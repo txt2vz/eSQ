@@ -5,7 +5,7 @@ parent.0 = clusterSubpop8.params
 
 eval.problem = cluster.ClusterQueryECJ
 stat = cluster.ClusterStatisticsECJ
-stat.file = statDump/clout.stat
+#stat.file = statDump/clout.stat
 
 evalthreads = auto
 breedthreads = auto
