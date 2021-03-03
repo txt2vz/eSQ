@@ -52,7 +52,7 @@ class Reports {
         }
 
         t14List.toUnique { it.v1 }.each { t ->
-            def t13Max = t14List.findAll { t.v3 == it.v3 }.max { q -> q.v10 }
+            def t13Max = t14List.findAll { t.v3 == it.v3 }.max { q -> q.v13 }
             fcsvMax << "${t13Max.v1}, ${t13Max.v2.getQueryDescription()}, ${t13Max.v3}, ${t13Max.v4},${t13Max.v5},${t13Max.v6},${t13Max.v7},${t13Max.v8}, ${t13Max.v9},${t13Max.v10},${t13Max.v11}, ${t13Max.v12}, ${t13Max.v13},  ${new Date()} \n"
         }
 

@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 5
-    final static int MAX_FIT_JOBS = 1
+    final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
     final static boolean useSameIndexForEffectivenessMeasure = true
@@ -49,7 +49,7 @@ class ClusterMainECJ extends Evolve {
 
     List<QType> queryTypesList = [
 
-            //QType.OR_INTERSECT,
+            QType.OR_INTERSECT,
        //     QType.AND_INTERSECT
                   QType.OR1
     ]
@@ -90,8 +90,8 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, GAtime, KNNtime, overallTime \n'
         }
 
-        [true].each { set_k ->
-       // [true, false].each { set_k ->
+  //      [true].each { set_k ->
+        [true, false].each { set_k ->
             SETK = set_k
 
             queryTypesList.each { qType ->
