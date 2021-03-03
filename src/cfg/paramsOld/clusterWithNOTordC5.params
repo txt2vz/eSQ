@@ -1,0 +1,61 @@
+parent.0 = clusterSubpop.params
+#parent.0 = clusterSinglePop.params
+#parent.0		= simple.params
+
+eval.problem = cluster.ClusterQuery
+stat = cluster.ClusterGAStatistics
+
+evalthreads = 4 
+breedthreads = 4
+generations =  1500
+breed.elite.0 = 1
+
+#pop.subpops = 1
+pop.subpop.0.species.genome-size = 25
+pop.subpop.0.size = 256
+pop.subpop.1.species.genome-size = 25
+pop.subpop.1.size = 128
+pop.subpop.2.species.genome-size = 25
+pop.subpop.2.size = 256
+
+pop.subpop.0.species.min-gene = -2
+pop.subpop.0.species.max-gene = 100
+pop.subpop.1.species.min-gene = -2
+pop.subpop.1.species.max-gene = 100
+pop.subpop.2.species.min-gene = -2
+pop.subpop.2.species.max-gene = 100
+
+pop.subpop.0.species.max-gene.4 = 10
+pop.subpop.0.species.min-gene.4 = -1
+pop.subpop.1.species.max-gene.4 = 10
+pop.subpop.1.species.min-gene.4 = -1
+pop.subpop.2.species.max-gene.4 = 10
+pop.subpop.2.species.min-gene.4 = -1
+
+pop.subpop.0.species.max-gene.9 = 10
+pop.subpop.0.species.min-gene.9 = -1
+pop.subpop.1.species.max-gene.9 = 10
+pop.subpop.1.species.min-gene.9 = -1
+pop.subpop.2.species.max-gene.9 = 10
+pop.subpop.2.species.min-gene.9 = -1
+
+pop.subpop.0.species.max-gene.14= 10
+pop.subpop.0.species.min-gene.14= -1
+pop.subpop.1.species.max-gene.14= 10
+pop.subpop.1.species.min-gene.14= -1
+pop.subpop.2.species.max-gene.14= 10
+pop.subpop.2.species.min-gene.14= -1
+
+pop.subpop.0.species.max-gene.19= 10
+pop.subpop.0.species.min-gene.19= -1
+pop.subpop.1.species.max-gene.19= 10
+pop.subpop.1.species.min-gene.19= -1
+pop.subpop.2.species.max-gene.19= 10
+pop.subpop.2.species.min-gene.19= -1
+
+pop.subpop.0.species.max-gene.24= 10
+pop.subpop.0.species.min-gene.24= -1
+pop.subpop.1.species.max-gene.24= 10
+pop.subpop.1.species.min-gene.24= -1
+pop.subpop.2.species.max-gene.24= 10
+pop.subpop.2.species.min-gene.24= -1

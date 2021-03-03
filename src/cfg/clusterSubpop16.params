@@ -1,0 +1,220 @@
+parent.0		= simple.params
+
+select.tournament.size = 3
+
+pop.subpops = 16
+pop.default-subpop =0
+
+breed.elite.0 = 2
+breed.elite.2 = 3
+breed.elite.3 = 4
+breed.elite.6 = 0
+breed.elite.7 = 0
+
+pop.subpop.0.size = 64
+pop.subpop.1.size = 64
+pop.subpop.2.size = 64
+pop.subpop.3.size = 64
+
+pop.subpop.0 = ec.Subpopulation
+pop.subpop.0.species = ec.vector.IntegerVectorSpecies
+pop.subpop.0.species.ind = ec.vector.IntegerVectorIndividual
+pop.subpop.0.species.fitness = cluster.ECJclusterFitness
+
+pop.subpop.0.species.crossover-type	= one
+pop.subpop.0.species.crossover-likelihood = 0.7
+pop.subpop.0.species.mutation-prob	= 0.1
+
+pop.subpop.0.species.mutation-type = reset
+
+pop.subpop.0.species.pipe = ec.vector.breed.VectorMutationPipeline
+pop.subpop.0.species.pipe.source.0 = ec.vector.breed.VectorCrossoverPipeline
+pop.subpop.0.species.pipe.source.0.source.0	= ec.select.TournamentSelection
+pop.subpop.0.species.pipe.source.0.source.1	= ec.select.TournamentSelection
+
+##########################################################
+pop.subpop.1 = ec.Subpopulation
+pop.subpop.1.duplicate-retries = 5
+
+pop.subpop.1.species = ec.vector.IntegerVectorSpecies
+pop.subpop.1.species.ind = ec.vector.IntegerVectorIndividual
+pop.subpop.1.species.fitness = cluster.ECJclusterFitness
+
+pop.subpop.1.species.crossover-type	= two
+pop.subpop.1.species.crossover-likelihood	= 0.8
+pop.subpop.1.species.mutation-prob	= 0.1
+pop.subpop.1.species.mutation-type = reset
+
+pop.subpop.1.species.pipe = ec.vector.breed.VectorMutationPipeline
+pop.subpop.1.species.pipe.source.0 = ec.vector.breed.VectorCrossoverPipeline
+pop.subpop.1.species.pipe.source.0.source.0	= ec.select.SigmaScalingSelection
+pop.subpop.1.species.pipe.source.0.source.1	= ec.select.SigmaScalingSelection
+
+###############################################################
+pop.subpop.2 = ec.Subpopulation
+pop.subpop.2.duplicate-retries = 5
+
+pop.subpop.2.species = ec.vector.IntegerVectorSpecies
+pop.subpop.2.species.ind = ec.vector.IntegerVectorIndividual
+pop.subpop.2.species.fitness = cluster.ECJclusterFitness
+
+pop.subpop.2.species.crossover-type	= one
+pop.subpop.2.species.crossover-likelihood	= 0.7
+pop.subpop.2.species.mutation-prob	= 0.05
+
+pop.subpop.2.species.mutation-type = reset
+
+pop.subpop.2.species.pipe = ec.vector.breed.VectorMutationPipeline
+pop.subpop.2.species.pipe.source.0 = ec.vector.breed.VectorCrossoverPipeline
+pop.subpop.2.species.pipe.source.0.source.0	= ec.select.TournamentSelection
+pop.subpop.2.species.pipe.source.0.source.1	= ec.select.TournamentSelection
+
+###############################################################
+pop.subpop.3 = ec.Subpopulation
+pop.subpop.3.duplicate-retries = 5
+
+pop.subpop.3.species = ec.vector.IntegerVectorSpecies
+pop.subpop.3.species.ind = ec.vector.IntegerVectorIndividual
+pop.subpop.3.species.fitness = cluster.ECJclusterFitness
+
+pop.subpop.3.species.crossover-type	= two
+pop.subpop.3.species.crossover-likelihood	= 0.7
+pop.subpop.3.species.mutation-prob	= 0.1
+pop.subpop.3.species.mutation-type = reset
+
+pop.subpop.3.species.pipe = ec.vector.breed.VectorMutationPipeline
+pop.subpop.3.species.pipe.source.0 = ec.vector.breed.VectorCrossoverPipeline
+pop.subpop.3.species.pipe.source.0.source.0	= ec.select.SigmaScalingSelection
+pop.subpop.3.species.pipe.source.0.source.1	= ec.select.SigmaScalingSelection
+
+###############################################################
+exch = ec.exchange.InterPopulationExchange
+
+exch.subpop.0.select = ec.select.TournamentSelection
+exch.subpop.0.select.size = 3
+exch.subpop.0.mod = 30
+exch.subpop.0.start = 30
+exch.subpop.0.size = 3
+exch.subpop.0.num-dest = 1
+exch.subpop.0.dest.0 = 1
+
+exch.subpop.1.select = ec.select.TournamentSelection
+exch.subpop.1.select.size= 3
+exch.subpop.1.mod = 30
+exch.subpop.1.start = 30
+exch.subpop.1.size = 3
+exch.subpop.1.num-dest = 1
+exch.subpop.1.dest.0 = 2
+
+exch.subpop.2.select = ec.select.TournamentSelection
+exch.subpop.2.select.size= 3
+exch.subpop.2.mod = 30
+exch.subpop.2.start = 30
+exch.subpop.2.size = 3
+exch.subpop.2.num-dest = 1
+exch.subpop.2.dest.0 = 3
+
+exch.subpop.3.select = ec.select.TournamentSelection
+exch.subpop.3.select.size= 3
+exch.subpop.3.mod = 30
+exch.subpop.3.start = 30
+exch.subpop.3.size = 4
+exch.subpop.3.num-dest = 2
+exch.subpop.3.dest.0 = 0
+exch.subpop.3.dest.1 = 4
+
+exch.subpop.4.select = ec.select.TournamentSelection
+exch.subpop.4.select.size= 3
+exch.subpop.4.mod = 30
+exch.subpop.4.start = 30
+exch.subpop.4.size = 3
+exch.subpop.4.num-dest = 1
+exch.subpop.4.dest.0 = 5
+
+exch.subpop.5.select = ec.select.TournamentSelection
+exch.subpop.5.select.size= 3
+exch.subpop.5.mod = 30
+exch.subpop.5.start = 30
+exch.subpop.5.size = 3
+exch.subpop.5.num-dest = 1
+exch.subpop.5.dest.0 = 6
+
+exch.subpop.6.select = ec.select.TournamentSelection
+exch.subpop.6.select.size= 3
+exch.subpop.6.mod = 30
+exch.subpop.6.start = 30
+exch.subpop.6.size = 3
+exch.subpop.6.num-dest = 1
+exch.subpop.6.dest.0 = 7
+
+exch.subpop.7.select = ec.select.TournamentSelection
+exch.subpop.7.select.size= 3
+exch.subpop.7.mod = 30
+exch.subpop.7.start = 30
+exch.subpop.7.size = 3
+exch.subpop.7.num-dest = 1
+exch.subpop.7.dest.0 = 0
+
+exch.subpop.8.select = ec.select.TournamentSelection
+exch.subpop.8.select.size= 3
+exch.subpop.8.mod = 30
+exch.subpop.8.start = 50
+exch.subpop.8.size = 2
+exch.subpop.8.num-dest = 1
+exch.subpop.8.dest.0 = 2
+
+exch.subpop.9.select = ec.select.TournamentSelection
+exch.subpop.9.select.size= 3
+exch.subpop.9.mod = 30
+exch.subpop.9.start = 50
+exch.subpop.9.size = 2
+exch.subpop.9.num-dest = 1
+exch.subpop.9.dest.0 = 2
+
+exch.subpop.10.select = ec.select.TournamentSelection
+exch.subpop.10.select.size= 3
+exch.subpop.10.mod = 30
+exch.subpop.10.start = 50
+exch.subpop.10.size = 2
+exch.subpop.10.num-dest = 1
+exch.subpop.10.dest.0 = 3
+
+exch.subpop.11.select = ec.select.TournamentSelection
+exch.subpop.11.select.size= 3
+exch.subpop.11.mod = 30
+exch.subpop.11.start = 50
+exch.subpop.11.size = 2
+exch.subpop.11.num-dest = 1
+exch.subpop.11.dest.0 = 3
+
+exch.subpop.12.select = ec.select.TournamentSelection
+exch.subpop.12.select.size= 3
+exch.subpop.12.mod = 30
+exch.subpop.12.start = 50
+exch.subpop.12.size = 2
+exch.subpop.12.num-dest = 1
+exch.subpop.12.dest.0 = 3
+
+exch.subpop.13.select = ec.select.TournamentSelection
+exch.subpop.13.select.size= 3
+exch.subpop.13.mod = 30
+exch.subpop.13.start = 50
+exch.subpop.13.size = 2
+exch.subpop.13.num-dest = 1
+exch.subpop.13.dest.0 = 3
+
+exch.subpop.14.select = ec.select.TournamentSelection
+exch.subpop.14.select.size= 3
+exch.subpop.14.mod = 30
+exch.subpop.14.start = 50
+exch.subpop.14.size = 2
+exch.subpop.14.num-dest = 1
+exch.subpop.14.dest.0 = 3
+
+exch.subpop.15.select = ec.select.TournamentSelection
+exch.subpop.15.select.size= 3
+exch.subpop.15.mod = 30
+exch.subpop.15.start = 50
+exch.subpop.15.size = 2
+exch.subpop.15.num-dest = 1
+exch.subpop.15.dest.0 = 1

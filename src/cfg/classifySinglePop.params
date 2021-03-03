@@ -1,0 +1,37 @@
+parent.0		= simple.params
+
+evalthreads = 				4
+breedthreads = 				4
+generations =  10
+
+eval.problem = classify.ClassifyFit
+stat = classify.ClassifyGAStatistics
+stat.file = statDump/out.stat
+
+select.tournament.size = 3
+breed.elite.0 = 2
+
+pop.subpops = 1
+pop.default-subpop =0
+
+pop.subpop.0 = ec.Subpopulation
+pop.subpop.0.size = 512 
+pop.subpop.0.species = ec.vector.IntegerVectorSpecies
+pop.subpop.0.species.ind = ec.vector.IntegerVectorIndividual
+pop.subpop.0.species.fitness = classify.ClassifyFit
+
+pop.subpop.0.species.min-gene = 0
+pop.subpop.0.species.max-gene = 50
+pop.subpop.0.species.genome-size = 8
+pop.subpop.0.species.crossover-type	= two
+
+pop.subpop.0.species.crossover-likelihood	= 0.7
+pop.subpop.0.species.mutation-prob	= 0.2
+
+pop.subpop.0.species.mutation-type = reset
+
+pop.subpop.0.species.pipe = ec.vector.breed.VectorMutationPipeline
+pop.subpop.0.species.pipe.source.0 = ec.vector.breed.VectorCrossoverPipeline
+pop.subpop.0.species.pipe.source.0.source.0	= ec.select.TournamentSelection
+pop.subpop.0.species.pipe.source.0.source.1	= ec.select.TournamentSelection
+

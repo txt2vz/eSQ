@@ -1,0 +1,47 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compile 'org.codehaus.groovy:groovy-all:3.0.7'
+    compile group: 'org.codehaus.groovy', name: 'groovy-json', version: '3.0.7'
+
+    compile group: 'io.jenetics', name: 'jenetics', version: '5.2.0'
+    //  compile group: 'io.jenetics', name: 'jenetics', version: '6.0.0'
+
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.4.0'
+    compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.4.0'
+    compile group: 'org.apache.lucene', name: 'lucene-classification', version: '7.4.0'
+    compile group: 'org.apache.lucene', name: 'lucene-queryparser', version: '7.4.0'
+
+    // compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.2.0'
+    // compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.2.0'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+
+
+
+    //  testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+// https://mvnrepository.com/artifact/org.spockframework/spock-core
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '2.0-M2-groovy-3.0'
+
+
+    //compile fileTree(dir: 'lib', include: ['*.jar'])
+     compile fileTree(dir: 'lib', include: 'ecj-27.jar')
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,60 @@
+parent.0 = clusterSubpopTournament.params
+#parent.0 = clusterSinglePop.params
+#parent.0		= simple.params
+
+eval.problem = cluster.ClusterQuery
+stat = cluster.ClusterGAStatistics
+
+evalthreads = 4 
+breedthreads = 4
+generations =  1000
+breed.elite.0 = 1
+
+#pop.subpops = 1
+pop.subpop.0.species.genome-size = 20
+pop.subpop.0.size = 256
+pop.subpop.1.species.genome-size = 20
+pop.subpop.1.size = 128
+pop.subpop.2.species.genome-size = 20
+pop.subpop.2.size = 128
+
+pop.subpop.0.species.num-segments = 3
+pop.subpop.1.species.num-segments = 3
+pop.subpop.2.species.num-segments = 3
+
+pop.subpop.0.species.segment-type = start
+pop.subpop.1.species.segment-type = start
+pop.subpop.2.species.segment-type = start
+
+pop.subpop.0.species.segment.0.start = 0
+pop.subpop.0.species.segment.1.start = 8
+pop.subpop.0.species.segment.2.start = 16
+
+pop.subpop.1.species.segment.0.start = 0
+pop.subpop.1.species.segment.1.start = 8
+pop.subpop.1.species.segment.2.start = 16
+
+pop.subpop.2.species.segment.0.start = 0
+pop.subpop.2.species.segment.1.start = 8
+pop.subpop.2.species.segment.2.start = 16
+
+pop.subpop.0.species.segment.0.min-gene = -1
+pop.subpop.0.species.segment.0.max-gene = 100
+pop.subpop.0.species.segment.1.min-gene = -1
+pop.subpop.0.species.segment.1.max-gene = 100
+pop.subpop.0.species.segment.2.min-gene = -1
+pop.subpop.0.species.segment.2.max-gene = 50  
+
+pop.subpop.1.species.segment.0.min-gene = -1
+pop.subpop.1.species.segment.0.max-gene = 100
+pop.subpop.1.species.segment.1.min-gene = -1
+pop.subpop.1.species.segment.1.max-gene = 100
+pop.subpop.1.species.segment.2.min-gene = -1
+pop.subpop.1.species.segment.2.max-gene = 50  
+
+pop.subpop.2.species.segment.0.min-gene = -1
+pop.subpop.2.species.segment.0.max-gene = 50
+pop.subpop.2.species.segment.1.min-gene = -1
+pop.subpop.2.species.segment.1.max-gene = 100
+pop.subpop.2.species.segment.2.min-gene = -1
+pop.subpop.2.species.segment.2.max-gene = 50  
