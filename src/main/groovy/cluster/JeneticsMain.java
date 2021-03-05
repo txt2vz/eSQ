@@ -39,14 +39,14 @@ public class JeneticsMain {
 
     //static int k;
     static List<IndexEnum> ieList = Arrays.asList(
-//            IndexEnum.CRISIS3,
-            IndexEnum.CLASSIC4 //,
-//            IndexEnum.NG3,
-//            IndexEnum.NG5,
-//            IndexEnum.NG6,
-//            IndexEnum.R4,
-//            IndexEnum.R5,
- //           IndexEnum.R6
+            IndexEnum.CRISIS3,
+            IndexEnum.CLASSIC4 ,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
+            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -65,10 +65,10 @@ public class JeneticsMain {
         final Date startRun = new Date();
         final int popSize = 512;
         final int maxGen = 120;
-        final int maxGene = 100;
+        final int maxGene = 70;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int setkMaxNumberOfCategories = 9;
-        final int numberOfJobs = 2;
+        final int numberOfJobs = 3;
         final int numberOfSubPops = 1;
 
         final int maxGenomeLength = 19;

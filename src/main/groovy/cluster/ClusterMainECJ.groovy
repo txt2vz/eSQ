@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 5
+    final static int NUMBER_OF_JOBS = 3
     final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
@@ -48,29 +48,24 @@ class ClusterMainECJ extends Evolve {
 
 
     List<QType> queryTypesList = [
-
-            QType.OR_INTERSECT,
+//    QType.OR_INTERSECT,
        //     QType.AND_INTERSECT
-                  QType.OR1
+                 QType.OR1
     ]
 
     List<MinIntersectValue> intersectRatioList = [
           //  MinIntersectValue.RATIO_POINT_5
 
-  //        MinIntersectValue.NONE,
+//          MinIntersectValue.NONE,
 //          MinIntersectValue.RATIO_POINT_1,
 //          MinIntersectValue.RATIO_POINT_2,
-//          MinIntersectValue.RATIO_POINT_3,
+//          MinIntersectValue.RATIO_POINT_3,//
 //          MinIntersectValue.RATIO_POINT_4,
 //          MinIntersectValue.RATIO_POINT_5,
           MinIntersectValue.RATIO_POINT_6,
 //          MinIntersectValue.RATIO_POINT_7,
 //          MinIntersectValue.RATIO_POINT_8,
 //          MinIntersectValue.RATIO_POINT_9,
-//
-//          MinIntersectValue.RATIO_POINT_95,
-//          MinIntersectValue.RATIO_POINT_97,
-//          MinIntersectValue.RATIO_POINT_10
 
     ]
 
@@ -90,7 +85,7 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, GAtime, KNNtime, overallTime \n'
         }
 
-  //      [true].each { set_k ->
+    //    [true].each { set_k ->
         [true, false].each { set_k ->
             SETK = set_k
 
