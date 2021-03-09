@@ -38,7 +38,7 @@ public class ClusterStatisticsECJ extends SimpleStatistics {
 
         File fcsv = new File('results/generationReport.csv')
         if (!fcsv.exists()) {
-            fcsv << 'generation, averageF1, averagePrecision, averageRecall, baseFitness, indexName, fitnessMethod, intersectMethod, queryType, date \n'
+            fcsv << 'generation, averageF1, averagePrecision, averageRecall, baseFitness, indexName, setK, queryType, date \n'
         }
         fcsv << "${state.generation}, ${averageF1.round(2)}, ${averagePrecision.round(2)}, ${averageRecall.round(2)}, ${cfit.getFitness().round(2)}, ${Indexes.index.name()}, $ClusterMainECJ.SETK, ${ClusterQueryECJ.QUERY_TYPE}, ${new Date()} \n"
 
