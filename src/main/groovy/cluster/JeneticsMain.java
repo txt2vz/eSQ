@@ -36,7 +36,7 @@ public class JeneticsMain {
     static IndexReader ir;
     final static boolean SETK = true;
     static String gaEngine = "JENETICS.IO";
-    static final double kPenalty = 0.04d;
+    static final double kPenalty = 0.03d;
 
     //static int k;
     static List<IndexEnum> ieList = Arrays.asList(
@@ -74,7 +74,7 @@ public class JeneticsMain {
 
         final int maxGenomeLength = 19;
         final boolean onlyDocsInOneClusterForClassifier = false;
-        double minIntersectRatio = 0.5d;
+        double minIntersectRatio = 0.6d;
         Reports reports = new Reports();
 
         ieList.stream().forEach(ie -> {
@@ -161,7 +161,7 @@ public class JeneticsMain {
                 System.out.println("Best of run **********************************  classifierF1 " + t3ClassiferResult.getV1() + " " + ie.name() + '\n');
 
                 //System.out.println("statistics " + statistics);
-                reports.reports(ie, t6QuerySetResult, t3ClassiferResult, fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, 0);
+                reports.reports(ie, t6QuerySetResult, t3ClassiferResult, fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty, popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, 0);
 
             });
 

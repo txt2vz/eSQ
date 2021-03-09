@@ -23,7 +23,7 @@ public class ClusterStatisticsECJ extends SimpleStatistics {
         }.max { it.fitness() }
 
 
-        if (state.generation % 5 == 0) generationReport(state, cf)
+      //  if (state.generation % 5 == 0) generationReport(state, cf)
 
         cf.generationStats(state.generation)
     }
@@ -40,5 +40,7 @@ public class ClusterStatisticsECJ extends SimpleStatistics {
         if (!fcsv.exists()) {
             fcsv << 'generation, averageF1, averagePrecision, averageRecall, baseFitness, indexName, fitnessMethod, intersectMethod, queryType, date \n'
         }
+        fcsv << "${state.generation}, ${averageF1.round(2)}, ${averagePrecision.round(2)}, ${averageRecall.round(2)}, ${cfit.getFitness().round(2)}, ${Indexes.index.name()}, $ClusterMainECJ.SETK, ${ClusterQueryECJ.QUERY_TYPE}, ${new Date()} \n"
+
     }
 }

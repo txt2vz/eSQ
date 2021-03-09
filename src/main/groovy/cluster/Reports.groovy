@@ -31,9 +31,7 @@ class Reports {
         if (!fcsv.exists()) {
             fcsv << 'SetK, QueryType, Index, QueryF1, QueryPrecision, QueryRecall, ClassifierF1,ClassifierPrecision,ClassifierRecall, UniqueHits, Fitness, NumberofCategories, NumberOfClusters, ClusterCountError, ClassifyMethod, MinIntersectRatio, kPenalty, PopulationSize, NumberOfSubPops, GenomeSize, MaxGene, Gen, GA_Engine, Job, maxFitJob, date \n'
         }
-//        fcsv << " $setk, $qType, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $onlyDocsInOnecluster, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
         fcsv << " $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
-
 
         File queryFileOut = new File('results/Queries.txt')
         queryFileOut << "Total Docs: ${Indexes.indexReader.numDocs()} Index: ${Indexes.index} ${new Date()} \n"

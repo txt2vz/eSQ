@@ -19,8 +19,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 3
+    final static int NUMBER_OF_JOBS = 11
+    final static int MAX_FIT_JOBS = 5
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
     final static boolean useSameIndexForEffectivenessMeasure = true
@@ -43,18 +43,18 @@ class ClusterMainECJ extends Evolve {
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
     ]
 
-    List<Double> kPenalty = [0.04d]
+    List<Double> kPenalty = [0.03d]
     //       [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
 
     List<QType> queryTypesList = [
-//    QType.OR_INTERSECT,
-       //     QType.AND_INTERSECT
-                 QType.OR1
+            QType.OR_INTERSECT,
+            QType.OR1
+            //     QType.AND_INTERSECT
     ]
 
     List<MinIntersectValue> intersectRatioList = [
-          //  MinIntersectValue.RATIO_POINT_5
+            //  MinIntersectValue.RATIO_POINT_5
 
 //          MinIntersectValue.NONE,
 //          MinIntersectValue.RATIO_POINT_1,
@@ -62,7 +62,7 @@ class ClusterMainECJ extends Evolve {
 //          MinIntersectValue.RATIO_POINT_3,//
 //          MinIntersectValue.RATIO_POINT_4,
 //          MinIntersectValue.RATIO_POINT_5,
-          MinIntersectValue.RATIO_POINT_6,
+            MinIntersectValue.RATIO_POINT_6,
 //          MinIntersectValue.RATIO_POINT_7,
 //          MinIntersectValue.RATIO_POINT_8,
 //          MinIntersectValue.RATIO_POINT_9,
@@ -71,7 +71,7 @@ class ClusterMainECJ extends Evolve {
 
     List<LuceneClassifyMethod> classifyMethodList = [
             LuceneClassifyMethod.KNN,
-        //          LuceneClassifyMethod.NB
+            //          LuceneClassifyMethod.NB
     ]
 
     ClusterMainECJ() {
@@ -85,7 +85,7 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, GAtime, KNNtime, overallTime \n'
         }
 
-    //    [true].each { set_k ->
+        //    [true].each { set_k ->
         [true, false].each { set_k ->
             SETK = set_k
 
