@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 11
-    final static int MAX_FIT_JOBS = 5
+    final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
     final static boolean useSameIndexForEffectivenessMeasure = true

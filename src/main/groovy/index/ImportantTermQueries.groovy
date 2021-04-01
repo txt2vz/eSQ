@@ -1,5 +1,7 @@
 package index
 
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
 import groovy.transform.CompileStatic
 import org.apache.lucene.index.*
 import org.apache.lucene.search.DocIdSetIterator
@@ -62,5 +64,17 @@ class ImportantTermQueries {
                 df > 3 && !stopSet.contains(word) && !word.contains("'") && !word.contains('.') && word.length() > 1 && word.charAt(0).isLetter()
 
         return b
+    }
+    static void main (String [] args){
+
+        final Date start = new Date()
+
+        def l = getTFIDFTermQueryList(IndexEnum.CRISIS3.indexReader)
+        println " l  $l"
+
+        final Date end = new Date()
+        TimeDuration duration = TimeCategory.minus(end, start)
+        println "Duration: $duration"
+
     }
 }
