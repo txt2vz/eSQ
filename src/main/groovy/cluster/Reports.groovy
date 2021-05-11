@@ -35,7 +35,7 @@ class Reports {
 
         File queryFileOut = new File('results/Queries.txt')
         queryFileOut << "Total Docs: ${Indexes.indexReader.numDocs()} Index: ${Indexes.index} ${new Date()} \n"
-        queryFileOut << "UniqueHits: ${uniqueHits}  TotalHitsAllQueries: $totalHits  QuerySetf1: $qF1 ClassifierF1: $cF1 setk: $setk CategoryCountError: $categoryCountErrorAbs  minIntersectRation: $minIntersectRatio \n"
+        queryFileOut << "UniqueHits: ${uniqueHits}  TotalHitsAllQueries: $totalHits  QuerySetf1: $qF1  qP: $qP qR: $qR ClassifierF1: $cF1  cP: $cP cR: $cR  setk: $setk CategoryCountError: $categoryCountErrorAbs  minIntersectRation: $minIntersectRatio \n"
         queryFileOut << QuerySet.printQuerySet(queryMap)
         queryFileOut << "************************************************ \n \n"
 
