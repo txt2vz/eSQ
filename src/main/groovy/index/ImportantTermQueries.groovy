@@ -33,7 +33,8 @@ class ImportantTermQueries {
             final int df = indexReader.docFreq(t)
             String word = t.text()
 
-            if (isUsefulTerm(df, word)) {
+            //if (isUsefulTerm(df, word)) {
+            if (true) {
 
                 final long docFreq = indexReader.docFreq(t);
                 double tfidfTotal = 0

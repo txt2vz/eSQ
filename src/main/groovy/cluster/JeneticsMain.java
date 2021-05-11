@@ -85,7 +85,7 @@ public class JeneticsMain {
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
 
                 Indexes.setIndex(ie, true);
-                termQueryList = (Collections.unmodifiableList(ImportantTermQueries.getTFIDFTermQueryList(ie.getIndexReader())));
+                termQueryList =  Indexes.getTermQueryList();// //(Collections.unmodifiableList(ImportantTermQueries.getTFIDFTermQueryList(ie.getIndexReader())));
 
                 final int maxCats = (SETK) ? setkMaxNumberOfCategories : indexEnum.getNumberOfCategories();
                 final int genomeLength = (qType == QType.OR1) ? maxCats : maxGenomeLength;

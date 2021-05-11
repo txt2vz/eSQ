@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.TermQuery
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.FSDirectory
 
@@ -74,6 +75,7 @@ class Indexes {
     static IndexEnum index
     static IndexSearcher indexSearcher
     static IndexReader indexReader
+    static List<TermQuery> termQueryList
 
     // Lucene field names
     static final String FIELD_CATEGORY_NAME = 'category',
@@ -90,6 +92,7 @@ class Indexes {
         index = ie
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
+        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable();
 
         if (printDetails) {
             println "indexEnum $index maxDocs ${indexReader.maxDoc()}"

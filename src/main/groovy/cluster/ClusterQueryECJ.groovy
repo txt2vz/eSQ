@@ -25,7 +25,8 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
 
         super.setup(state, base);
         println "ClusterQueryECJ Setup. Total docs for ClusterQueryECJ.groovy   " + Indexes.indexReader.numDocs()
-        tql = ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader) asImmutable()
+        tql = Indexes.termQueryList
+                //ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader) asImmutable()
     }
 
 
