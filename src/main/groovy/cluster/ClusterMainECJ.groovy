@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 2
-    final static int MAX_FIT_JOBS = 2
+    final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
     final static boolean useSameIndexForEffectivenessMeasure = true
@@ -29,7 +29,7 @@ class ClusterMainECJ extends Evolve {
 
     //indexes suitable for clustering.
     List<Tuple2<IndexEnum, IndexEnum>> clusteringIndexes = [
-
+//
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R4, IndexEnum.R4TEST),
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R5, IndexEnum.R5TEST),
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
@@ -48,9 +48,9 @@ class ClusterMainECJ extends Evolve {
 
 
     List<QType> queryTypesList = [
-            //   QType.OR_INTERSECT,
-            QType.OR1
-            //     QType.AND_INTERSECT
+              QType.OR_INTERSECT,
+         //   QType.OR1
+         //       QType.AND_INTERSECT
     ]
 
     List<MinIntersectValue> intersectRatioList = [
@@ -85,34 +85,36 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-        //    [true].each { set_k ->  //true to allow GA to know predefined number of clusters
-        [true, false].each { set_k ->
-            //  [false].each { set_k ->
+            [true].each { set_k ->  //true to allow GA to know predefined number of clusters
+      //  [true, false].each { set_k ->
+           //   [false].each { set_k ->
             SETK = set_k
             String parameterFilePath =
-                    SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
+                    'src/cfg/clusterGA_Kmap.params'
+                   // SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
 
             queryTypesList.each { qType ->
                 ClusterQueryECJ.QUERY_TYPE = qType
                 println "Query type $qType"
 
-                clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
+                intersectRatioList.each { MinIntersectValue minIntersectRatio ->
+                    clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
 
-                    println "Index Enum trainTestIndexes: $trainTestIndexes"
-                    Indexes.setIndex(trainTestIndexes.first)
+                        println "Index Enum trainTestIndexes: $trainTestIndexes"
+                        Indexes.setIndex(trainTestIndexes.first, minIntersectRatio.intersectRatio)
 
-                    NUMBER_OF_JOBS.times { job ->
+                        NUMBER_OF_JOBS.times { job ->
 
-                        MAX_FIT_JOBS.times { maxFit ->
+                            MAX_FIT_JOBS.times { maxFit ->
 
-                            EvolutionState state = new EvolutionState()
 
-                            kPenalty.each { kPenalty ->
-                                ECJclusterFitness.K_PENALTY = kPenalty
+                                kPenalty.each { kPenalty ->
+                                    ECJclusterFitness.K_PENALTY = kPenalty
+                                    EvolutionState state = new EvolutionState()
 
-                                intersectRatioList.each { MinIntersectValue minIntersectRatio ->
+
                                     final Date indexTime = new Date()
-                                    QueryTermIntersect.minIntersect = minIntersectRatio
+                                    //  QueryTermIntersect.minIntersect = minIntersectRatio
 
                                     ParameterDatabase parameters = new ParameterDatabase(new File(parameterFilePath));
 
@@ -164,10 +166,12 @@ class ClusterMainECJ extends Evolve {
 
                                         reports.reports(trainTestIndexes.v1, t6QuerySetResult, t3ClassiferResult, ecjFitness, qType, SETK, classifyMethod, minIntersectRatio.intersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
                                     }
+                                    cleanup(state);
+                                    println "--------END JOB $job  -----------------------------------------------"
+
                                 }
                             }
-                            cleanup(state);
-                            println "--------END JOB $job  -----------------------------------------------"
+
                         }
                         reports.reportMaxFitness()
                     }

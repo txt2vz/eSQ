@@ -10,16 +10,17 @@ import org.apache.lucene.search.TermQuery
 //see https://www.tutorialspoint.com/genetic_algorithms/genetic_algorithms_fundamentals.htm
 
 enum QType {
-    OR1 ('Single-Word'),
-    OR_INTERSECT ('Multi-Word-OR'),
-    AND_INTERSECT ('Multi-Word-AND')
+    OR1('Single-Word'),
+    OR_INTERSECT('Multi-Word-OR'),
+    AND_INTERSECT('Multi-Word-AND')
 
-    QType(String desc){
-        queryDescription=desc
+    QType(String desc) {
+        queryDescription = desc
     }
 
     String queryDescription;
-    String description(){
+
+    String description() {
         return queryDescription;
     }
 }
@@ -27,24 +28,26 @@ enum QType {
 @CompileStatic
 class QuerySet {
 
-    static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, List<TermQuery> termQueryList, final int k, QType qType) {
+    static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
         //  MinIntersectValue mi =
 
+       // println "in getQuerybuilderrer $intChromosome, k $k, qtyiet $qType"
+
         switch (qType) {
-            case QType.OR1: return getOneWordQueryPerCluster(intChromosome, termQueryList, k)
+            case QType.OR1: return getOneWordQueryPerCluster(intChromosome, k)
                 break
 
             case QType.OR_INTERSECT:
-                return getIntersect(intChromosome, termQueryList, k, BooleanClause.Occur.SHOULD);
+                return getIntersect(intChromosome, k, BooleanClause.Occur.SHOULD);
                 break
 
-            case QType.AND_INTERSECT:
-                return getIntersect(intChromosome, termQueryList, k, BooleanClause.Occur.MUST);
-                break
+//            case QType.AND_INTERSECT:
+//                return getIntersect(intChromosome, termQueryList, k, BooleanClause.Occur.MUST);
+//                break
         }
     }
 
-    private static List<BooleanQuery.Builder> getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
+    private static List<BooleanQuery.Builder> getOneWordQueryPerCluster(int[] intChromosome, final int k) {
 
         //   Set<Integer> alleles = [] as Set<Integer>
         List<BooleanQuery.Builder> bqbL = []
@@ -54,10 +57,10 @@ class QuerySet {
         while (clusterNumber < k && index < intChromosome.size()) {
 
             final int allele = intChromosome[index]
-            assert allele < termQueryList.size() && allele >= 0
+            assert allele < Indexes.termQueryList.size() && allele >= 0
 
             //   if (alleles.add(allele)) {
-            bqbL[clusterNumber] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
+            bqbL[clusterNumber] = new BooleanQuery.Builder().add(Indexes.termQueryList[allele], BooleanClause.Occur.SHOULD)
             clusterNumber++
             //   }
             index++
@@ -65,34 +68,33 @@ class QuerySet {
         return bqbL.asImmutable()
     }
 
-    private static List<BooleanQuery.Builder> getIntersect(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
+    private static List<BooleanQuery.Builder> getIntersect(int[] intChromosome, final int k, BooleanClause.Occur booleanClauseOccur) {
+
+     // println "in getIntersect chromsome $intChromosome k $k"
 
         List<BooleanQuery.Builder> bqbL = []
-        Set<Integer> alleles = [] as Set<Integer>
-        int clusterNumber = 0
-        int index = 0
+        Set<Integer> alleleSet = [] as Set<Integer>
 
-        while (clusterNumber < k && index < intChromosome.size()) {
-            final int allele = intChromosome[index]
+        final int intersectGenomeStart = 10
 
-            if (alleles.add(allele)) {
-                bqbL[clusterNumber] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur )
-                clusterNumber++
-            }
-            index++
-        }
+        for (int i = 0; i < k; i++) {
+            final int rootAllele = intChromosome[i]
+            TermQuery termQueryRoot = Indexes.termQueryList[rootAllele]
+            bqbL[i] = new BooleanQuery.Builder().add(termQueryRoot, booleanClauseOccur)
 
-        for (int i = index; i < intChromosome.size(); i++) {
+            for (int j = i + intersectGenomeStart; j < intChromosome.size(); j = j + k) {
+                final int newAllele = intChromosome[j]
 
-            final int allele = intChromosome[i]
-            clusterNumber = i % k
+                if (Indexes.termIntersectMap.containsKey(termQueryRoot)) {
 
-            BooleanQuery rootq = bqbL[clusterNumber].build()
-            Query tq0 = rootq.clauses().first().getQuery()
-            TermQuery tqNew = termQueryList[allele]
+                    List<TermQuery> intersectingTerms = Indexes.termIntersectMap[termQueryRoot]
 
-            if (alleles.add(allele) && (QueryTermIntersect.isValidIntersect(tq0, tqNew))) {
-                bqbL[clusterNumber].add(tqNew, booleanClauseOccur)
+                    if (newAllele >=0 && newAllele < intersectingTerms.size()  && (alleleSet.add(newAllele))  ) {
+
+                        TermQuery tqNew = intersectingTerms[newAllele]
+                        bqbL[i].add(tqNew, booleanClauseOccur)
+                    }
+                }
             }
         }
 

@@ -54,7 +54,8 @@ public class JeneticsMain {
         final int k = getK(gt, indexEnum, SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
 
-        List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArray, termQueryList, k, qType);
+      //  List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArray, termQueryList, k, qType);
+        List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArray, k, qType);
         final int uniqueHits = UniqueHits.getUniqueHits(bqbList).getV2();
 
         final double f = (SETK) ? uniqueHits * (1.0 - (kPenalty * k)) : uniqueHits;
@@ -84,7 +85,7 @@ public class JeneticsMain {
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
 
-                Indexes.setIndex(ie, true);
+                Indexes.setIndex(ie, 0.6d, true);
                 termQueryList =  Indexes.getTermQueryList();// //(Collections.unmodifiableList(ImportantTermQueries.getTFIDFTermQueryList(ie.getIndexReader())));
 
                 final int maxCats = (SETK) ? setkMaxNumberOfCategories : indexEnum.getNumberOfCategories();
@@ -132,7 +133,8 @@ public class JeneticsMain {
 
                                     fitness.set(ind.bestPhenotype().fitness());
 
-                                    List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestGen, termQueryList, k, qType);
+                                   // List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestGen, termQueryList, k, qType);
+                                    List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestGen, k, qType);
                                     Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> queryDataGen = QuerySet.querySetInfo(bqbList, true);
                                     System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                     System.out.println();
@@ -148,7 +150,8 @@ public class JeneticsMain {
                 int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
                 final int k = getK(g, ie, SETK);
 
-                List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestOfRun, termQueryList, k, qType);
+               // List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestOfRun, termQueryList, k, qType);
+                List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestOfRun, k, qType);
                 Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList);
 
                 Classifier classifier = ClassifyUnassigned.getClassifierForUnassignedDocuments(ie, LuceneClassifyMethod.KNN);

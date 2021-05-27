@@ -18,14 +18,16 @@ import org.apache.lucene.search.TermQuery
 @CompileStatic
 public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
 
-    List <TermQuery>  tql
+   // List <TermQuery>  tql
+    Map<TermQuery, List<TermQuery>> termIntersectMap
     static QType QUERY_TYPE
 
     public void setup(final EvolutionState state, final Parameter base) {
 
         super.setup(state, base);
         println "ClusterQueryECJ Setup. Total docs for ClusterQueryECJ.groovy   " + Indexes.indexReader.numDocs()
-        tql = Indexes.termQueryList
+      //  tql = Indexes.termQueryList
+        termIntersectMap = Indexes.termIntersectMap
                 //ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader) asImmutable()
     }
 
@@ -44,7 +46,8 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
 
         final int[] genome = (ClusterMainECJ.SETK) ? genomeOrig[1.. genomeOrig.size()-1] as int[] : genomeOrig
 
-        List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(genome, tql, k, QUERY_TYPE);
+       // List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(genome, tql, k, QUERY_TYPE);
+        List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(genome, k, QUERY_TYPE);
         Tuple3<Map<Query, Integer>, Integer, Integer> uniqueHitsTuple = UniqueHits.getUniqueHits(bqbList);
 
        // final int uniqueHits = uniqueHitsTuple.v2

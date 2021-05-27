@@ -1,6 +1,8 @@
 package index
 
+import cluster.QueryTermIntersect
 import groovy.transform.CompileStatic
+import groovy.transform.Immutable
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.DirectoryReader
@@ -76,6 +78,7 @@ class Indexes {
     static IndexSearcher indexSearcher
     static IndexReader indexReader
     static List<TermQuery> termQueryList
+    static Map<TermQuery, List<TermQuery>> termIntersectMap
 
     // Lucene field names
     static final String FIELD_CATEGORY_NAME = 'category',
@@ -88,14 +91,37 @@ class Indexes {
 
     static final Analyzer analyzer = new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
-    static void setIndex(IndexEnum ie, boolean printDetails = false) {
+    static void setIndex(IndexEnum ie, final double minIntersectRation = 0.5d,  boolean printDetails = false) {
         index = ie
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
         termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable();
+        termIntersectMap = getTermIntersectMap(termQueryList, minIntersectRation)
 
         if (printDetails) {
             println "indexEnum $index maxDocs ${indexReader.maxDoc()}"
         }
+    }
+
+    static Map<TermQuery, List<TermQuery>> getTermIntersectMap(List<TermQuery> tqList, final double minIntersectRatio){
+
+        Map<TermQuery, List<TermQuery>> termIntersectMapLocal = [:]
+        tqList.each {TermQuery tqRoot ->
+
+            List<TermQuery> tqListMinus = tqList - tqRoot
+            tqListMinus.each { TermQuery tqRelated->
+
+                if (QueryTermIntersect.isValidIntersect(tqRoot,tqRelated, minIntersectRatio)){
+                    if (termIntersectMapLocal[tqRoot]){
+
+                        termIntersectMapLocal[tqRoot].add(tqRelated)
+                    } else {
+
+                        termIntersectMapLocal.put(tqRoot, [tqRelated])
+                    }
+                }
+            }
+        }
+        return  termIntersectMapLocal.take(11)
     }
 }

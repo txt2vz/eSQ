@@ -13,10 +13,10 @@ import org.apache.lucene.util.BytesRef
 @CompileStatic
 class ImportantTermQueries {
 
-    private static Set<String> stopSet = StopSet.getStopSetFromFile()
-    private final static int MAX_TERMQUERYLIST_SIZE = 200
+    static Set<String> stopSet = StopSet.getStopSetFromFile()
+    final static int MAX_TERMQUERYLIST_SIZE = 200
 
-    static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader) {
+    static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {
 
         TermsEnum termsEnum = MultiFields.getTerms(indexReader, Indexes.FIELD_CONTENTS).iterator()
 
@@ -52,7 +52,7 @@ class ImportantTermQueries {
         }
 
         termQueryMap = termQueryMap.sort { a, b -> a.value <=> b.value }
-        List<TermQuery> tql = new ArrayList<TermQuery>(termQueryMap.keySet().take(MAX_TERMQUERYLIST_SIZE))
+        List<TermQuery> tql = new ArrayList<TermQuery>(termQueryMap.keySet().take(maxSize))
 
         println "termQueryMap size: ${termQueryMap.size()}  termQuerylist size: ${tql.size()}  termQuerylist: $tql"
         println "termQueryMap ${termQueryMap.take(50)}"
@@ -62,7 +62,12 @@ class ImportantTermQueries {
     private static boolean isUsefulTerm(int df, String word) {
 
         boolean b =
-                df > 3 && !stopSet.contains(word) && !word.contains("'") && !word.contains('.') && word.length() > 1 && word.charAt(0).isLetter()
+                df > 3 &&
+                !stopSet.contains(word) &&
+                !word.contains("'") &&
+                !word.contains('.') &&
+                word.length() > 1 &&
+                word.charAt(0).isLetter()
 
         return b
     }
