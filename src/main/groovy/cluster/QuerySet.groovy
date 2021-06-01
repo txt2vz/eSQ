@@ -2,6 +2,7 @@ package cluster
 
 import groovy.transform.CompileStatic
 import index.Indexes
+import org.apache.lucene.index.Term
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
@@ -29,9 +30,6 @@ enum QType {
 class QuerySet {
 
     static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
-        //  MinIntersectValue mi =
-
-       // println "in getQuerybuilderrer $intChromosome, k $k, qtyiet $qType"
 
         switch (qType) {
             case QType.OR1: return getOneWordQueryPerCluster(intChromosome, k)
@@ -70,14 +68,13 @@ class QuerySet {
 
     private static List<BooleanQuery.Builder> getIntersect(int[] intChromosome, final int k, BooleanClause.Occur booleanClauseOccur) {
 
-     // println "in getIntersect chromsome $intChromosome k $k"
-
         List<BooleanQuery.Builder> bqbL = []
         Set<Integer> alleleSet = [] as Set<Integer>
 
         final int intersectGenomeStart = 10
 
         for (int i = 0; i < k; i++) {
+
             final int rootAllele = intChromosome[i]
             TermQuery termQueryRoot = Indexes.termQueryList[rootAllele]
             bqbL[i] = new BooleanQuery.Builder().add(termQueryRoot, booleanClauseOccur)
@@ -85,16 +82,18 @@ class QuerySet {
             for (int j = i + intersectGenomeStart; j < intChromosome.size(); j = j + k) {
                 final int newAllele = intChromosome[j]
 
-                if (Indexes.termIntersectMap.containsKey(termQueryRoot)) {
+                //     if (Indexes.termQueryIntersectMap.containsKey(termQueryRoot)) {
 
-                    List<TermQuery> intersectingTerms = Indexes.termIntersectMap[termQueryRoot]
+                assert Indexes.termQueryIntersectMap.containsKey(termQueryRoot)
 
-                    if (newAllele >=0 && newAllele < intersectingTerms.size()  && (alleleSet.add(newAllele))  ) {
+                List<Tuple2<TermQuery, Double>> intersectingTerms = Indexes.termQueryIntersectMap[termQueryRoot]
 
-                        TermQuery tqNew = intersectingTerms[newAllele]
-                        bqbL[i].add(tqNew, booleanClauseOccur)
-                    }
+                if (intersectingTerms.size() > 0 && newAllele >= 0 && newAllele < intersectingTerms.size() && (alleleSet.add(newAllele))) {
+
+                    TermQuery tqNew = intersectingTerms[newAllele].v1
+                    bqbL[i].add(tqNew, booleanClauseOccur)
                 }
+                //  }
             }
         }
 

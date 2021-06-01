@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 2
+    final static int NUMBER_OF_JOBS = 1
     final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
@@ -32,15 +32,15 @@ class ClusterMainECJ extends Evolve {
 //
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R4, IndexEnum.R4TEST),
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R5, IndexEnum.R5TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
-
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG3, IndexEnum.NG3TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
-
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CLASSIC4, IndexEnum.CLASSIC4TEST),
-
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
+//            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
+//
+//            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG3, IndexEnum.NG3TEST),
+//            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
+//            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
+//
+//            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CLASSIC4, IndexEnum.CLASSIC4TEST),
+//
+//            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -61,7 +61,7 @@ class ClusterMainECJ extends Evolve {
 //          MinIntersectValue.RATIO_POINT_2,
 //          MinIntersectValue.RATIO_POINT_3,//
 //          MinIntersectValue.RATIO_POINT_4,
-//          MinIntersectValue.RATIO_POINT_5,
+ //         MinIntersectValue.RATIO_POINT_5,
             MinIntersectValue.RATIO_POINT_6,
 //          MinIntersectValue.RATIO_POINT_7,
 //          MinIntersectValue.RATIO_POINT_8,
@@ -101,17 +101,16 @@ class ClusterMainECJ extends Evolve {
                     clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
 
                         println "Index Enum trainTestIndexes: $trainTestIndexes"
-                        Indexes.setIndex(trainTestIndexes.first, minIntersectRatio.intersectRatio)
+                        Indexes.setIndex(trainTestIndexes.v1)
+                        Indexes.setTermQueryLists(minIntersectRatio.intersectRatio)
 
                         NUMBER_OF_JOBS.times { job ->
 
                             MAX_FIT_JOBS.times { maxFit ->
 
-
                                 kPenalty.each { kPenalty ->
-                                    ECJclusterFitness.K_PENALTY = kPenalty
+                                    Indexes.K_PENALTY = kPenalty
                                     EvolutionState state = new EvolutionState()
-
 
                                     final Date indexTime = new Date()
                                     //  QueryTermIntersect.minIntersect = minIntersectRatio
@@ -164,16 +163,18 @@ class ClusterMainECJ extends Evolve {
                                         IndexEnum checkEffectifnessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.first : trainTestIndexes.second
                                         Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectifnessIndex, bestClusterFitness.k)
 
-                                        reports.reports(trainTestIndexes.v1, t6QuerySetResult, t3ClassiferResult, ecjFitness, qType, SETK, classifyMethod, minIntersectRatio.intersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
+                                  //      reports.reports(trainTestIndexes.v1, t6QuerySetResult, t3ClassiferResult, ecjFitness, qType, SETK, classifyMethod, minIntersectRatio.intersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
+                                        reports.reports(trainTestIndexes.v1, t6QuerySetResult.v1, t6QuerySetResult.v2, t6QuerySetResult.v3, t6QuerySetResult.v4, t6QuerySetResult.v5, t6QuerySetResult.v6, t3ClassiferResult.v1, t3ClassiferResult.v2, t3ClassiferResult.v3, ecjFitness, qType, SETK, classifyMethod, minIntersectRatio.intersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
+
                                     }
                                     cleanup(state);
                                     println "--------END JOB $job  -----------------------------------------------"
 
                                 }
                             }
-
+                            reports.reportMaxFitness()
                         }
-                        reports.reportMaxFitness()
+
                     }
                 }
             }

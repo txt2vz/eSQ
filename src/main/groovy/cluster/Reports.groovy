@@ -6,20 +6,23 @@ import index.Indexes
 import org.apache.lucene.search.Query
 
 class Reports {
-    List<Tuple14<String, QType, String, Double, Double, Double, Double, Double, Double, Integer, Double, Integer, Double, LuceneClassifyMethod>> t14List = []
+    List<Tuple15<String, QType, String, Double, Double, Double, Double, Double, Double, Integer, Double, Integer, Double, LuceneClassifyMethod, Double>> t15List = []
 
-    void reports(IndexEnum ie, Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> qResult, Tuple3 cResult, double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
+    //void reports(IndexEnum ie, Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> qResult, Tuple3 cResult, double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
+    void reports(IndexEnum ie,Map<Query, Integer> queryMap,int uniqueHits, int totalHits, double qF1, double qP, double qR, double cF1, double cP, double cR,   double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
 
-        Map<Query, Integer> queryMap = qResult.v1
-        final int uniqueHits = qResult.v2
-        final int totalHits = qResult.v3
-        final double qF1 = qResult.v4
-        final double qP = qResult.v5
-        final double qR = qResult.v6
 
-        final double cF1 = cResult.v1
-        final double cP = cResult.v2
-        final double cR = cResult.v3
+
+//        Map<Query, Integer> queryMap = qResult.v1
+//        final int uniqueHits = qResult.v2
+//        final int totalHits = qResult.v3
+//        final double qF1 = qResult.v4
+//        final double qP = qResult.v5
+//        final double qR = qResult.v6
+//
+//        final double cF1 = cResult.v1
+//        final double cP = cResult.v2
+//        final double cR = cResult.v3
 
         final int numberOfClusters = queryMap.size();
         final int categoryCountError = ie.numberOfCategories - numberOfClusters
@@ -29,9 +32,9 @@ class Reports {
 
         File fcsv = new File("results/results.csv")
         if (!fcsv.exists()) {
-            fcsv << 'SetK, QueryType, Index, QueryF1, QueryPrecision, QueryRecall, ClassifierF1,ClassifierPrecision,ClassifierRecall, UniqueHits, Fitness, NumberofCategories, NumberOfClusters, ClusterCountError, ClassifyMethod, MinIntersectRatio, kPenalty, PopulationSize, NumberOfSubPops, GenomeSize, MaxGene, Gen, GA_Engine, Job, maxFitJob, date \n'
+            fcsv << 'SetK, QueryType, Index, QueryF1, QueryPrecision, QueryRecall, ClassifierF1,ClassifierPrecision,ClassifierRecall, UniqueHits, Fitness, NumberofCategories, NumberOfClusters, ClusterCountError,  ClassifyMethod, MinIntersect, kPenalty, PopulationSize, NumberOfSubPops, GenomeSize, MaxGene, MinIntersectRatio, Gen, GA_Engine, Job, maxFitJob, date \n'
         }
-        fcsv << " $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
+        fcsv << " $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $minIntersectRatio, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
 
         File queryFileOut = new File('results/Queries.txt')
         queryFileOut << "Total Docs: ${Indexes.indexReader.numDocs()} Index: ${Indexes.index} ${new Date()} \n"
@@ -39,22 +42,24 @@ class Reports {
         queryFileOut << QuerySet.printQuerySet(queryMap)
         queryFileOut << "************************************************ \n \n"
 
-        t14List << new Tuple14(setkDescription, qType, ie.name(), qF1, qP, qR, cF1, cP, cR, categoryCountErrorAbs, minIntersectRatio, uniqueHits, fitness, lcm)
+        t15List << new Tuple15(setkDescription, qType, ie.name(), qF1, qP, qR, cF1, cP, cR, categoryCountErrorAbs, minIntersectRatio, uniqueHits, fitness, lcm, kPenalty)
     }
 
     void reportMaxFitness() {
 
         File fcsvMax = new File("results/maxFitnessReport.csv")
         if (!fcsvMax.exists()) {
-            fcsvMax << 'Setk, QueryType, Index, queryF1, queryPrecision, queryRecall, ClassifierF1, ClassifierPrecision, ClasssifierRecall, CategoryCountError, MinIntersectRatio, UniqueHits, Fitness, ClassifyMethod, Date \n'
+            fcsvMax << 'Setk, QueryType, Index, queryF1, queryPrecision, queryRecall, ClassifierF1, ClassifierPrecision, ClasssifierRecall, CategoryCountError, MinIntersect, UniqueHits, Fitness, ClassifyMethod, kPenalty, Date \n'
         }
 
-        t14List.toUnique { it.v1 }.each { t ->
-            def t13Max = t14List.findAll { t.v3 == it.v3 }.max { q -> q.v13 }
-            fcsvMax << "${t13Max.v1}, ${t13Max.v2.getQueryDescription()}, ${t13Max.v3}, ${t13Max.v4},${t13Max.v5},${t13Max.v6},${t13Max.v7},${t13Max.v8}, ${t13Max.v9},${t13Max.v10},${t13Max.v11}, ${t13Max.v12}, ${t13Max.v13},  ${new Date()} \n"
+        t15List.toUnique { it.v1 }.each { t ->
+            def t15Max = t15List.findAll { t.v3 == it.v3 }.max { q -> q.v13 }
+            fcsvMax << "${t15Max.v1}, ${t15Max.v2.getQueryDescription()}, ${t15Max.v3}, ${t15Max.v4},${t15Max.v5},${t15Max.v6},${t15Max.v7},${t15Max.v8}, ${t15Max.v9},${t15Max.v10},${t15Max.v11}, ${t15Max.v12}, ${t15Max.v13}, ${t15Max.v14}, ${t15Max.v15},  ${new Date()} \n"
         }
 
-        println "Average query f1 " + t14List.average { it.v4 } + " Classifier f1: " + t14List.average { it.v7 }
-        t14List.clear();
+        //println "Job Average query f1  for category" + t15List.average { it.v4 } + " Classifier f1: " + t15List.average { it.v7 }
+       // println "T15 $t15List"
+
+        t15List.clear();
     }
 }

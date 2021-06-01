@@ -78,7 +78,8 @@ class Indexes {
     static IndexSearcher indexSearcher
     static IndexReader indexReader
     static List<TermQuery> termQueryList
-    static Map<TermQuery, List<TermQuery>> termIntersectMap
+    static Map<TermQuery, List<Tuple2<TermQuery, Double>>> termQueryIntersectMap
+    public static double K_PENALTY = 0.04d
 
     // Lucene field names
     static final String FIELD_CATEGORY_NAME = 'category',
@@ -89,39 +90,22 @@ class Indexes {
                         FIELD_ASSIGNED_CLASS = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id';
 
-    static final Analyzer analyzer = new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
+    static final Analyzer analyzer = new StandardAnalyzer()
+    //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
-    static void setIndex(IndexEnum ie, final double minIntersectRation = 0.5d,  boolean printDetails = false) {
+    static void setIndex(IndexEnum ie, final double minIntersectRation = 0.5d, boolean printDetails = false) {
         index = ie
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
-        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable();
-        termIntersectMap = getTermIntersectMap(termQueryList, minIntersectRation)
+
 
         if (printDetails) {
             println "indexEnum $index maxDocs ${indexReader.maxDoc()}"
         }
     }
 
-    static Map<TermQuery, List<TermQuery>> getTermIntersectMap(List<TermQuery> tqList, final double minIntersectRatio){
-
-        Map<TermQuery, List<TermQuery>> termIntersectMapLocal = [:]
-        tqList.each {TermQuery tqRoot ->
-
-            List<TermQuery> tqListMinus = tqList - tqRoot
-            tqListMinus.each { TermQuery tqRelated->
-
-                if (QueryTermIntersect.isValidIntersect(tqRoot,tqRelated, minIntersectRatio)){
-                    if (termIntersectMapLocal[tqRoot]){
-
-                        termIntersectMapLocal[tqRoot].add(tqRelated)
-                    } else {
-
-                        termIntersectMapLocal.put(tqRoot, [tqRelated])
-                    }
-                }
-            }
-        }
-        return  termIntersectMapLocal.take(11)
+    static void setTermQueryLists(final double minIntersectRation = 0.5d){
+        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable()
+        termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRation) asImmutable()
     }
 }

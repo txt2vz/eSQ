@@ -164,7 +164,7 @@ public class JeneticsMain {
                 System.out.println("Best of run **********************************  classifierF1 " + t3ClassiferResult.getV1() + " " + ie.name() + '\n');
 
                 //System.out.println("statistics " + statistics);
-                reports.reports(ie, t6QuerySetResult, t3ClassiferResult, fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty, popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, 0);
+          //      reports.reports(ie, t6QuerySetResult, t3ClassiferResult, fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty, popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, 0);
 
             });
 

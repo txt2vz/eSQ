@@ -1,8 +1,10 @@
 package index
 
+import cluster.QueryTermIntersect
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import groovy.transform.CompileStatic
+import groovy.transform.Immutable
 import org.apache.lucene.index.*
 import org.apache.lucene.search.DocIdSetIterator
 import org.apache.lucene.search.TermQuery
@@ -15,12 +17,13 @@ class ImportantTermQueries {
 
     static Set<String> stopSet = StopSet.getStopSetFromFile()
     final static int MAX_TERMQUERYLIST_SIZE = 200
+    final static int MAX_INTERSECT_LIST_SIZE = 40
 
     static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {
 
         TermsEnum termsEnum = MultiFields.getTerms(indexReader, Indexes.FIELD_CONTENTS).iterator()
 
-        println "ImportantTermQueries TFIDF:  Index: " + Indexes.index
+      //  println "ImportantTermQueries TFIDF:  Index: " + Indexes.index
 
         Map<TermQuery, Double> termQueryMap = [:]
         BytesRef termbr;
@@ -34,7 +37,7 @@ class ImportantTermQueries {
             String word = t.text()
 
             if (isUsefulTerm(df, word)) {
-           // if (true) {
+                // if (true) {
 
                 final long docFreq = indexReader.docFreq(t);
                 double tfidfTotal = 0
@@ -59,19 +62,45 @@ class ImportantTermQueries {
         return tql.asImmutable()
     }
 
+
     private static boolean isUsefulTerm(int df, String word) {
 
         boolean b =
                 df > 3 &&
-                !stopSet.contains(word) &&
-                !word.contains("'") &&
-                !word.contains('.') &&
-                word.length() > 1 &&
-                word.charAt(0).isLetter()
+                        !stopSet.contains(word) &&
+                        !word.contains("'") &&
+                        !word.contains('.') &&
+                        word.length() > 1 &&
+                        word.charAt(0).isLetter()
 
         return b
     }
-    static void main (String [] args){
+
+    static Map<TermQuery, List<Tuple2<TermQuery, Double>>> getTermIntersectMapSorted(List<TermQuery> tqList, final double minIntersectRatio) {
+
+        Map<TermQuery, List<Tuple2<TermQuery, Double>>> termIntersectMapLocal = [:]
+        tqList.each { TermQuery tqRoot ->
+
+            List<TermQuery> tqListMinus = tqList - tqRoot
+            List<Tuple2<TermQuery, Double>> listRelatedTuples = []
+
+            tqListMinus.each { TermQuery tqRelated ->
+
+                final double intersectValue = QueryTermIntersect.getIntersectValue(tqRoot, tqRelated)
+
+                if (intersectValue > minIntersectRatio) {
+
+                    listRelatedTuples << new Tuple2(tqRelated, intersectValue)
+                }
+            }
+            listRelatedTuples.sort { -it.v2 }.take(MAX_INTERSECT_LIST_SIZE)
+            termIntersectMapLocal << [(tqRoot): listRelatedTuples]
+        }
+        return termIntersectMapLocal
+    }
+
+
+    static void main(String[] args) {
 
         final Date start = new Date()
 

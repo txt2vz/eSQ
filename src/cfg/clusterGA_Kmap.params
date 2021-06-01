@@ -19,13 +19,13 @@ pop.default-subpop =0
 breed.elite.0 = 2
 
 #pop.subpops = 4
-pop.subpop.0.species.genome-size = 20
+pop.subpop.0.species.genome-size = 30
 pop.subpop.0.size = 64
-pop.subpop.1.species.genome-size = 20
+pop.subpop.1.species.genome-size = 30
 pop.subpop.1.size = 64
-pop.subpop.2.species.genome-size = 20
+pop.subpop.2.species.genome-size = 30
 pop.subpop.2.size = 64
-pop.subpop.3.species.genome-size = 20
+pop.subpop.3.species.genome-size = 30
 pop.subpop.3.size = 64
 
 pop.subpop.0.species.fitness = cluster.ECJclusterFitness
@@ -114,13 +114,13 @@ pop.subpop.7.species.segment.1.max-gene = 100
 
 #segement to to specify intersecting words
 pop.subpop.0.species.segment.2.min-gene = -1
-pop.subpop.0.species.segment.2.max-gene = 40
+pop.subpop.0.species.segment.2.max-gene = 10
 pop.subpop.1.species.segment.2.min-gene = -1
-pop.subpop.1.species.segment.2.max-gene = 40
+pop.subpop.1.species.segment.2.max-gene = 20
 pop.subpop.2.species.segment.2.min-gene = -1
-pop.subpop.2.species.segment.2.max-gene = 40
+pop.subpop.2.species.segment.2.max-gene = 20
 pop.subpop.3.species.segment.2.min-gene = -1
-pop.subpop.3.species.segment.2.max-gene = 40
+pop.subpop.3.species.segment.2.max-gene = 20
 pop.subpop.4.species.segment.2.min-gene = -1
 pop.subpop.4.species.segment.2.max-gene = 40
 pop.subpop.5.species.segment.2.min-gene = -1
