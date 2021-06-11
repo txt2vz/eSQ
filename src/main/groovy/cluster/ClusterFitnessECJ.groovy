@@ -9,9 +9,7 @@ import org.apache.lucene.search.Query
 import org.apache.lucene.search.TotalHitCountCollector
 
 @CompileStatic
-public class ECJclusterFitness extends SimpleFitness {
-
-   // public static double K_PENALTY = 0.04d
+public class ClusterFitnessECJ extends SimpleFitness {
 
     Map<Query, Integer> queryMap = [:]
     List<BooleanQuery.Builder> bqbList =[]

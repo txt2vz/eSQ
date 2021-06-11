@@ -19,7 +19,7 @@ pop.subpop.3.size = 64
 pop.subpop.0 = ec.Subpopulation
 pop.subpop.0.species = ec.vector.IntegerVectorSpecies
 pop.subpop.0.species.ind = ec.vector.IntegerVectorIndividual
-pop.subpop.0.species.fitness = cluster.ECJclusterFitness
+pop.subpop.0.species.fitness = cluster.ClusterFitnessECJ
 
 pop.subpop.0.species.crossover-type	= one
 pop.subpop.0.species.crossover-likelihood = 0.7
@@ -38,7 +38,7 @@ pop.subpop.1.duplicate-retries = 5
 
 pop.subpop.1.species = ec.vector.IntegerVectorSpecies
 pop.subpop.1.species.ind = ec.vector.IntegerVectorIndividual
-pop.subpop.1.species.fitness = cluster.ECJclusterFitness
+pop.subpop.1.species.fitness = cluster.ClusterFitnessECJ
 
 pop.subpop.1.species.crossover-type	= two
 pop.subpop.1.species.crossover-likelihood	= 0.8
@@ -56,7 +56,7 @@ pop.subpop.2.duplicate-retries = 5
 
 pop.subpop.2.species = ec.vector.IntegerVectorSpecies
 pop.subpop.2.species.ind = ec.vector.IntegerVectorIndividual
-pop.subpop.2.species.fitness = cluster.ECJclusterFitness
+pop.subpop.2.species.fitness = cluster.ClusterFitnessECJ
 
 pop.subpop.2.species.crossover-type	= one
 pop.subpop.2.species.crossover-likelihood	= 0.7
@@ -75,7 +75,7 @@ pop.subpop.3.duplicate-retries = 5
 
 pop.subpop.3.species = ec.vector.IntegerVectorSpecies
 pop.subpop.3.species.ind = ec.vector.IntegerVectorIndividual
-pop.subpop.3.species.fitness = cluster.ECJclusterFitness
+pop.subpop.3.species.fitness = cluster.ClusterFitnessECJ
 
 pop.subpop.3.species.crossover-type	= two
 pop.subpop.3.species.crossover-likelihood	= 0.7

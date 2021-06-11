@@ -38,11 +38,11 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
         if (ind.evaluated)
             return;
 
-        ECJclusterFitness fitness = (ECJclusterFitness) ind.fitness;
+        ClusterFitnessECJ fitness = (ClusterFitnessECJ) ind.fitness;
         IntegerVectorIndividual intVectorIndividual = (IntegerVectorIndividual) ind
 
         final int[] genomeOrig = intVectorIndividual.genome as int[]
-        final int   k =  (ClusterMainECJ.SETK) ? genomeOrig[0] :  Indexes.index.numberOfCategories
+        final int   k = (ClusterMainECJ.SETK) ? genomeOrig[0] :  Indexes.index.numberOfCategories
         final int[] genome = (ClusterMainECJ.SETK) ? genomeOrig[1.. genomeOrig.size()-1] as int[] : genomeOrig
 
         List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(genome, k, QUERY_TYPE);

@@ -8,21 +8,7 @@ import org.apache.lucene.search.Query
 class Reports {
     List<Tuple15<String, QType, String, Double, Double, Double, Double, Double, Double, Integer, Double, Integer, Double, LuceneClassifyMethod, Double>> t15List = []
 
-    //void reports(IndexEnum ie, Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> qResult, Tuple3 cResult, double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
-    void reports(IndexEnum ie,Map<Query, Integer> queryMap,int uniqueHits, int totalHits, double qF1, double qP, double qR, double cF1, double cP, double cR,   double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
-
-
-
-//        Map<Query, Integer> queryMap = qResult.v1
-//        final int uniqueHits = qResult.v2
-//        final int totalHits = qResult.v3
-//        final double qF1 = qResult.v4
-//        final double qP = qResult.v5
-//        final double qR = qResult.v6
-//
-//        final double cF1 = cResult.v1
-//        final double cP = cResult.v2
-//        final double cR = cResult.v3
+   void reports(IndexEnum ie,Map<Query, Integer> queryMap,int uniqueHits, int totalHits, double qF1, double qP, double qR, double cF1, double cP, double cR,   double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
 
         final int numberOfClusters = queryMap.size();
         final int categoryCountError = ie.numberOfCategories - numberOfClusters

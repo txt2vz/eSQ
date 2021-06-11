@@ -19,19 +19,19 @@ pop.default-subpop =0
 breed.elite.0 = 2
 
 #pop.subpops = 4
-pop.subpop.0.species.genome-size = 30
+pop.subpop.0.species.genome-size = 21
 pop.subpop.0.size = 64
-pop.subpop.1.species.genome-size = 30
+pop.subpop.1.species.genome-size = 21
 pop.subpop.1.size = 64
-pop.subpop.2.species.genome-size = 30
+pop.subpop.2.species.genome-size = 21
 pop.subpop.2.size = 64
-pop.subpop.3.species.genome-size = 30
+pop.subpop.3.species.genome-size = 21
 pop.subpop.3.size = 64
 
-pop.subpop.0.species.fitness = cluster.ECJclusterFitness
-pop.subpop.1.species.fitness = cluster.ECJclusterFitness
-pop.subpop.2.species.fitness = cluster.ECJclusterFitness
-pop.subpop.3.species.fitness = cluster.ECJclusterFitness
+pop.subpop.0.species.fitness = cluster.ClusterFitnessECJ
+pop.subpop.1.species.fitness = cluster.ClusterFitnessECJ
+pop.subpop.2.species.fitness = cluster.ClusterFitnessECJ
+pop.subpop.3.species.fitness = cluster.ClusterFitnessECJ
 
 pop.subpop.0.species.min-gene = 0
 pop.subpop.0.species.max-gene = 80
@@ -51,31 +51,31 @@ pop.subpop.5.species.num-segments = 3
 pop.subpop.6.species.num-segments = 3
 pop.subpop.7.species.num-segments = 3
 
-#segment 1 to specify k
+#segment  to specify k
 pop.subpop.0.species.segment.0.start = 0
 pop.subpop.0.species.segment.1.start = 1
-pop.subpop.0.species.segment.2.start = 10
+pop.subpop.0.species.segment.2.start = 9
 pop.subpop.1.species.segment.0.start = 0
 pop.subpop.1.species.segment.1.start = 1
-pop.subpop.1.species.segment.2.start = 10
+pop.subpop.1.species.segment.2.start = 9
 pop.subpop.2.species.segment.0.start = 0
 pop.subpop.2.species.segment.1.start = 1
-pop.subpop.2.species.segment.2.start = 10
+pop.subpop.2.species.segment.2.start = 9
 pop.subpop.3.species.segment.0.start = 0
 pop.subpop.3.species.segment.1.start = 1
-pop.subpop.3.species.segment.2.start = 10
+pop.subpop.3.species.segment.2.start = 9
 pop.subpop.4.species.segment.0.start = 0
 pop.subpop.4.species.segment.1.start = 1
-pop.subpop.4.species.segment.2.start = 10
+pop.subpop.4.species.segment.2.start = 9
 pop.subpop.5.species.segment.0.start = 0
 pop.subpop.5.species.segment.1.start = 1
-pop.subpop.5.species.segment.2.start = 10
+pop.subpop.5.species.segment.2.start = 9
 pop.subpop.6.species.segment.0.start = 0
 pop.subpop.6.species.segment.1.start = 1
-pop.subpop.6.species.segment.2.start = 10
+pop.subpop.6.species.segment.2.start = 9
 pop.subpop.7.species.segment.0.start = 0
 pop.subpop.7.species.segment.1.start = 1
-pop.subpop.7.species.segment.2.start = 10
+pop.subpop.7.species.segment.2.start = 9
 
 pop.subpop.0.species.segment.0.min-gene = 2
 pop.subpop.0.species.segment.0.max-gene = 9
@@ -96,35 +96,35 @@ pop.subpop.7.species.segment.0.max-gene = 9
 
 #segment 1 to speicfy root words
 pop.subpop.0.species.segment.1.min-gene = 0
-pop.subpop.0.species.segment.1.max-gene = 100
+pop.subpop.0.species.segment.1.max-gene = 80
 pop.subpop.1.species.segment.1.min-gene = 0
-pop.subpop.1.species.segment.1.max-gene = 100
+pop.subpop.1.species.segment.1.max-gene = 80
 pop.subpop.2.species.segment.1.min-gene = 0
-pop.subpop.2.species.segment.1.max-gene = 100
+pop.subpop.2.species.segment.1.max-gene = 80
 pop.subpop.3.species.segment.1.min-gene = 0
-pop.subpop.3.species.segment.1.max-gene = 100
+pop.subpop.3.species.segment.1.max-gene = 80
 pop.subpop.4.species.segment.1.min-gene = 0
-pop.subpop.4.species.segment.1.max-gene = 100
+pop.subpop.4.species.segment.1.max-gene = 80
 pop.subpop.5.species.segment.1.min-gene = 0
-pop.subpop.5.species.segment.1.max-gene = 100
+pop.subpop.5.species.segment.1.max-gene = 80
 pop.subpop.6.species.segment.1.min-gene = 0
-pop.subpop.6.species.segment.1.max-gene = 100
+pop.subpop.6.species.segment.1.max-gene = 80
 pop.subpop.7.species.segment.1.min-gene = 0
-pop.subpop.7.species.segment.1.max-gene = 100
+pop.subpop.7.species.segment.1.max-gene = 80
 
 #segement to to specify intersecting words
 pop.subpop.0.species.segment.2.min-gene = -1
 pop.subpop.0.species.segment.2.max-gene = 10
 pop.subpop.1.species.segment.2.min-gene = -1
-pop.subpop.1.species.segment.2.max-gene = 20
+pop.subpop.1.species.segment.2.max-gene = 10
 pop.subpop.2.species.segment.2.min-gene = -1
 pop.subpop.2.species.segment.2.max-gene = 20
 pop.subpop.3.species.segment.2.min-gene = -1
 pop.subpop.3.species.segment.2.max-gene = 20
 pop.subpop.4.species.segment.2.min-gene = -1
-pop.subpop.4.species.segment.2.max-gene = 40
+pop.subpop.4.species.segment.2.max-gene = 30
 pop.subpop.5.species.segment.2.min-gene = -1
-pop.subpop.5.species.segment.2.max-gene = 40
+pop.subpop.5.species.segment.2.max-gene = 30
 pop.subpop.6.species.segment.2.min-gene = -1
 pop.subpop.6.species.segment.2.max-gene = 40
 pop.subpop.7.species.segment.2.min-gene = -1

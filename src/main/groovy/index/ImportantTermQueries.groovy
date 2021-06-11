@@ -23,8 +23,6 @@ class ImportantTermQueries {
 
         TermsEnum termsEnum = MultiFields.getTerms(indexReader, Indexes.FIELD_CONTENTS).iterator()
 
-      //  println "ImportantTermQueries TFIDF:  Index: " + Indexes.index
-
         Map<TermQuery, Double> termQueryMap = [:]
         BytesRef termbr;
         TFIDFSimilarity tfidfSim = new ClassicSimilarity()
@@ -37,7 +35,6 @@ class ImportantTermQueries {
             String word = t.text()
 
             if (isUsefulTerm(df, word)) {
-                // if (true) {
 
                 final long docFreq = indexReader.docFreq(t);
                 double tfidfTotal = 0
@@ -76,9 +73,11 @@ class ImportantTermQueries {
         return b
     }
 
-    static Map<TermQuery, List<Tuple2<TermQuery, Double>>> getTermIntersectMapSorted(List<TermQuery> tqList, final double minIntersectRatio) {
+    // for each term find and store intersecting terms
+    static Map<TermQuery, List<Tuple2<TermQuery, Double>>> getTermIntersectMapSorted(List<TermQuery> tqList) {
 
         Map<TermQuery, List<Tuple2<TermQuery, Double>>> termIntersectMapLocal = [:]
+
         tqList.each { TermQuery tqRoot ->
 
             List<TermQuery> tqListMinus = tqList - tqRoot
@@ -88,14 +87,16 @@ class ImportantTermQueries {
 
                 final double intersectValue = QueryTermIntersect.getIntersectValue(tqRoot, tqRelated)
 
-                if (intersectValue > minIntersectRatio) {
+                if (intersectValue >= Indexes.MIN_INTERSECT_RATIO) {
 
                     listRelatedTuples << new Tuple2(tqRelated, intersectValue)
                 }
             }
+
             listRelatedTuples.sort { -it.v2 }.take(MAX_INTERSECT_LIST_SIZE)
             termIntersectMapLocal << [(tqRoot): listRelatedTuples]
         }
+
         return termIntersectMapLocal
     }
 
