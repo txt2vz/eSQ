@@ -97,7 +97,7 @@ public class JeneticsMain {
                             (SETK) ?
                                     Genotype.of(
                                             IntegerChromosome.of(0, maxGene, genomeLength),
-                                            IntegerChromosome.of(2, setkMaxNumberOfCategories)) :  //possible values for k
+                                            IntegerChromosome.of(2, setkMaxNumberOfCategories)) :  //psossible values for k
 
                                     Genotype.of(
                                             IntegerChromosome.of(0, maxGene, genomeLength));
