@@ -15,8 +15,12 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:3.0.7'
     compile group: 'org.codehaus.groovy', name: 'groovy-json', version: '3.0.7'
 
-    compile group: 'io.jenetics', name: 'jenetics', version: '5.2.0'
+   // compile group: 'io.jenetics', name: 'jenetics', version: '5.2.0'
     //  compile group: 'io.jenetics', name: 'jenetics', version: '6.0.0'
+
+    // https://mvnrepository.com/artifact/io.jenetics/jenetics
+    implementation group: 'io.jenetics', name: 'jenetics', version: '6.2.0'
+
 
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.4.0'
     compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.4.0'

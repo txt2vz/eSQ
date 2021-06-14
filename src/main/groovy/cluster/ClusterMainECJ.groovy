@@ -86,6 +86,7 @@ class ClusterMainECJ extends Evolve {
                 println "Query type $qType"
 
                 intersectRatioList.each { Double minIntersectRatio ->
+
                     clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
 
                         println "Index Enum trainTestIndexes: $trainTestIndexes"
