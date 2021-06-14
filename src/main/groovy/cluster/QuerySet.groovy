@@ -104,9 +104,6 @@ class QuerySet {
         return bqbL.asImmutable()
     }
 
-
-
-
     private static List<BooleanQuery.Builder> getIntersectWithMap(int[] intChromosome, final int k, BooleanClause.Occur booleanClauseOccur) {
 
         List<BooleanQuery.Builder> bqbL = []

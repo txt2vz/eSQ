@@ -19,8 +19,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 2
-    final static int MAX_FIT_JOBS = 2
+    final static int NUMBER_OF_JOBS = 5
+    final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
     final static boolean useSameIndexForEffectivenessMeasure = true
@@ -48,7 +48,7 @@ class ClusterMainECJ extends Evolve {
 
     List<Double> intersectRatioList = [
             0.6d
-            //  0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d]
+          //    0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
     List<QType> queryTypesList = [
@@ -74,8 +74,8 @@ class ClusterMainECJ extends Evolve {
         }
 
         //   [false].each { set_k ->
-        // [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-        [true, false].each { set_k ->
+         [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+      //  [true, false].each { set_k ->
 
             SETK = set_k
             String parameterFilePath = SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
