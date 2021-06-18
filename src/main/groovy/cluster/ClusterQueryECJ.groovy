@@ -48,7 +48,7 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
         List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(genome, k, QUERY_TYPE);
         Tuple3<Map<Query, Integer>, Integer, Integer> uniqueHitsTuple = UniqueHits.getUniqueHits(bqbList);
 
-        final int uniqueHits = uniqueHitsTuple.v2 - (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
+        final int uniqueHits = uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
 
         final double f = (ClusterMainECJ.SETK) ? uniqueHits * (1.0 - (Indexes.K_PENALTY * k)) as double : uniqueHits as double
 

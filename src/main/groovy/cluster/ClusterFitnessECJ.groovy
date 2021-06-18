@@ -15,9 +15,7 @@ public class ClusterFitnessECJ extends SimpleFitness {
     List<BooleanQuery.Builder> bqbList =[]
     double baseFitness = 0.0  //for ECJ
     int uniqueHits = 0
-//    int hitsMatchingTwoOrMoreQueries = 0
     int totalHits = 0
-  //  int missedDocs = 0
     int k
 
     double getFitness() {

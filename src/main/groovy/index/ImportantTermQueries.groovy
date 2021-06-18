@@ -54,11 +54,10 @@ class ImportantTermQueries {
         termQueryMap = termQueryMap.sort { a, b -> a.value <=> b.value }
         List<TermQuery> tql = new ArrayList<TermQuery>(termQueryMap.keySet().take(maxSize))
 
-        println "termQueryMap size: ${termQueryMap.size()}  termQuerylist size: ${tql.size()}  termQuerylist: $tql"
-        println "termQueryMap ${termQueryMap.take(50)}"
+        println "termQueryMap size: ${termQueryMap.size()}  termQuerylist size: ${tql.size()}  termQuerylist (first 20): ${tql.take(20)}"
+        println "termQueryMap (20) ${termQueryMap.take(20)}"
         return tql.asImmutable()
     }
-
 
     private static boolean isUsefulTerm(int df, String word) {
 
@@ -69,7 +68,6 @@ class ImportantTermQueries {
                         !word.contains('.') &&
                         word.length() > 1 &&
                         word.charAt(0).isLetter()
-
         return b
     }
 

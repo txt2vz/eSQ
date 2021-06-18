@@ -32,12 +32,11 @@ class QuerySet {
     static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
 
         switch (qType) {
-            case QType.OR1: return getOneWordQueryPerCluster(intChromosome, k)
+            case QType.OR1:
+                return getOneWordQueryPerCluster(intChromosome, Indexes.termQueryList, k)
                 break
 
             case QType.OR_INTERSECT:
-                //return getIntersectWithMap(intChromosome, k, BooleanClause.Occur.SHOULD);
-
                 return getIntersect(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
                 break
 
@@ -47,28 +46,22 @@ class QuerySet {
         }
     }
 
-
     private static List<BooleanQuery.Builder> getIntersect(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
 
         List<BooleanQuery.Builder> bqbL = []
         Set<Integer> alleles = [] as Set<Integer>
-        int clusterNumber = 0
-        int index = 0
 
-        while (clusterNumber < k && index < intChromosome.size()) {
-            final int allele = intChromosome[index]
-
-            if (alleles.add(allele)) {
-                bqbL[clusterNumber] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur )
-                clusterNumber++
-            }
-            index++
-        }
-
-        for (int i = index; i < intChromosome.size(); i++) {
+        for (int i = 0; i < k && i < intChromosome.size(); i++) {
 
             final int allele = intChromosome[i]
-            clusterNumber = i % k
+            bqbL[i] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
+            alleles.add(allele)
+        }
+
+        for (int j = k; j < intChromosome.size(); j++) {
+
+            final int allele = intChromosome[j]
+            final int clusterNumber = j % k
 
             BooleanQuery rootq = bqbL[clusterNumber].build()
             Query tq0 = rootq.clauses().first().getQuery()
@@ -83,28 +76,21 @@ class QuerySet {
         return bqbL.asImmutable()
     }
 
-    private static List<BooleanQuery.Builder> getOneWordQueryPerCluster(int[] intChromosome, final int k) {
+    private static List<BooleanQuery.Builder> getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
 
-        //   Set<Integer> alleles = [] as Set<Integer>
         List<BooleanQuery.Builder> bqbL = []
 
-        int index = 0;
-        int clusterNumber = 0
-        while (clusterNumber < k && index < intChromosome.size()) {
+        for (int i = 0; i < k && i < intChromosome.size(); i++) {
 
-            final int allele = intChromosome[index]
-            assert allele < Indexes.termQueryList.size() && allele >= 0
-
-            //   if (alleles.add(allele)) {
-            bqbL[clusterNumber] = new BooleanQuery.Builder().add(Indexes.termQueryList[allele], BooleanClause.Occur.SHOULD)
-            clusterNumber++
-            //   }
-            index++
+            final int allele = intChromosome[i]
+            bqbL[i] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
         }
+
+        assert bqbL.size() == k
         return bqbL.asImmutable()
     }
 
-    private static List<BooleanQuery.Builder> getIntersectWithMap(int[] intChromosome, final int k, BooleanClause.Occur booleanClauseOccur) {
+    private static List<BooleanQuery.Builder> getIntersectWithMap(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
 
         List<BooleanQuery.Builder> bqbL = []
         Set<Integer> alleleSet = [] as Set<Integer>
@@ -114,7 +100,7 @@ class QuerySet {
         for (int i = 0; i < k; i++) {
 
             final int rootAllele = intChromosome[i]
-            TermQuery termQueryRoot = Indexes.termQueryList[rootAllele]
+            TermQuery termQueryRoot = termQueryList[rootAllele]
             bqbL[i] = new BooleanQuery.Builder().add(termQueryRoot, booleanClauseOccur)
 
             for (int j = i + intersectGenomeStart; j < intChromosome.size(); j = j + k) {

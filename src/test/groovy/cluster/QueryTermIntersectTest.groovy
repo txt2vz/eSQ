@@ -14,48 +14,58 @@ class QueryTermIntersectTest extends Specification {
     def "QueryListFromChromosome OR 20News3 tfidf"() {
         setup:
         Indexes.setIndex(IndexEnum.NG3TEST)
-        List <TermQuery> tfidfList =
-                ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader) asImmutable()
-        int[] genome =  new int[] {0, 1, 2}
+        Indexes.setTermQueryLists(0.0d)
 
         when:
         final int k = 3
-        List<BooleanQuery.Builder> bqbL =    QuerySet.getQueryBuilderList(genome, tfidfList, k, QType.OR1)
-
-        Query q = bqbL[0].build()
-        String s = q.toString(Indexes.FIELD_CONTENTS)
-        println "s $s"
-        TermQuery tq = new TermQuery (new Term(Indexes.FIELD_CONTENTS,s))
-        println "tq $tq"
-
-        then:
-        Indexes.index.numberOfCategories == 3
-
-        tfidfList[0].getTerm().text() == 'nasa'
-        tfidfList[1].getTerm().text() == 'space'
-        tfidfList[2].getTerm().text() == 'god'
-
-        bqbL.size() ==  Indexes.index.numberOfCategories
-        q.toString(Indexes.FIELD_CONTENTS) == 'nasa'
-
-        when:
-        genome = [0, 2, 4, 1, 3, 7] as int[]
-        QueryTermIntersect.minIntersect = MinIntersectValue.NONE
-        bqbL =    QuerySet.getQueryBuilderList(genome, tfidfList, k, QType.OR_INTERSECT)
-
+        int[] genome3 =  new int[] {0, 1, 2}
+        List<BooleanQuery.Builder> bqbL =  QuerySet.getQueryBuilderList(genome3, k, QType.OR1)
         Query q0 = bqbL[0].build()
         Query q1 = bqbL[1].build()
         Query q2 = bqbL[2].build()
 
+        then:
+        Indexes.termQueryList[0].getTerm().text() == 'nasa'
+        Indexes.termQueryList[1].getTerm().text() == 'space'
+        Indexes.termQueryList[2].getTerm().text() == 'god'
+        Indexes.termQueryList[3].getTerm().text() == 'hockey'
+        Indexes.termQueryList[4].getTerm().text() == 'orbit'
+        Indexes.termQueryList[5].getTerm().text() == 'jesus'
+        Indexes.termQueryList[6].getTerm().text() == 'play'
+        Indexes.termQueryList[7].getTerm().text() == 'game'
+        Indexes.termQueryList[8].getTerm().text() == 'team'
 
-//        println "qo $q0"
-//        println "q1 $q1"
-//        println "q2 $q2"
+        bqbL.size() ==  Indexes.index.numberOfCategories
+        q0.toString(Indexes.FIELD_CONTENTS) == 'nasa'
+        q1.toString(Indexes.FIELD_CONTENTS) == 'space'
+        q2.toString(Indexes.FIELD_CONTENTS) == 'god'
+
+        when:
+        int[] genome6 = [0, 2, 4, 1, 3, 7] as int[]
+        bqbL = QuerySet.getQueryBuilderList(genome6, k, QType.OR_INTERSECT)
+
+        Query q3 = bqbL[0].build()
+        Query q4 = bqbL[1].build()
+        Query q5 = bqbL[2].build()
 
         then:
-        q0.toString(Indexes.FIELD_CONTENTS) == 'nasa space'
-        q1.toString(Indexes.FIELD_CONTENTS) == 'god hockey'
-        q2.toString(Indexes.FIELD_CONTENTS) == 'orbit game'
+        q3.toString(Indexes.FIELD_CONTENTS) == 'nasa space'
+        q4.toString(Indexes.FIELD_CONTENTS) == 'god hockey'
+        q5.toString(Indexes.FIELD_CONTENTS) == 'orbit game'
+
+        when:
+        Indexes.MIN_INTERSECT_RATIO = 0.2d
+        genome3 = [0, 2, 4, 1, 3, 7] as int[]
+        bqbL = QuerySet.getQueryBuilderList(genome3, k, QType.OR_INTERSECT)
+
+        Query q6 = bqbL[0].build()
+        Query q7 = bqbL[1].build()
+        Query q8 = bqbL[2].build()
+
+        then:
+        q6.toString(Indexes.FIELD_CONTENTS) == 'nasa space'
+        q7.toString(Indexes.FIELD_CONTENTS) == 'god'
+        q8.toString(Indexes.FIELD_CONTENTS) == 'orbit'
     }
 }
 
