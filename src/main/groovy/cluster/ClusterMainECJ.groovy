@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 4
+    final static int NUMBER_OF_JOBS = 3
     final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
@@ -29,7 +29,6 @@ class ClusterMainECJ extends Evolve {
 
     //indexes suitable for clustering.
     List<Tuple2<IndexEnum, IndexEnum>> clusteringIndexes = [
-//
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R4, IndexEnum.R4TEST),
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R5, IndexEnum.R5TEST),
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
@@ -44,16 +43,16 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<Double> kPenalty = [0.03d]
-        //   [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
+//           [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
             0.6d
-        //     0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
+            //     0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
     List<QType> queryTypesList = [
-               QType.OR_INTERSECT,
-                QType.OR1
+            QType.OR_INTERSECT,
+            QType.OR1
             //       QType.AND_INTERSECT
     ]
 
@@ -73,9 +72,9 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-    // //      [false].each { set_k ->
-     ///    [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-        [true, false].each { set_k ->
+        // //      [false].each { set_k ->
+        [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+            //    [true, false].each { set_k ->
 
             SETK = set_k
             String parameterFilePath = SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'

@@ -64,7 +64,6 @@ public class JeneticsMain {
         //final double f = uniqueHits - multi_hits ;
         final double f = (SETK) ? totalHitsMinus * (1.0 - (kPenalty * k)) : totalHitsMinus;
 
-
         return (f > 0) ? f : 0.0d;
     }
 
@@ -73,11 +72,11 @@ public class JeneticsMain {
         final Date startRun = new Date();
         final int popSize = 512;
         final int maxGen = 120;
-        final int maxGene = 80;
+        final int maxGene = 110;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int setkMax = 9;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 2;
+        final int numberMaxFitJobs = 3;
         final int numberOfSubPops = 1;
         final int maxGenomeLength = 19;
         final boolean onlyDocsInOneClusterForClassifier = false;
