@@ -28,48 +28,12 @@ class BuildIndex {
     }
 
     BuildIndex() {
-        //    Indexes.setIndex(IndexEnum.R4Train)
 
         String indexPath =
-                //     Indexes.indexEnum.pathString
-                //'indexes/warCrimes'
-                //'indexes/resistance'
-                //        'indexes/R4Train'
-                //    'indexes/R4Test'
-              //  'indexes/classic4Test'
-             //   'indexes/NG3Train'
-                'indexes/NG6Test'
-         //       'indexes/R6'
-
-
+                'indexes/NG6Train'
 
         String docsPath =
-                /C:\Users\lauri\OneDrive - Sheffield Hallam University\DataSets\NewsGroup\NG6Test/
-           //     /C:\Users\lauri\OneDrive - Sheffield Hallam University\DataSets\Reuters\R6Train/
-             //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\NewsGroup\NG5Train/
-        //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\NewsGroup\NG6Train/
-
-    //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\Classic\Classic4Test/
-
-         //       /C:\Users\aceslh\Dataset\20NG6GraphicsHockeyCryptSpaceChristianGuns/
-
-
-  //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\NewsGroup\NG5Test/
-        //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\Reuters\R5Train/
-     //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\GAclusterPaper2018\r5/
- //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\Reuters\R6Train100/
-          //      /C:\Users\aceslh\Dataset\20NG6GraphicsHockeyCryptSpaceChristianGuns/
-                 //  /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\NewsGroup\NG3BTrainSkewed/
-       //         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\NewsGroup\NG3BTrain/
-                //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\Classic\Classic4Test/
-             //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\NG5Test/
-
-        //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\Reuters\R4Test/
-        //         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\DataSets\Reuters\R4Train/
-        //                 /C:\Users\aceslh\Dataset\20NG3SpaceHockeyChristian\train/
-        //     /C:\Users\aceslh\Dataset\20NG4ScienceTrain/
-        ///C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\secrecy/
-        ///C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+                'datasets/NG6Train';
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
