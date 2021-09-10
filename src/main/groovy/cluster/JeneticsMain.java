@@ -59,10 +59,10 @@ public class JeneticsMain {
         final int multi_hits = totalHits - uniqueHits;
         final int totalHitsMinus = totalHits - multi_hits;
 
-       // final double f = (SETK) ? uniqueHits * (1.0 - (kPenalty * k)) : uniqueHits;
+        final double f = (SETK) ? uniqueHits * (1.0 - (kPenalty * k)) : uniqueHits;
        // final double f = uniqueHits;
-        //final double f = uniqueHits - multi_hits ;
-        final double f = (SETK) ? totalHitsMinus * (1.0 - (kPenalty * k)) : totalHitsMinus;
+       //final double f = uniqueHits - multi_hits ;
+       // final double f = (SETK) ? totalHitsMinus * (1.0 - (kPenalty * k)) : totalHitsMinus;
 
         return (f > 0) ? f : 0.0d;
     }
@@ -70,12 +70,12 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 512;
+        final int popSize = 256;
         final int maxGen = 120;
         final int maxGene = 110;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int setkMax = 9;
-        final int numberOfJobs = 2;
+        final int numberOfJobs = 5;
         final int numberMaxFitJobs = 3;
         final int numberOfSubPops = 1;
         final int maxGenomeLength = 19;
@@ -128,9 +128,9 @@ public class JeneticsMain {
                            //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
 
-                            .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
-                            .offspringSelector(new TournamentSelector<>(5))
-                            .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
+                        //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
+                         //   .offspringSelector(new TournamentSelector<>(5))
+                        //   .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
 
                            //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
                                    //  new MeanAlterer <>(0.6))
