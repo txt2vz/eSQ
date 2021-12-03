@@ -184,7 +184,7 @@ public class JeneticsMain {
 
                     //System.out.println("statistics " + statistics);
                 });
-                reports.reportMaxFitness();
+                reports.reportMaxFitness(jobNumber);
             });
         });
 

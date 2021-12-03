@@ -31,16 +31,16 @@ class Reports {
         t15List << new Tuple15(setkDescription, qType, ie.name(), qF1, qP, qR, cF1, cP, cR, categoryCountErrorAbs, minIntersectRatio, uniqueHits, fitness, lcm, kPenalty)
     }
 
-    void reportMaxFitness() {
+    void reportMaxFitness(int job) {
 
         File fcsvMax = new File("results/maxFitnessReport.csv")
         if (!fcsvMax.exists()) {
-            fcsvMax << 'Setk, QueryType, Index, queryF1, queryPrecision, queryRecall, ClassifierF1, ClassifierPrecision, ClasssifierRecall, CategoryCountError, MinIntersect, UniqueHits, Fitness, ClassifyMethod, kPenalty, Date \n'
+            fcsvMax << 'Setk, QueryType, Index, queryF1, queryPrecision, queryRecall, ClassifierF1, ClassifierPrecision, ClasssifierRecall, CategoryCountError, MinIntersect, UniqueHits, Fitness, ClassifyMethod, kPenalty, Job, Date \n'
         }
 
         t15List.toUnique { it.v1 }.each { t ->
             def t15Max = t15List.findAll { t.v3 == it.v3 }.max { q -> q.v13 }
-            fcsvMax << "${t15Max.v1}, ${t15Max.v2.getQueryDescription()}, ${t15Max.v3}, ${t15Max.v4},${t15Max.v5},${t15Max.v6},${t15Max.v7},${t15Max.v8}, ${t15Max.v9},${t15Max.v10},${t15Max.v11}, ${t15Max.v12}, ${t15Max.v13}, ${t15Max.v14}, ${t15Max.v15},  ${new Date()} \n"
+            fcsvMax << "${t15Max.v1}, ${t15Max.v2.getQueryDescription()}, ${t15Max.v3}, ${t15Max.v4},${t15Max.v5},${t15Max.v6},${t15Max.v7},${t15Max.v8}, ${t15Max.v9},${t15Max.v10},${t15Max.v11}, ${t15Max.v12}, ${t15Max.v13}, ${t15Max.v14}, ${t15Max.v15}, ${job},  ${new Date()} \n"
         }
 
         //println "Job Average query f1  for category" + t15List.average { it.v4 } + " Classifier f1: " + t15List.average { it.v7 }

@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
+    final static int NUMBER_OF_JOBS = 11
     final static int MAX_FIT_JOBS = 3
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
@@ -73,8 +73,8 @@ class ClusterMainECJ extends Evolve {
         }
 
         // //      [false].each { set_k ->
-        [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-            //    [true, false].each { set_k ->
+        //   [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+        [true, false].each { set_k ->
 
             SETK = set_k
             String parameterFilePath = SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -154,7 +154,7 @@ class ClusterMainECJ extends Evolve {
                                     cleanup(state);
                                     println "--------END JOB $job  -----------------------------------------------"
                                 }
-                                reports.reportMaxFitness()
+                                reports.reportMaxFitness(job)
                             }
                         }
                     }
