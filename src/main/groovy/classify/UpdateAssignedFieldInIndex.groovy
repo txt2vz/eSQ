@@ -104,6 +104,7 @@ class UpdateAssignedFieldInIndex {
         println "Max docs: " + indexWriter.maxDoc() + " numDocs: " + indexWriter.numDocs()
 
         indexWriter.close()
+
         Indexes.setIndex(trainIndex)
         IndexUtils.categoryFrequencies(Indexes.indexSearcher)
     }

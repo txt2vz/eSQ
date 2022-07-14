@@ -5,11 +5,16 @@ import index.IndexUtils
 import index.Indexes
 import org.apache.lucene.classification.Classifier
 import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
+import org.apache.lucene.document.Document
 import org.apache.lucene.index.Term
 import org.apache.lucene.search.BooleanQuery
+import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
+import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.search.TermQuery
+import org.apache.lucene.search.TopDocs
 import org.apache.lucene.search.TotalHitCountCollector
+import groovy.json.JsonOutput
 
 class Effectiveness {
 
@@ -90,6 +95,9 @@ class Effectiveness {
                         Indexes.FIELD_CONTENTS,
                         -1)
 
+        // def m = confusionMatrix.getLinearizedMatrix()
+        //println "lineraised m  $m"
+
         if (testIndex.numberOfCategories == k) {
 
             f1Lucene = confusionMatrix.getF1Measure()
@@ -126,6 +134,45 @@ class Effectiveness {
         assert f1Lucene
         assert precisionLucene
         assert recallLucene
+
+        List<Tuple2> vData = [];
+        Query qAll = new MatchAllDocsQuery()
+        TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
+        ScoreDoc[] allHits = topDocs.scoreDocs
+        Tuple2<String, String> t2
+        List<String> classes = []
+        List<String> clusters = []
+
+//        v measure data
+        int y = 0
+        for (ScoreDoc sd : allHits) {
+            Document d = Indexes.indexSearcher.doc(sd.doc)
+            y++
+
+            String category = d.get(Indexes.FIELD_CATEGORY_NAME)
+            String assignedCat = d.get(Indexes.FIELD_ASSIGNED_CLASS)
+
+
+            // if (assignedCat = "unassigned") {
+            def cluster = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).getAssignedClass().utf8ToString()
+
+            //  if (c != category) {
+            //      println "YYY in effectiveness c " + c + " category " + category
+            //  }
+            vData.add(new Tuple2(category, cluster))
+            classes.add(category)
+            clusters.add(cluster)
+            // }
+
+        }
+        println "vdata  " + vData + " y " + y
+        println "classes leng ${classes.size()} clusters len ${clusters.size()}"
+
+        File classesFile = new File("classes.txt")
+        File clustersFile = new File("clusters.txt")
+
+        classesFile.write(JsonOutput.toJson(classes))
+        clustersFile.write(JsonOutput.toJson(clusters))
 
         return new Tuple3(f1Lucene, precisionLucene, recallLucene)
     }

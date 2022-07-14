@@ -73,6 +73,9 @@ class ClassifyUnassigned {
 
     static void main(String[] args) {
         Classifier classifier = getClassifierForUnassignedDocuments(IndexEnum.CRISIS3, LuceneClassifyMethod.KNN)
-        Effectiveness.classifierEffectiveness(classifier, IndexEnum.CRISIS3TEST, IndexEnum.CRISIS3TEST.numberOfCategories)
+        println "ccccc  " + classifier.assignClass("bigwet").getAssignedClass().utf8ToString()
+
+
+        //Effectiveness.classifierEffectiveness(classifier, IndexEnum.CRISIS3TEST, IndexEnum.CRISIS3TEST.numberOfCategories)
     }
 }

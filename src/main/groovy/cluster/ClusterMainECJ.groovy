@@ -11,6 +11,7 @@ import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import groovy.transform.CompileStatic
 import index.IndexEnum
+import index.IndexUtils
 import index.Indexes
 import org.apache.lucene.classification.Classifier
 import org.apache.lucene.search.BooleanQuery
@@ -19,8 +20,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 11
-    final static int MAX_FIT_JOBS = 3
+    final static int NUMBER_OF_JOBS = 1
+    final static int MAX_FIT_JOBS = 1
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
     final static boolean useSameIndexForEffectivenessMeasure = true
@@ -29,17 +30,17 @@ class ClusterMainECJ extends Evolve {
 
     //indexes suitable for clustering.
     List<Tuple2<IndexEnum, IndexEnum>> clusteringIndexes = [
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R4, IndexEnum.R4TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R5, IndexEnum.R5TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
+        //    new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R4, IndexEnum.R4TEST),
+         //   new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R5, IndexEnum.R5TEST),
+          //  new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
 
             new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG3, IndexEnum.NG3TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
+         //   new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
+          //  new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
 
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CLASSIC4, IndexEnum.CLASSIC4TEST),
+         //   new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CLASSIC4, IndexEnum.CLASSIC4TEST),
 
-            new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
+     //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -51,7 +52,7 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-            QType.OR_INTERSECT,
+          //  QType.OR_INTERSECT,
             QType.OR1
             //       QType.AND_INTERSECT
     ]
@@ -73,8 +74,8 @@ class ClusterMainECJ extends Evolve {
         }
 
         // //      [false].each { set_k ->
-        //   [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-        [true, false].each { set_k ->
+           [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+      //  [true, false].each { set_k ->
 
             SETK = set_k
             String parameterFilePath = SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -155,6 +156,7 @@ class ClusterMainECJ extends Evolve {
                                     println "--------END JOB $job  -----------------------------------------------"
                                 }
                                 reports.reportMaxFitness(job)
+
                             }
                         }
                     }
