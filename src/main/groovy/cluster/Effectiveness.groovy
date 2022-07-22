@@ -131,49 +131,45 @@ class Effectiveness {
             println "avaerage precisionLucene $precisionLucene average recallLucene $recallLucene f1k $f1Lucene k $k"
         }
 
-        assert f1Lucene
-        assert precisionLucene
-        assert recallLucene
+     //   assert f1Lucene
+     //   assert precisionLucene
+     //   assert recallLucene
 
-        List<Tuple2> vData = [];
+        return new Tuple3(f1Lucene, precisionLucene, recallLucene)
+    }
+
+    static void v_measure(Classifier classifier, int job){
+
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
         ScoreDoc[] allHits = topDocs.scoreDocs
-        Tuple2<String, String> t2
+
         List<String> classes = []
         List<String> clusters = []
 
-//        v measure data
-        int y = 0
         for (ScoreDoc sd : allHits) {
             Document d = Indexes.indexSearcher.doc(sd.doc)
-            y++
 
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
             String assignedCat = d.get(Indexes.FIELD_ASSIGNED_CLASS)
 
-
-            // if (assignedCat = "unassigned") {
             def cluster = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).getAssignedClass().utf8ToString()
 
-            //  if (c != category) {
-            //      println "YYY in effectiveness c " + c + " category " + category
-            //  }
-            vData.add(new Tuple2(category, cluster))
             classes.add(category)
             clusters.add(cluster)
-            // }
-
         }
-        println "vdata  " + vData + " y " + y
-        println "classes leng ${classes.size()} clusters len ${clusters.size()}"
 
-        File classesFile = new File("classes.txt")
-        File clustersFile = new File("clusters.txt")
+        println " in v measure classes leng ${classes.size()} clusters len ${clusters.size()}"
+
+        //String classesFileName = "classes"+ Indexes.index.name()+"job"+job+".txt"
+        //String clustersFileName = "clusters"+ Indexes.index.name()+"job"+job+".txt"
+        String classesFileName = "classes"
+        String clustersFileName = "clusters"
+
+        File classesFile = new File(classesFileName)
+        File clustersFile = new File(clustersFileName)
 
         classesFile.write(JsonOutput.toJson(classes))
         clustersFile.write(JsonOutput.toJson(clusters))
-
-        return new Tuple3(f1Lucene, precisionLucene, recallLucene)
     }
 }

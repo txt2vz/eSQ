@@ -2,6 +2,7 @@ package classify
 
 import cluster.Effectiveness
 import index.IndexEnum
+import index.IndexUtils
 import index.Indexes
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.classification.BM25NBClassifier
@@ -28,7 +29,7 @@ class ClassifyUnassigned {
 
         Indexes.setIndex(trainIndex)
 
-        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_ASSIGNED_CLASS, 'unassigned'))
+        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_ASSIGNED_CLASS,  'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD);
         bqb.add(assignedTQ, BooleanClause.Occur.MUST_NOT)
@@ -68,13 +69,19 @@ class ClassifyUnassigned {
                 break;
         }
 
+
         return classifier
     }
 
     static void main(String[] args) {
-        Classifier classifier = getClassifierForUnassignedDocuments(IndexEnum.CRISIS3, LuceneClassifyMethod.KNN)
-        println "ccccc  " + classifier.assignClass("bigwet").getAssignedClass().utf8ToString()
 
+        println " index reader numbdocs ${IndexEnum.CRISIS3.indexReader.numDocs() }"
+        Classifier classifier = getClassifierForUnassignedDocuments(IndexEnum.CRISIS3, LuceneClassifyMethod.KNN)
+        println "bigwet  " + classifier.assignClass("bigwet").getAssignedClass().utf8ToString()
+        println "marathon  " + classifier.assignClass("marathon").getAssignedClass().utf8ToString()
+        println "fire  " + classifier.assignClass("fire").getAssignedClass().utf8ToString()
+        println "zz  " + classifier.assignClass("zz").getAssignedClass().utf8ToString()
+        IndexUtils.categoryFrequencies(IndexEnum.CRISIS3.indexSearcher, true)
 
         //Effectiveness.classifierEffectiveness(classifier, IndexEnum.CRISIS3TEST, IndexEnum.CRISIS3TEST.numberOfCategories)
     }

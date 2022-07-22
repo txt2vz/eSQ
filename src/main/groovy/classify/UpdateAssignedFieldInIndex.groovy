@@ -25,31 +25,7 @@ class UpdateAssignedFieldInIndex {
 
     static void updateAssignedField(IndexEnum trainIndex, Set<Query> queries, boolean onlyDocsInOneCluster = false) {
 
-        Indexes.setIndex(trainIndex)
-        String indexPath = Indexes.index.pathString
-        Path path = Paths.get(indexPath)
-        Directory directory = FSDirectory.open(path)
-        Analyzer analyzer = new StandardAnalyzer()
-        IndexWriterConfig iwc = new IndexWriterConfig(analyzer)
-        iwc.setOpenMode(IndexWriterConfig.OpenMode.APPEND)
-        IndexWriter indexWriter = new IndexWriter(directory, iwc)
-
-        TopDocs topDocsAll = Indexes.indexSearcher.search(new MatchAllDocsQuery(), Integer.MAX_VALUE)
-        ScoreDoc[] hitsAll = topDocsAll.scoreDocs
-
-        for (ScoreDoc sd : hitsAll) {
-
-            Document d = Indexes.indexSearcher.doc(sd.doc)
-            d.removeField(Indexes.FIELD_ASSIGNED_CLASS)
-            Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, 'unassigned', Field.Store.YES);
-            d.add(assignedClass)
-
-            Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
-            indexWriter.updateDocument(t, d)
-        }
-
-        indexWriter.forceMerge(1)
-        indexWriter.commit()
+        IndexWriter indexWriter = setAllUnassigned(trainIndex)
 
         //modify queries so that they do not return documents returned by any other query
         if (onlyDocsInOneCluster) {
@@ -82,12 +58,15 @@ class UpdateAssignedFieldInIndex {
             TopDocs topDocs = Indexes.indexSearcher.search(query, Integer.MAX_VALUE)
             ScoreDoc[] hits = topDocs.scoreDocs
 
+            println ("query ${query.toString(Indexes.FIELD_CONTENTS)}")
+
             for (ScoreDoc sd : hits) {
 
                 Document d = Indexes.indexSearcher.doc(sd.doc)
 
                 d.removeField(Indexes.FIELD_ASSIGNED_CLASS)
-                Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, name, Field.Store.YES);
+                //Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, name, Field.Store.YES);
+                Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, query.toString(Indexes.FIELD_CONTENTS), Field.Store.YES);
                 d.add(assignedClass)
 
                 Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
@@ -107,6 +86,40 @@ class UpdateAssignedFieldInIndex {
 
         Indexes.setIndex(trainIndex)
         IndexUtils.categoryFrequencies(Indexes.indexSearcher)
+    }
+
+    public static IndexWriter setAllUnassigned(IndexEnum trainIndex) {
+        IndexWriter indexWriter = prepareIndex(trainIndex)
+
+        TopDocs topDocsAll = Indexes.indexSearcher.search(new MatchAllDocsQuery(), Integer.MAX_VALUE)
+        ScoreDoc[] hitsAll = topDocsAll.scoreDocs
+
+        for (ScoreDoc sd : hitsAll) {
+
+            Document d = Indexes.indexSearcher.doc(sd.doc)
+            d.removeField(Indexes.FIELD_ASSIGNED_CLASS)
+            Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, 'unassigned', Field.Store.YES);
+            d.add(assignedClass)
+
+            Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
+            indexWriter.updateDocument(t, d)
+        }
+
+        indexWriter.forceMerge(1)
+        indexWriter.commit()
+        indexWriter
+    }
+
+    private static IndexWriter prepareIndex(IndexEnum trainIndex) {
+        Indexes.setIndex(trainIndex)
+        String indexPath = Indexes.index.pathString
+        Path path = Paths.get(indexPath)
+        Directory directory = FSDirectory.open(path)
+        Analyzer analyzer = new StandardAnalyzer()
+        IndexWriterConfig iwc = new IndexWriterConfig(analyzer)
+        iwc.setOpenMode(IndexWriterConfig.OpenMode.APPEND)
+        IndexWriter indexWriter = new IndexWriter(directory, iwc)
+        indexWriter
     }
 
     static void main(String[] args) {
