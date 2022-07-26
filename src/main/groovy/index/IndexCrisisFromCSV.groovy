@@ -1,7 +1,6 @@
 package index
 
 import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
@@ -102,7 +101,7 @@ class IndexCrisisFromCSV {
                         Field ttField = new StringField(Indexes.FIELD_TEST_TRAIN, test_train, Field.Store.YES)
                         doc.add(ttField)
 
-                        Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, 'unassigned', Field.Store.YES);
+                        Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES);
                         doc.add(assignedClass)
 
                         writer.addDocument(doc)

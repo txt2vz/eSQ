@@ -1,6 +1,6 @@
 package classify
 
-import cluster.QueryTextFile
+
 import groovy.transform.CompileStatic
 import index.IndexEnum
 import index.IndexUtils
@@ -64,9 +64,9 @@ class UpdateAssignedFieldInIndex {
 
                 Document d = Indexes.indexSearcher.doc(sd.doc)
 
-                d.removeField(Indexes.FIELD_ASSIGNED_CLASS)
+                d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
                 //Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, name, Field.Store.YES);
-                Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, query.toString(Indexes.FIELD_CONTENTS), Field.Store.YES);
+                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, query.toString(Indexes.FIELD_CONTENTS), Field.Store.YES);
                 d.add(assignedClass)
 
                 Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
@@ -94,17 +94,21 @@ class UpdateAssignedFieldInIndex {
         TopDocs topDocsAll = Indexes.indexSearcher.search(new MatchAllDocsQuery(), Integer.MAX_VALUE)
         ScoreDoc[] hitsAll = topDocsAll.scoreDocs
 
+
+        int counter = 0
         for (ScoreDoc sd : hitsAll) {
 
             Document d = Indexes.indexSearcher.doc(sd.doc)
-            d.removeField(Indexes.FIELD_ASSIGNED_CLASS)
-            Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, 'unassigned', Field.Store.YES);
+            d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
+            Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES);
             d.add(assignedClass)
 
             Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
             indexWriter.updateDocument(t, d)
+            counter++
         }
 
+         println " in setAllUnassigned $counter updated"
         indexWriter.forceMerge(1)
         indexWriter.commit()
         indexWriter

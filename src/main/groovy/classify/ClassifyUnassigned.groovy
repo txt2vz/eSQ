@@ -1,6 +1,6 @@
 package classify
 
-import cluster.Effectiveness
+
 import index.IndexEnum
 import index.IndexUtils
 import index.Indexes
@@ -25,11 +25,12 @@ enum LuceneClassifyMethod {
 
 class ClassifyUnassigned {
 
-    static Classifier getClassifierForUnassignedDocuments(IndexEnum trainIndex, LuceneClassifyMethod luceneClassifyMethod) {
+    static Classifier getClassifier(IndexEnum trainIndex, LuceneClassifyMethod luceneClassifyMethod) {
 
         Indexes.setIndex(trainIndex)
 
-        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_ASSIGNED_CLASS,  'unassigned'))
+        //query to filter out unassigned docs for the classifier
+        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD);
         bqb.add(assignedTQ, BooleanClause.Occur.MUST_NOT)
@@ -38,7 +39,7 @@ class ClassifyUnassigned {
         TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(unassignedQ, Indexes.indexReader.numDocs())
         ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs;
 
-        println "unAssignedHits size " + unAssignedHits.size()
+        println " in classifyUnassigned unAssignedHits size " + unAssignedHits.size()
 
         Classifier classifier
 
@@ -53,7 +54,7 @@ class ClassifyUnassigned {
                         20,
                         3,
                         1,
-                        Indexes.FIELD_ASSIGNED_CLASS,
+                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
                         Indexes.FIELD_CONTENTS
                 )
                 break;
@@ -63,7 +64,7 @@ class ClassifyUnassigned {
                         Indexes.indexReader,
                         new StandardAnalyzer(),
                         unassignedQ,
-                        Indexes.FIELD_ASSIGNED_CLASS,
+                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
                         Indexes.FIELD_CONTENTS
                 )
                 break;
@@ -76,7 +77,7 @@ class ClassifyUnassigned {
     static void main(String[] args) {
 
         println " index reader numbdocs ${IndexEnum.CRISIS3.indexReader.numDocs() }"
-        Classifier classifier = getClassifierForUnassignedDocuments(IndexEnum.CRISIS3, LuceneClassifyMethod.KNN)
+        Classifier classifier = getClassifier(IndexEnum.CRISIS3, LuceneClassifyMethod.KNN)
         println "bigwet  " + classifier.assignClass("bigwet").getAssignedClass().utf8ToString()
         println "marathon  " + classifier.assignClass("marathon").getAssignedClass().utf8ToString()
         println "fire  " + classifier.assignClass("fire").getAssignedClass().utf8ToString()

@@ -147,7 +147,7 @@ class IndexClassic {
 			Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
 			doc.add(documentIDfield)
 
-			Field assignedClass = new StringField(Indexes.FIELD_ASSIGNED_CLASS, 'unassigned', Field.Store.YES);
+			Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES);
 			doc.add(assignedClass)
 
 			writer.addDocument(doc);

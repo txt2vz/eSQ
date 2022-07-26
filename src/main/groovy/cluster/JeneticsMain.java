@@ -11,7 +11,6 @@ import index.*;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.IntRange;
 import org.apache.lucene.classification.Classifier;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -172,7 +171,7 @@ public class JeneticsMain {
                     List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestOfRun, k, qType);
                     Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList);
 
-                    Classifier classifier = ClassifyUnassigned.getClassifierForUnassignedDocuments(ie, LuceneClassifyMethod.KNN);
+                    Classifier classifier = ClassifyUnassigned.getClassifier(ie, LuceneClassifyMethod.KNN);
 
                     UpdateAssignedFieldInIndex.updateAssignedField(ie, t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
 

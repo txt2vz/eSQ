@@ -7,6 +7,7 @@ import org.apache.lucene.classification.Classifier
 import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.Term
+import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
@@ -131,14 +132,14 @@ class Effectiveness {
             println "avaerage precisionLucene $precisionLucene average recallLucene $recallLucene f1k $f1Lucene k $k"
         }
 
-     //   assert f1Lucene
-     //   assert precisionLucene
-     //   assert recallLucene
+        //   assert f1Lucene
+        //   assert precisionLucene
+        //   assert recallLucene
 
         return new Tuple3(f1Lucene, precisionLucene, recallLucene)
     }
 
-    static void v_measure(Classifier classifier, int job){
+    static void write_classes_clusters_for_v_measure(Classifier classifier, int job, boolean qOnly, boolean rand, Set<Query> queries) {
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
@@ -147,24 +148,55 @@ class Effectiveness {
         List<String> classes = []
         List<String> clusters = []
 
+        int unasscount = 0
+        int qOnlyCount = 0
+
+        def r = new Random()
+
         for (ScoreDoc sd : allHits) {
             Document d = Indexes.indexSearcher.doc(sd.doc)
-
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-            String assignedCat = d.get(Indexes.FIELD_ASSIGNED_CLASS)
+            String contents = d.get(Indexes.FIELD_CONTENTS)
+            String queryAssignedCluster = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
-            def cluster = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).getAssignedClass().utf8ToString()
+            String cluster = queryAssignedCluster
 
-            classes.add(category)
-            clusters.add(cluster)
+            if (cluster == 'unassigned') {
+                if (rand) {
+                    Query qRand = queries.getAt(r.nextInt(queries.size()))
+                    cluster = qRand.toString((Indexes.FIELD_CONTENTS))
+                } else {
+                    cluster = classifier.assignClass(contents).getAssignedClass().utf8ToString()
+                }
+            }
+
+            //1. get vmeasure of query assigned only
+            //2. get v measure for randomly assigned where not query assigned.
+
+            if (queryAssignedCluster == 'unassigned') {
+                unasscount++;
+            }
+
+            if (qOnly) {
+                if (queryAssignedCluster != 'unassigned') {
+                    classes.add(category)
+                    clusters.add(cluster)
+                    qOnlyCount++
+                }
+            } else {
+                classes.add(category)
+                clusters.add(cluster)
+            }
         }
 
-        println " in v measure classes leng ${classes.size()} clusters len ${clusters.size()}"
+        println "qonlycount $qOnlyCount"
+        println "in v measure unass count $unasscount"
 
-        //String classesFileName = "classes"+ Indexes.index.name()+"job"+job+".txt"
-        //String clustersFileName = "clusters"+ Indexes.index.name()+"job"+job+".txt"
-        String classesFileName = "classes"
-        String clustersFileName = "clusters"
+        println "In v measure classes leng ${classes.size()} clusters len ${clusters.size()}"
+        println "in v measure toSet classess ${classes.toSet().size()} clust ${clusters.toSet().size()}"
+
+        String classesFileName = "classes.txt"
+        String clustersFileName = "clusters.txt"
 
         File classesFile = new File(classesFileName)
         File clustersFile = new File(clustersFileName)

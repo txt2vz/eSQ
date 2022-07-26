@@ -90,7 +90,7 @@ class Indexes {
                         FIELD_PATH = 'path',
                         FIELD_TEST_TRAIN = 'test_train',
                         FIELD_CATEGORY_NUMBER = 'categoryNumber',
-                        FIELD_ASSIGNED_CLASS = 'assignedClass',
+                        FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id';
 
     static final Analyzer analyzer = new StandardAnalyzer()

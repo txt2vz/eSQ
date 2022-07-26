@@ -63,7 +63,7 @@ class IndexUtils {
             Document d = indexSearcher.doc(sd.doc)
 
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-            String assignedCat = d.get(Indexes.FIELD_ASSIGNED_CLASS)
+            String assignedCat = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
             int n = assignedCategoryFrequencies.get(assignedCat) ?: 0
             assignedCategoryFrequencies.put((assignedCat), n + 1)
@@ -94,7 +94,7 @@ class IndexUtils {
             Document d = indexSearcher.doc(sd.doc)
 
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-            String assignedCat = d.get(Indexes.FIELD_ASSIGNED_CLASS)
+            String assignedCat = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
             vData.add(new Tuple2(category, assignedCat))
         }
         return vData
