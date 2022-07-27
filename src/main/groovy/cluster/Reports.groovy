@@ -48,4 +48,15 @@ class Reports {
 
         t15List.clear();
     }
+
+    void reportV(IndexEnum ie, QType qType, boolean setK, LuceneClassifyMethod lcm, int popSize, int job, int gen, t3){
+
+        String setkDescription = setK ? 'k-discovered' : 'k-predefined';
+        File fcsv = new File("results/resultsV.csv")
+        if (!fcsv.exists()) {
+            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, PopulationSize, Gen, Job, date \n'
+        }
+        fcsv <<  "$setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $lcm, ${t3.v1}, ${t3.v2}, ${t3.v3}, $popSize, $gen, $job, ${new Date()}  \n"
+                //" $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $minIntersectRatio, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
+    }
 }

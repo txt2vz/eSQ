@@ -20,6 +20,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/io.jenetics/jenetics
     implementation group: 'io.jenetics', name: 'jenetics', version: '6.2.0'
+    //implementation group: 'org.python', name: 'jython', version: '2.7.0'
 
 
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.4.0'
@@ -44,6 +45,7 @@ dependencies {
 
     //compile fileTree(dir: 'lib', include: ['*.jar'])
      compile fileTree(dir: 'lib', include: 'ecj-27.jar')
+    compile fileTree(dir: 'lib', include: 'jython-standalone-2.7.2.jar')
 }
 
 test {

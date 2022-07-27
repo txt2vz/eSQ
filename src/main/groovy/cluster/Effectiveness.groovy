@@ -7,8 +7,6 @@ import org.apache.lucene.classification.Classifier
 import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.Term
-import org.apache.lucene.search.BooleanClause
-import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
@@ -139,7 +137,7 @@ class Effectiveness {
         return new Tuple3(f1Lucene, precisionLucene, recallLucene)
     }
 
-    static void write_classes_clusters_for_v_measure(Classifier classifier, int job, boolean qOnly, boolean rand, Set<Query> queries) {
+    static Tuple3<Double, Double, Double> write_classes_clusters_for_v_measure(Classifier classifier, int job, boolean qOnly, boolean rand, Set<Query> queries) {
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
@@ -203,5 +201,32 @@ class Effectiveness {
 
         classesFile.write(JsonOutput.toJson(classes))
         clustersFile.write(JsonOutput.toJson(clusters))
+
+        String res
+
+        try {
+            CallVmeasurePython cp0 = new CallVmeasurePython()
+           res= cp0.proce()
+
+        } catch (Exception e){
+            print " Exeception  in callVmeasurePython $e"
+        }
+        List <String> l = []
+
+        l =res.split(',')
+        //println "l length " + l.size()
+       // println "L $l"
+        //println " l[0] ${l[0]}"
+
+        double vMeasure = l[0].toDouble()
+        double homogeniety = l[1].toDouble()
+        double completness = l[2].toDouble()
+
+       // println "Effectness res groovy $res"
+
+       // println "In effect vMeasure $vMeasure homogentiey $homogeniety completneess $completness"
+
+        //Tuple3<Double, Double,  Double> vhc = new Tuple3<>()
+        return new Tuple3(vMeasure, homogeniety, completness)
     }
 }

@@ -1,27 +1,11 @@
 package index
 
-import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.document.Document
-import org.apache.lucene.document.Field
-import org.apache.lucene.document.StringField
-import org.apache.lucene.document.TextField
-import org.apache.lucene.index.*
-import org.apache.lucene.index.IndexWriterConfig.OpenMode
-import org.apache.lucene.search.IndexSearcher
-import org.apache.lucene.search.TermQuery
-import org.apache.lucene.search.TotalHitCountCollector
-import org.apache.lucene.store.Directory
-import org.apache.lucene.store.FSDirectory
-import static java.nio.charset.StandardCharsets.*;
-
 import java.nio.file.Path
 import java.nio.file.Paths
-import static java.nio.charset.StandardCharsets.*;
 
-//import org.apache.lucene.queryparser.classic.QueryParser
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 class CrisisToFileFromCSV {
-
 
     Path docsPath = Paths.get(/C:\Users\lauri\OneDrive - Sheffield Hallam University\Research\DataSets\crisisData3/)
     Path filesOut = Paths.get(/C:\Data\crisis3/)

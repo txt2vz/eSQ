@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 1
+    final static int NUMBER_OF_JOBS = 5
     final static int MAX_FIT_JOBS = 1
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
@@ -34,12 +34,12 @@ class ClusterMainECJ extends Evolve {
      //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
 
      //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG3, IndexEnum.NG3TEST),
-    //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
-          //  new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
+           new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
+    //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
 
       //      new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CLASSIC4, IndexEnum.CLASSIC4TEST),
 
-           new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
+      //     new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -51,13 +51,13 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-      //      QType.OR_INTERSECT,
+            QType.OR_INTERSECT,
             QType.OR1
-            //       QType.AND_INTERSECT
+        //           QType.AND_INTERSECT
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
-         //   LuceneClassifyMethod.KNN,
+            LuceneClassifyMethod.KNN,
                       LuceneClassifyMethod.NB
     ]
 
@@ -72,9 +72,9 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-             [false].each { set_k ->
-     //      [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-      //  [true, false].each { set_k ->
+       //      [false].each { set_k ->
+         //  [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+        [true, false].each { set_k ->
 
             GA_TO_SETK = set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -147,9 +147,12 @@ class ClusterMainECJ extends Evolve {
                                         TimeDuration overallTime = TimeCategory.minus(new Date(), indexTime)
                                         timingFile << ",  " + durationKNN.toMilliseconds() + ', ' + overallTime.toMilliseconds() + '\n'
                                         IndexEnum checkEffectivenessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.v1 : trainTestIndexes.v2
-                                        //Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
-                                        Effectiveness.write_classes_clusters_for_v_measure(classifier, job, false, false, queries)
+                           //             Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
+                                        def t3 = Effectiveness.write_classes_clusters_for_v_measure(classifier, job, false, false, queries)
 
+                                        println "in main t3 $t3"
+
+                                        reports.reportV(trainTestIndexes.v1, qType, set_k, classifyMethod, popSize, job, state.generation, t3 )
                                         //reports.reports(trainTestIndexes.v1, t6QuerySetResult.v1, t6QuerySetResult.v2, t6QuerySetResult.v3, t6QuerySetResult.v4, t6QuerySetResult.v5, t6QuerySetResult.v6, t3ClassiferResult.v1, t3ClassiferResult.v2, t3ClassiferResult.v3, ecjFitness, qType, GA_TO_SETK, classifyMethod, minIntersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
                                     }
                                     cleanup(state);
