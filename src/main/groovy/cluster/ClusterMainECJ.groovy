@@ -30,12 +30,13 @@ class ClusterMainECJ extends Evolve {
     List<IndexEnum> indexList = [
           //  IndexEnum.CRISIS3b,
          //   IndexEnum.NG3,
-          IndexEnum.NG3Full,
+       //   IndexEnum.NG3Full,
          //   IndexEnum.R4,
          //   IndexEnum.R5,
          //   IndexEnum.NG4,
          //   IndexEnum.NG5,
          //   IndexEnum.NG6
+            IndexEnum.R6
     ]
 
     List<Double> kPenalty = [0.03d]
