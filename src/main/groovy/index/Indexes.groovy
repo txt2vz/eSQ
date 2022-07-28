@@ -31,11 +31,14 @@ enum IndexEnum {
     NG5TEST('indexes/NG5Test', 5),
     NG6('indexes/NG6Train', 6),
     NG6TEST('indexes/NG6Test', 6),
+    NG4('indexes/NG4', 4),
+    NG3Full('indexes/NG3Full', 3),
 
     CLASSIC4('indexes/classic4Train', 4),
     CLASSIC4TEST('indexes/classic4Test', 4),
 
     CRISIS3('indexes/crisis3Train', 3),
+    CRISIS3b('indexes/crisis3b', 3),
     CRISIS3TEST('indexes/crisis3Test', 3)
 
     // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
@@ -109,6 +112,7 @@ class Indexes {
     static void setTermQueryLists(final double minIntersectRatio){
         MIN_INTERSECT_RATIO = minIntersectRatio
         termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable()
+        println "termquery list $termQueryList"
        // termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRatio) asImmutable()
     }
 }

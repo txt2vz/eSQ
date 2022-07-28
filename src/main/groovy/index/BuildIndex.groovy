@@ -30,10 +30,15 @@ class BuildIndex {
     BuildIndex() {
 
         String indexPath =
-                'indexes/NG6Train'
+      //          'indexes/crisis3b'
+       //'indexes/NG4'
+                'indexes/NG3Full'
 
         String docsPath =
-                'datasets/NG6Train';
+        //     /C:\Data\NG4/
+        /C:\Data\NG3Full/
+                //   /C:\Data\crisis3/
+               // 'datasets/NG6Train';
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
@@ -59,7 +64,7 @@ class BuildIndex {
             int dirCount = 0
             it.eachFileRecurse { file ->
 
-                if (!file.hidden && file.exists() && file.canRead() && !file.isDirectory() && dirCount < 100) {
+                if (!file.hidden && file.exists() && file.canRead() && !file.isDirectory() && dirCount < 600) {
                     Document doc = new Document()
 
                     Field catNumberField = new StringField(Indexes.FIELD_CATEGORY_NUMBER, String.valueOf(categoryNumber), Field.Store.YES);
@@ -70,22 +75,22 @@ class BuildIndex {
                     Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
                     doc.add(documentIDfield)
 
-                    Field pathField = new StringField(Indexes.FIELD_PATH, file.getPath(), Field.Store.YES);
-                    doc.add(pathField)
+                 //   Field pathField = new StringField(Indexes.FIELD_PATH, file.getPath(), Field.Store.YES);
+                 //   doc.add(pathField)
 
                     String parent = file.getParent()
-                    String grandParent = file.getParentFile().getParent()
+                   // String grandParent = file.getParentFile().getParent()
 
                     String catName = parent.substring(parent.lastIndexOf(File.separator) + 1, parent.length())
                     Field catNameField = new StringField(Indexes.FIELD_CATEGORY_NAME, catName.replaceAll(/\W/, '').toLowerCase(), Field.Store.YES);
                     doc.add(catNameField)
 
-                    String test_train
-                    //   if (file.canonicalPath.contains("test")) test_train = "test" else test_train = "train"
-                    if (dirCount % 2 == 0) test_train = "train" else test_train = "test"
+                //    String test_train
+                  //     if (file.canonicalPath.contains("test")) test_train = "test" else test_train = "train"
+                  //  if (dirCount % 2 == 0) test_train = "train" else test_train = "test"
 
-                    Field ttField = new StringField(Indexes.FIELD_TEST_TRAIN, test_train, Field.Store.YES)
-                    doc.add(ttField)
+                  //  Field ttField = new StringField(Indexes.FIELD_TEST_TRAIN, test_train, Field.Store.YES)
+                  //  doc.add(ttField)
 
                     Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES);
                     doc.add(assignedClass)
@@ -126,6 +131,9 @@ class BuildIndex {
 
        // Indexes.setIndex(IndexEnum.NG5Train)
       //  IndexUtils.showCategoryFrequencies(Indexes.indexSearcher)
+
+         Indexes.setIndex(IndexEnum.CRISIS3b)
+         IndexUtils.categoryFrequencies(Indexes.indexSearcher)  //.showCategoryFrequencies(Indexes.indexSearcher)
 
         println "numDocs " + indexReader.numDocs()
         println "End ***************************************************************"

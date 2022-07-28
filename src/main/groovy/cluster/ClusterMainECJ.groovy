@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 5
+    final static int NUMBER_OF_JOBS = 1
     final static int MAX_FIT_JOBS = 1
     final static boolean onlyDocsInOneCluster = false
     final static boolean luceneClassify = true
@@ -27,22 +27,19 @@ class ClusterMainECJ extends Evolve {
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
 
-    //indexes suitable for clustering.
-    List<Tuple2<IndexEnum, IndexEnum>> clusteringIndexes = [
-      //      new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R4, IndexEnum.R4TEST),
-        //    new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R5, IndexEnum.R5TEST),
-     //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.R6, IndexEnum.R6TEST),
-
-     //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG3, IndexEnum.NG3TEST),
-           new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG5, IndexEnum.NG5TEST),
-    //       new Tuple2<IndexEnum, IndexEnum>(IndexEnum.NG6, IndexEnum.NG6TEST),
-
-      //      new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CLASSIC4, IndexEnum.CLASSIC4TEST),
-
-      //     new Tuple2<IndexEnum, IndexEnum>(IndexEnum.CRISIS3, IndexEnum.CRISIS3TEST)
+    List<IndexEnum> indexList = [
+          //  IndexEnum.CRISIS3b,
+         //   IndexEnum.NG3,
+          IndexEnum.NG3Full,
+         //   IndexEnum.R4,
+         //   IndexEnum.R5,
+         //   IndexEnum.NG4,
+         //   IndexEnum.NG5,
+         //   IndexEnum.NG6
     ]
 
     List<Double> kPenalty = [0.03d]
+    //[0.0d, 0.03d, 0.05d, 0.1d ]
 //           [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
@@ -51,14 +48,13 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-            QType.OR_INTERSECT,
+              QType.OR_INTERSECT,
             QType.OR1
-        //           QType.AND_INTERSECT
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
             LuceneClassifyMethod.KNN,
-                      LuceneClassifyMethod.NB
+            LuceneClassifyMethod.NB
     ]
 
     ClusterMainECJ() {
@@ -72,9 +68,9 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-       //      [false].each { set_k ->
-         //  [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-        [true, false].each { set_k ->
+      //        [false].each { set_k ->
+        [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+            //   [true, false].each { set_k ->
 
             GA_TO_SETK = set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -86,10 +82,11 @@ class ClusterMainECJ extends Evolve {
 
                 intersectRatioList.each { Double minIntersectRatio ->
 
-                    clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
+                    //  clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
+                    indexList.each { IndexEnum indexEnum ->
 
-                        println "Index Enum trainTestIndexes: $trainTestIndexes"
-                        Indexes.setIndex(trainTestIndexes.v1)
+                        println "Index Enum trainTestIndexes: $indexEnum"  // $trainTestIndexes"
+                        Indexes.setIndex(indexEnum)
                         Indexes.setTermQueryLists(minIntersectRatio)
 
                         kPenalty.each { kPenalty ->
@@ -131,28 +128,28 @@ class ClusterMainECJ extends Evolve {
 
                                     final Date GATime = new Date()
                                     TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
-                                    timingFile << trainTestIndexes.v1.name() + ",  " + qType + ",  " + set_k + ", " + durationGA.toMilliseconds()
+                                    //  timingFile << trainTestIndexes.v1.name() + ",  " + qType + ",  " + set_k + ", " + durationGA.toMilliseconds()
 
                                     Set<Query> queries = bestClusterFitness.queryMap.keySet().asImmutable()
                                     List<BooleanQuery.Builder> bqbList = bestClusterFitness.bqbList
 
                                     Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList)
 
-                                    UpdateAssignedFieldInIndex.updateAssignedField(trainTestIndexes.v1, queries, onlyDocsInOneCluster)
+                                    UpdateAssignedFieldInIndex.updateAssignedField(indexEnum, queries, onlyDocsInOneCluster)
 
                                     classifyMethodList.each { classifyMethod ->
-                                        Classifier classifier = ClassifyUnassigned.getClassifier(trainTestIndexes.first, classifyMethod)
+                                        Classifier classifier = ClassifyUnassigned.getClassifier(indexEnum, classifyMethod)
 
-                                        TimeDuration durationKNN = TimeCategory.minus(new Date(), GATime)
-                                        TimeDuration overallTime = TimeCategory.minus(new Date(), indexTime)
-                                        timingFile << ",  " + durationKNN.toMilliseconds() + ', ' + overallTime.toMilliseconds() + '\n'
-                                        IndexEnum checkEffectivenessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.v1 : trainTestIndexes.v2
-                           //             Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
+                                        //   TimeDuration durationKNN = TimeCategory.minus(new Date(), GATime)
+                                        //   TimeDuration overallTime = TimeCategory.minus(new Date(), indexTime)
+                                        //   timingFile << ",  " + durationKNN.toMilliseconds() + ', ' + overallTime.toMilliseconds() + '\n'
+                                        //    IndexEnum checkEffectivenessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.v1 : trainTestIndexes.v2
+                                        //             Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
                                         def t3 = Effectiveness.write_classes_clusters_for_v_measure(classifier, job, false, false, queries)
 
                                         println "in main t3 $t3"
 
-                                        reports.reportV(trainTestIndexes.v1, qType, set_k, classifyMethod, popSize, job, state.generation, t3 )
+                                        reports.reportV(indexEnum, qType, set_k, classifyMethod, minIntersectRatio, kPenalty, popSize, job, state.generation, t3)
                                         //reports.reports(trainTestIndexes.v1, t6QuerySetResult.v1, t6QuerySetResult.v2, t6QuerySetResult.v3, t6QuerySetResult.v4, t6QuerySetResult.v5, t6QuerySetResult.v6, t3ClassiferResult.v1, t3ClassiferResult.v2, t3ClassiferResult.v3, ecjFitness, qType, GA_TO_SETK, classifyMethod, minIntersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
                                     }
                                     cleanup(state);
