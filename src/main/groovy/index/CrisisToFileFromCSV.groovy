@@ -33,13 +33,14 @@ class CrisisToFileFromCSV {
             int fileID = 0
             file.splitEachLine(',') { fields ->
 
-                if (fileID > 0 && fileID < 500) {
+                //line 0 are headings
+                if (fileID > 0 && fileID <= 500) {
 
                     String tweetID = fields[0]
                     def textBody = fields[1]
 
                     String fileName = 'C:\\Data\\crisis3\\' + catName + '\\' + fileID + '\\'
-                    println "filename " + fileName
+                   // println "filename " + fileName
 
                     Path filesOutP = Paths.get(fileName)
 

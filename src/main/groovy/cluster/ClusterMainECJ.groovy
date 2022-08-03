@@ -19,24 +19,25 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 1
+    final static int NUMBER_OF_JOBS = 2
     final static int MAX_FIT_JOBS = 1
-    final static boolean onlyDocsInOneCluster = false
+    boolean onlyDocsInOneCluster = true
     final static boolean luceneClassify = true
-    final static boolean useSameIndexForEffectivenessMeasure = true
+   // final static boolean useSameIndexForEffectivenessMeasure = true
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
+    boolean useQueryOnly = true
 
     List<IndexEnum> indexList = [
-          //  IndexEnum.CRISIS3b,
+           IndexEnum.CRISIS3b,
          //   IndexEnum.NG3,
        //   IndexEnum.NG3Full,
-         //   IndexEnum.R4,
-         //   IndexEnum.R5,
+        //    IndexEnum.R4,
+        //    IndexEnum.R5,
          //   IndexEnum.NG4,
-         //   IndexEnum.NG5,
-         //   IndexEnum.NG6
-            IndexEnum.R6
+        //   IndexEnum.NG5,
+        //    IndexEnum.NG6
+       //     IndexEnum.R6
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -45,6 +46,7 @@ class ClusterMainECJ extends Evolve {
 
     List<Double> intersectRatioList = [
             0.6d
+       //  0.0d, 0.2d, 0.8d
             //     0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
@@ -68,96 +70,107 @@ class ClusterMainECJ extends Evolve {
         if (!timingFile.exists()) {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
+        [true, false].each { qOnly ->
+            useQueryOnly = qOnly
 
-      //        [false].each { set_k ->
-        [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-            //   [true, false].each { set_k ->
+            [true, false].each { oneClustQ ->
+                onlyDocsInOneCluster = oneClustQ
 
-            GA_TO_SETK = set_k
-            String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
-            // 'src/cfg/clusterGA_Kmap.params'
+                  [false].each { set_k ->
+             //   [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+                    //   [true, false].each { set_k ->
 
-            queryTypesList.each { qType ->
-                ClusterQueryECJ.QUERY_TYPE = qType
-                println "Query type $qType"
+                    GA_TO_SETK = set_k
+                    String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
+                    // 'src/cfg/clusterGA_Kmap.params'
 
-                intersectRatioList.each { Double minIntersectRatio ->
+                    queryTypesList.each { qType ->
+                        ClusterQueryECJ.QUERY_TYPE = qType
+                        println "Query type $qType"
 
-                    //  clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
-                    indexList.each { IndexEnum indexEnum ->
+                        intersectRatioList.each { Double minIntersectRatio ->
 
-                        println "Index Enum trainTestIndexes: $indexEnum"  // $trainTestIndexes"
-                        Indexes.setIndex(indexEnum)
-                        Indexes.setTermQueryLists(minIntersectRatio)
+                            //  clusteringIndexes.each { Tuple2<IndexEnum, IndexEnum> trainTestIndexes ->
+                            indexList.each { IndexEnum indexEnum ->
 
-                        kPenalty.each { kPenalty ->
-                            Indexes.K_PENALTY = kPenalty
+                                println "Index Enum trainTestIndexes: $indexEnum"  // $trainTestIndexes"
+                                Indexes.setIndex(indexEnum)
+                                Indexes.setTermQueryLists(minIntersectRatio)
 
-                            NUMBER_OF_JOBS.times { job ->
+                                kPenalty.each { kPenalty ->
+                                    Indexes.K_PENALTY = kPenalty
 
-                                MAX_FIT_JOBS.times { maxFit ->
+                                    NUMBER_OF_JOBS.times { job ->
 
-                                    final Date indexTime = new Date()
-                                    ParameterDatabase parameters = new ParameterDatabase(new File(parameterFilePath))
-                                    EvolutionState state = new EvolutionState()
+                                        MAX_FIT_JOBS.times { maxFit ->
 
-                                    state = initialize(parameters, job)
-                                    if (NUMBER_OF_JOBS >= 1) {
-                                        final String jobFilePrefix = "job." + job;
-                                        state.output.setFilePrefix(jobFilePrefix);
-                                        state.checkpointPrefix = jobFilePrefix + state.checkpointPrefix;
+                                            final Date indexTime = new Date()
+                                            ParameterDatabase parameters = new ParameterDatabase(new File(parameterFilePath))
+                                            EvolutionState state = new EvolutionState()
+
+                                            state = initialize(parameters, job)
+                                            if (NUMBER_OF_JOBS >= 1) {
+                                                final String jobFilePrefix = "job." + job;
+                                                state.output.setFilePrefix(jobFilePrefix);
+                                                state.checkpointPrefix = jobFilePrefix + state.checkpointPrefix;
+                                            }
+                                            //  state.parameters.set(new Parameter("generations"), "7")
+                                            state.output.systemMessage("Job: " + job);
+                                            state.job = new Object[1]
+                                            state.job[0] = new Integer(job)
+
+                                            state.run(EvolutionState.C_STARTED_FRESH);
+                                            int popSize = 0;
+                                            ClusterFitnessECJ bestClusterFitness = (ClusterFitnessECJ) state.population.subpops.collect { sbp ->
+                                                popSize = popSize + sbp.individuals.size()
+                                                sbp.individuals.max() { ind ->
+                                                    ind.fitness.fitness()
+                                                }.fitness
+                                            }.max { it.fitness() }
+                                            final double ecjFitness = bestClusterFitness.fitness;
+
+                                            final int numberOfSubpops = state.parameters.getInt(new Parameter("pop.subpops"), new Parameter("pop.subpops"))
+                                            final int wordListSizePop0 = state.parameters.getInt(new Parameter("pop.subpop.0.species.max-gene"), new Parameter("pop.subpop.0.species.max-gene"))
+                                            final int genomeSizePop0 = state.parameters.getInt(new Parameter("pop.subpop.0.species.genome-size"), new Parameter("pop.subpop.0.species.genome-size"))
+                                            println "wordListSizePop0: $wordListSizePop0 genomeSizePop0 $genomeSizePop0  subPops $numberOfSubpops"
+
+                                            final Date GATime = new Date()
+                                            TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
+                                            //  timingFile << trainTestIndexes.v1.name() + ",  " + qType + ",  " + set_k + ", " + durationGA.toMilliseconds()
+
+                                            Set<Query> queries = bestClusterFitness.queryMap.keySet().asImmutable()
+                                            List<BooleanQuery.Builder> bqbList = bestClusterFitness.bqbList
+
+                                            //Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList)
+
+                                            def t3UniqueHits = UniqueHits.getUniqueHits(bqbList)
+                                            //   final int uniqueHits = t3uhits.v2
+                                            //  final int totalHits = t3uhits.v3
+
+                                            UpdateAssignedFieldInIndex.updateAssignedField(indexEnum, queries, onlyDocsInOneCluster)
+
+                                            classifyMethodList.each { classifyMethod ->
+                                                Classifier classifier = ClassifyUnassigned.getClassifier(indexEnum, classifyMethod)
+
+                                                //   TimeDuration durationKNN = TimeCategory.minus(new Date(), GATime)
+                                                //   TimeDuration overallTime = TimeCategory.minus(new Date(), indexTime)
+                                                //   timingFile << ",  " + durationKNN.toMilliseconds() + ', ' + overallTime.toMilliseconds() + '\n'
+                                                //    IndexEnum checkEffectivenessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.v1 : trainTestIndexes.v2
+                                                //             Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
+                                                def t4vhc = Effectiveness.write_classes_clusters_for_v_measure(classifier, job, useQueryOnly)
+
+                                                println "in main t3vhc $t4vhc"
+
+                                                reports.reportV(indexEnum, qType, set_k, classifyMethod, minIntersectRatio, kPenalty, popSize, job, state.generation, t4vhc, t3UniqueHits, useQueryOnly, onlyDocsInOneCluster)
+                                                //reports.reports(trainTestIndexes.v1, t6QuerySetResult.v1, t6QuerySetResult.v2, t6QuerySetResult.v3, t6QuerySetResult.v4, t6QuerySetResult.v5, t6QuerySetResult.v6, t3ClassiferResult.v1, t3ClassiferResult.v2, t3ClassiferResult.v3, ecjFitness, qType, GA_TO_SETK, classifyMethod, minIntersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
+                                            }
+                                            cleanup(state);
+                                            println "--------END JOB $job  -----------------------------------------------"
+                                        }
+                                        //reports.reportMaxFitness(job)
+
                                     }
-                                    //  state.parameters.set(new Parameter("generations"), "7")
-                                    state.output.systemMessage("Job: " + job);
-                                    state.job = new Object[1]
-                                    state.job[0] = new Integer(job)
-
-                                    state.run(EvolutionState.C_STARTED_FRESH);
-                                    int popSize = 0;
-                                    ClusterFitnessECJ bestClusterFitness = (ClusterFitnessECJ) state.population.subpops.collect { sbp ->
-                                        popSize = popSize + sbp.individuals.size()
-                                        sbp.individuals.max() { ind ->
-                                            ind.fitness.fitness()
-                                        }.fitness
-                                    }.max { it.fitness() }
-                                    final double ecjFitness = bestClusterFitness.fitness;
-
-                                    final int numberOfSubpops = state.parameters.getInt(new Parameter("pop.subpops"), new Parameter("pop.subpops"))
-                                    final int wordListSizePop0 = state.parameters.getInt(new Parameter("pop.subpop.0.species.max-gene"), new Parameter("pop.subpop.0.species.max-gene"))
-                                    final int genomeSizePop0 = state.parameters.getInt(new Parameter("pop.subpop.0.species.genome-size"), new Parameter("pop.subpop.0.species.genome-size"))
-                                    println "wordListSizePop0: $wordListSizePop0 genomeSizePop0 $genomeSizePop0  subPops $numberOfSubpops"
-
-                                    final Date GATime = new Date()
-                                    TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
-                                    //  timingFile << trainTestIndexes.v1.name() + ",  " + qType + ",  " + set_k + ", " + durationGA.toMilliseconds()
-
-                                    Set<Query> queries = bestClusterFitness.queryMap.keySet().asImmutable()
-                                    List<BooleanQuery.Builder> bqbList = bestClusterFitness.bqbList
-
-                                    Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList)
-
-                                    UpdateAssignedFieldInIndex.updateAssignedField(indexEnum, queries, onlyDocsInOneCluster)
-
-                                    classifyMethodList.each { classifyMethod ->
-                                        Classifier classifier = ClassifyUnassigned.getClassifier(indexEnum, classifyMethod)
-
-                                        //   TimeDuration durationKNN = TimeCategory.minus(new Date(), GATime)
-                                        //   TimeDuration overallTime = TimeCategory.minus(new Date(), indexTime)
-                                        //   timingFile << ",  " + durationKNN.toMilliseconds() + ', ' + overallTime.toMilliseconds() + '\n'
-                                        //    IndexEnum checkEffectivenessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.v1 : trainTestIndexes.v2
-                                        //             Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
-                                        def t3 = Effectiveness.write_classes_clusters_for_v_measure(classifier, job, false, false, queries)
-
-                                        println "in main t3 $t3"
-
-                                        reports.reportV(indexEnum, qType, set_k, classifyMethod, minIntersectRatio, kPenalty, popSize, job, state.generation, t3)
-                                        //reports.reports(trainTestIndexes.v1, t6QuerySetResult.v1, t6QuerySetResult.v2, t6QuerySetResult.v3, t6QuerySetResult.v4, t6QuerySetResult.v5, t6QuerySetResult.v6, t3ClassiferResult.v1, t3ClassiferResult.v2, t3ClassiferResult.v3, ecjFitness, qType, GA_TO_SETK, classifyMethod, minIntersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
-                                    }
-                                    cleanup(state);
-                                    println "--------END JOB $job  -----------------------------------------------"
                                 }
-                                //reports.reportMaxFitness(job)
-
                             }
                         }
                     }

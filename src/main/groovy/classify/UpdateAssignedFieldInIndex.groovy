@@ -1,6 +1,5 @@
 package classify
 
-
 import groovy.transform.CompileStatic
 import index.IndexEnum
 import index.IndexUtils

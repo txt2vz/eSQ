@@ -30,15 +30,15 @@ class BuildIndex {
     BuildIndex() {
 
         String indexPath =
-      //          'indexes/crisis3b'
+          //      'indexes/R4'
        //'indexes/NG4'
-                'indexes/NG3Full'
+                'indexes/NG6Full'
 
         String docsPath =
         //     /C:\Data\NG4/
-        /C:\Data\NG3Full/
-                //   /C:\Data\crisis3/
-               // 'datasets/NG6Train';
+        /C:\Data\NG6Full/
+         //         /C:\Data\R4/
+
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)

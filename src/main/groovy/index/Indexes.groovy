@@ -18,7 +18,7 @@ import java.nio.file.Paths
 @CompileStatic
 enum IndexEnum {
 
-    R4('indexes/R4Train', 4),
+    R4('indexes/R4', 4),
     R4TEST('indexes/R4Test', 4),
     R5('indexes/R5Train', 5),
     R5TEST('indexes/R5Test', 5),
@@ -27,9 +27,9 @@ enum IndexEnum {
 
     NG3('indexes/NG3Train', 3),
     NG3TEST('indexes/NG3Test', 3),
-    NG5('indexes/NG5Train', 5),
+    NG5('indexes/NG5', 5),
     NG5TEST('indexes/NG5Test', 5),
-    NG6('indexes/NG6Train', 6),
+    NG6('indexes/NG6Full', 6),
     NG6TEST('indexes/NG6Test', 6),
     NG4('indexes/NG4', 4),
     NG3Full('indexes/NG3Full', 3),

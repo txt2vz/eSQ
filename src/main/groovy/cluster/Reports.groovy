@@ -49,14 +49,15 @@ class Reports {
         t15List.clear();
     }
 
-    void reportV(IndexEnum ie, QType qType, boolean setK, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int job, int gen, t3){
+    void reportV(IndexEnum ie, QType qType, boolean setK, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int job, int gen, Tuple4 t4vhc, Tuple3 t3Uhits, boolean  useQueryOnly, boolean  onlyDocsInOneCluster ){
 
         String setkDescription = setK ? 'k-discovered' : 'k-predefined';
         File fcsv = new File("results/resultsV.csv")
         if (!fcsv.exists()) {
-            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, minIntersectRatio, kPenalty, PopulationSize, Gen, Job, date \n'
+            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, uniqueHits, classClusterLength, totalHits, numDocs, minIntersectRatio, kPenalty, useQueryOnly,onlyDocsInOneCluster, PopulationSize, Gen, Job, date \n'
         }
-        fcsv <<  "$setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $lcm, ${t3.v1}, ${t3.v2}, ${t3.v3},$minIntersectRatio, $kPenalty, $popSize, $gen, $job, ${new Date()}  \n"
+        final int numDocs = ie.indexReader.numDocs()
+        fcsv <<  "$setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $lcm, ${t4vhc.v1}, ${t4vhc.v2}, ${t4vhc.v3}, ${t3Uhits.v2}, ${t3Uhits.v3}, ${t4vhc.v4}, $numDocs, $minIntersectRatio, $kPenalty, $useQueryOnly, $onlyDocsInOneCluster, $popSize, $gen, $job, ${new Date()}  \n"
                 //" $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $minIntersectRatio, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
     }
 }

@@ -137,7 +137,7 @@ class Effectiveness {
         return new Tuple3(f1Lucene, precisionLucene, recallLucene)
     }
 
-    static Tuple3<Double, Double, Double> write_classes_clusters_for_v_measure(Classifier classifier, int job, boolean qOnly, boolean rand, Set<Query> queries) {
+    static Tuple4<Double, Double, Double, Integer> write_classes_clusters_for_v_measure(Classifier classifier, int job, boolean queriesOnly) {
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
@@ -149,8 +149,6 @@ class Effectiveness {
         int unasscount = 0
         int qOnlyCount = 0
 
-        def r = new Random()
-
         for (ScoreDoc sd : allHits) {
             Document d = Indexes.indexSearcher.doc(sd.doc)
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
@@ -160,22 +158,14 @@ class Effectiveness {
             String cluster = queryAssignedCluster
 
             if (cluster == 'unassigned') {
-                if (rand) {
-                    Query qRand = queries.getAt(r.nextInt(queries.size()))
-                    cluster = qRand.toString((Indexes.FIELD_CONTENTS))
-                } else {
-                    cluster = classifier.assignClass(contents).getAssignedClass().utf8ToString()
-                }
+                cluster = classifier.assignClass(contents).getAssignedClass().utf8ToString()
             }
-
-            //1. get vmeasure of query assigned only
-            //2. get v measure for randomly assigned where not query assigned.
 
             if (queryAssignedCluster == 'unassigned') {
                 unasscount++;
             }
 
-            if (qOnly) {
+            if (queriesOnly) {
                 if (queryAssignedCluster != 'unassigned') {
                     classes.add(category)
                     clusters.add(cluster)
@@ -202,31 +192,23 @@ class Effectiveness {
         classesFile.write(JsonOutput.toJson(classes))
         clustersFile.write(JsonOutput.toJson(clusters))
 
-        String res
+        String resultFromPython
 
         try {
             CallVmeasurePython cp0 = new CallVmeasurePython()
-           res= cp0.proce()
+            resultFromPython = cp0.proce()
 
-        } catch (Exception e){
+        } catch (Exception e) {
             print " Exeception  in callVmeasurePython $e"
         }
-        List <String> l = []
+        List<String> resultsList = resultFromPython.split(',')
 
-        l =res.split(',')
-        //println "l length " + l.size()
-       // println "L $l"
-        //println " l[0] ${l[0]}"
+        final double vMeasure = resultsList[0].toDouble()
+        final double homogeniety = resultsList[1].toDouble()
+        final double completness = resultsList[2].toDouble()
 
-        double vMeasure = l[0].toDouble()
-        double homogeniety = l[1].toDouble()
-        double completness = l[2].toDouble()
+        assert classes.size() == clusters.size()
 
-       // println "Effectness res groovy $res"
-
-       // println "In effect vMeasure $vMeasure homogentiey $homogeniety completneess $completness"
-
-        //Tuple3<Double, Double,  Double> vhc = new Tuple3<>()
-        return new Tuple3(vMeasure, homogeniety, completness)
+        return new Tuple4(vMeasure, homogeniety, completness, clusters.size())
     }
 }
