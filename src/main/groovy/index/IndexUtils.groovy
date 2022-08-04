@@ -13,9 +13,9 @@ import org.apache.lucene.search.TotalHitCountCollector
 
 class IndexUtils {
 
-    static void main (String[] args){
+    static void main(String[] args) {
         Indexes.setIndex(IndexEnum.R5)
-        categoryFrequencies(Indexes.indexSearcher , true)
+        categoryFrequencies(Indexes.indexSearcher, true)
     }
 
     static Tuple3<String, Integer, Integer> getMostFrequentCategoryForQuery(Query q, boolean printDetails = false) {
@@ -37,10 +37,10 @@ class IndexUtils {
 
         Map.Entry<String, Integer> mostFrequentCategory = categoryFrequencyMap?.max { it?.value }
 
-        if ( mostFrequentCategory) {
+        if (mostFrequentCategory) {
 
-             mostFrequentCategoryName = mostFrequentCategory?.key
-             mostFrequentCategoryHits = mostFrequentCategory?.value
+            mostFrequentCategoryName = mostFrequentCategory?.key
+            mostFrequentCategoryHits = mostFrequentCategory?.value
         }
 
         if (printDetails) {
@@ -50,7 +50,7 @@ class IndexUtils {
         return new Tuple3<String, Integer, Integer>(mostFrequentCategoryName, mostFrequentCategoryHits, hits.size())
     }
 
-    static Map<String, Integer> categoryFrequencies(IndexSearcher indexSearcher, boolean printDetails = false){
+    static Map<String, Integer> categoryFrequencies(IndexSearcher indexSearcher, boolean printDetails = false) {
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = indexSearcher.search(qAll, Integer.MAX_VALUE)
@@ -68,7 +68,7 @@ class IndexUtils {
             int n = assignedCategoryFrequencies.get(assignedCat) ?: 0
             assignedCategoryFrequencies.put((assignedCat), n + 1)
 
-            n = categoryFrequencies.get(category)?: 0
+            n = categoryFrequencies.get(category) ?: 0
             categoryFrequencies.put((category), n + 1)
         }
 
@@ -80,16 +80,15 @@ class IndexUtils {
         return categoryFrequencies
     }
 
-    static List <Tuple2> vList (IndexSearcher indexSearcher)
-    {
+    static List<Tuple2> vList(IndexSearcher indexSearcher) {
         int x = 10;
-        List <Tuple2> vData = [];
+        List<Tuple2> vData = [];
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = indexSearcher.search(qAll, Integer.MAX_VALUE)
         ScoreDoc[] allHits = topDocs.scoreDocs
-       // Tuple2 <String, String> t2
+        // Tuple2 <String, String> t2
 
-        int y=0;
+        int y = 0;
         for (ScoreDoc sd : allHits) {
             Document d = indexSearcher.doc(sd.doc)
 

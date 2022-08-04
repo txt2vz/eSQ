@@ -1,8 +1,7 @@
 package cluster;
 
-import classify.ClassifyUnassigned;
 import classify.LuceneClassifyMethod;
-import classify.UpdateAssignedFieldInIndex;
+import classify.Classify;
 import groovy.lang.Tuple3;
 import groovy.lang.Tuple6;
 import groovy.time.TimeCategory;
@@ -153,8 +152,8 @@ public class JeneticsMain {
                                         fitness.set(ind.bestPhenotype().fitness());
 
                                         List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(termQintArray, k, qType);
-                                        Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> queryDataGen = QuerySet.querySetInfo(bqbList, true);
-                                        System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
+                         //              Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> queryDataGen = QuerySet.querySetInfo(bqbList, true);
+                                     //   System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                         System.out.println();
 
                                     })
@@ -169,17 +168,26 @@ public class JeneticsMain {
                     final int k = getK(g, ie, SETK);
 
                     List<BooleanQuery.Builder> bqbList = QuerySet.getQueryBuilderList(intArrayBestOfRun, k, qType);
-                    Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList);
+           //         Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList);
 
-                    Classifier classifier = ClassifyUnassigned.getClassifier(ie, LuceneClassifyMethod.KNN);
 
-                    UpdateAssignedFieldInIndex.updateAssignedField(ie, t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
+                    //Classifier classifier = ClassifyUnassigned.getClassifier(ie, LuceneClassifyMethod.KNN);
 
-                    Tuple3<Double, Double, Double> t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, ie, k);
+                  //  UpdateAssignedFieldInIndex.updateAssignedField(ie, t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
+                  //  Classify updateAssignedFieldInIndex = new Classify(indexEnum);
+                //    updateAssignedFieldInIndex.updateAssignedField(t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
 
-                    System.out.println("Best of run **********************************  classifierF1 " + t3ClassiferResult.getV1() + " " + ie.name() + '\n');
+               //     Classify classify = new Classify(indexEnum, t6QuerySetResult.getV1().keySet());
+                //    if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
+                //    classify.updateAssignedField();
 
-                    reports.reports(ie, t6QuerySetResult.getV1(), t6QuerySetResult.getV2(), t6QuerySetResult.getV3(), t6QuerySetResult.getV4(), t6QuerySetResult.getV5(), t6QuerySetResult.getV6(), t3ClassiferResult.getV1(), t3ClassiferResult.getV2(), t3ClassiferResult.getV3(), fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty, popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, maxFitjob);
+              //      Classifier classifier = classify.getClassifier(LuceneClassifyMethod.KNN);
+
+                    //Tuple3<Double, Double, Double> t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, ie, k);
+
+                  //  System.out.println("Best of run **********************************  classifierF1 " + t3ClassiferResult.getV1() + " " + ie.name() + '\n');
+
+                   // reports.reports(ie, t6QuerySetResult.getV1(), t6QuerySetResult.getV2(), t6QuerySetResult.getV3(), t6QuerySetResult.getV4(), t6QuerySetResult.getV5(), t6QuerySetResult.getV6(), t3ClassiferResult.getV1(), t3ClassiferResult.getV2(), t3ClassiferResult.getV3(), fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty, popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, maxFitjob);
 
                     //System.out.println("statistics " + statistics);
                 });

@@ -122,7 +122,7 @@ class QuerySet {
         assert bqbL.size() == k
         return bqbL.asImmutable()
     }
-
+/*
     static Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> querySetInfo(List<BooleanQuery.Builder> bqbList, boolean printQueries = false) {
 
         Tuple3<Map<Query, Integer>, Integer, Integer> t3 = UniqueHits.getUniqueHits(bqbList);
@@ -142,6 +142,8 @@ class QuerySet {
 
         return new Tuple6(queryMap, uniqueHits, totalHitsAllQueries, f1, precision, recall)
     }
+
+ */
 
     static String printQuerySet(Map<Query, Integer> queryIntegerMap) {
         StringBuilder sb = new StringBuilder()

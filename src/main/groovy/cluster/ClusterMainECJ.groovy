@@ -1,8 +1,8 @@
 package cluster
 
-import classify.ClassifyUnassigned
+
 import classify.LuceneClassifyMethod
-import classify.UpdateAssignedFieldInIndex
+import classify.Classify
 import ec.EvolutionState
 import ec.Evolve
 import ec.util.ParameterDatabase
@@ -23,21 +23,21 @@ class ClusterMainECJ extends Evolve {
     final static int MAX_FIT_JOBS = 1
     boolean onlyDocsInOneCluster = true
     final static boolean luceneClassify = true
-   // final static boolean useSameIndexForEffectivenessMeasure = true
+    // final static boolean useSameIndexForEffectivenessMeasure = true
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
     boolean useQueryOnly = true
 
     List<IndexEnum> indexList = [
-           IndexEnum.CRISIS3b,
-         //   IndexEnum.NG3,
-       //   IndexEnum.NG3Full,
-        //    IndexEnum.R4,
-        //    IndexEnum.R5,
-         //   IndexEnum.NG4,
-        //   IndexEnum.NG5,
-        //    IndexEnum.NG6
-       //     IndexEnum.R6
+         //   IndexEnum.CRISIS3b,
+            //   IndexEnum.NG3,
+               IndexEnum.NG3Full,
+            //    IndexEnum.R4,
+                IndexEnum.R5,
+            //   IndexEnum.NG4,
+            //   IndexEnum.NG5,
+            //    IndexEnum.NG6
+            //     IndexEnum.R6
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -46,18 +46,18 @@ class ClusterMainECJ extends Evolve {
 
     List<Double> intersectRatioList = [
             0.6d
-       //  0.0d, 0.2d, 0.8d
+            //  0.0d, 0.2d, 0.8d
             //     0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
     List<QType> queryTypesList = [
-              QType.OR_INTERSECT,
+                QType.OR_INTERSECT,
             QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
             LuceneClassifyMethod.KNN,
-            LuceneClassifyMethod.NB
+            //   LuceneClassifyMethod.NB
     ]
 
     ClusterMainECJ() {
@@ -70,15 +70,17 @@ class ClusterMainECJ extends Evolve {
         if (!timingFile.exists()) {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
-        [true, false].each { qOnly ->
+       [true, false].each { qOnly ->
+      //  [false].each { qOnly ->
             useQueryOnly = qOnly
 
-            [true, false].each { oneClustQ ->
+       //     [true].each { oneClustQ ->
+                      [true, false].each { oneClustQ ->
                 onlyDocsInOneCluster = oneClustQ
 
-                  [false].each { set_k ->
-             //   [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-                    //   [true, false].each { set_k ->
+               // [false].each { set_k ->
+                       [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+                    //  [true, false].each { set_k ->
 
                     GA_TO_SETK = set_k
                     String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -146,24 +148,17 @@ class ClusterMainECJ extends Evolve {
                                             def t3UniqueHits = UniqueHits.getUniqueHits(bqbList)
                                             //   final int uniqueHits = t3uhits.v2
                                             //  final int totalHits = t3uhits.v3
-
-                                            UpdateAssignedFieldInIndex.updateAssignedField(indexEnum, queries, onlyDocsInOneCluster)
+                                            Classify classify = new Classify(indexEnum, queries)
+                                            if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
+                                            classify.updateAssignedField()
 
                                             classifyMethodList.each { classifyMethod ->
-                                                Classifier classifier = ClassifyUnassigned.getClassifier(indexEnum, classifyMethod)
-
-                                                //   TimeDuration durationKNN = TimeCategory.minus(new Date(), GATime)
-                                                //   TimeDuration overallTime = TimeCategory.minus(new Date(), indexTime)
-                                                //   timingFile << ",  " + durationKNN.toMilliseconds() + ', ' + overallTime.toMilliseconds() + '\n'
-                                                //    IndexEnum checkEffectivenessIndex = useSameIndexForEffectivenessMeasure ? trainTestIndexes.v1 : trainTestIndexes.v2
-                                                //             Tuple3 t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, checkEffectivenessIndex, bestClusterFitness.k)
-                                                def t4vhc = Effectiveness.write_classes_clusters_for_v_measure(classifier, job, useQueryOnly)
-
-                                                println "in main t3vhc $t4vhc"
+                                                Classifier classifier = classify.getClassifier(classifyMethod)
+                                                def t4vhc = Effectiveness.get_v_measure_h_c_sizOfAllClusters(classifier, job, useQueryOnly)
+                                                println "in main t4vhc $t4vhc"
 
                                                 reports.reportV(indexEnum, qType, set_k, classifyMethod, minIntersectRatio, kPenalty, popSize, job, state.generation, t4vhc, t3UniqueHits, useQueryOnly, onlyDocsInOneCluster)
-                                                //reports.reports(trainTestIndexes.v1, t6QuerySetResult.v1, t6QuerySetResult.v2, t6QuerySetResult.v3, t6QuerySetResult.v4, t6QuerySetResult.v5, t6QuerySetResult.v6, t3ClassiferResult.v1, t3ClassiferResult.v2, t3ClassiferResult.v3, ecjFitness, qType, GA_TO_SETK, classifyMethod, minIntersectRatio, kPenalty, popSize as int, numberOfSubpops, genomeSizePop0, wordListSizePop0, state.generation, gaEngine, job, maxFit)
-                                            }
+                                           }
                                             cleanup(state);
                                             println "--------END JOB $job  -----------------------------------------------"
                                         }

@@ -6,30 +6,6 @@ import index.Indexes
 import org.apache.lucene.search.Query
 
 class Reports {
-    List<Tuple15<String, QType, String, Double, Double, Double, Double, Double, Double, Integer, Double, Integer, Double, LuceneClassifyMethod, Double>> t15List = []
-
-   void reports(IndexEnum ie,Map<Query, Integer> queryMap,int uniqueHits, int totalHits, double qF1, double qP, double qR, double cF1, double cP, double cR,   double fitness, QType qType, boolean setk, LuceneClassifyMethod lcm, double minIntersectRatio, double kPenalty, int popSize, int numberOfSubpops, int genomeSize, int maxGene, int gen, String gaEngine, int job, int maxFitJob) {
-
-        final int numberOfClusters = queryMap.size();
-        final int categoryCountError = ie.numberOfCategories - numberOfClusters
-        final int categoryCountErrorAbs = Math.abs(categoryCountError)
-
-        String setkDescription = setk ? 'k-discovered' : 'k-predefined';
-
-        File fcsv = new File("results/results.csv")
-        if (!fcsv.exists()) {
-            fcsv << 'SetK, QueryType, Index, QueryF1, QueryPrecision, QueryRecall, ClassifierF1,ClassifierPrecision,ClassifierRecall, UniqueHits, Fitness, NumberofCategories, NumberOfClusters, ClusterCountError,  ClassifyMethod, MinIntersect, kPenalty, PopulationSize, NumberOfSubPops, GenomeSize, MaxGene, MinIntersectRatio, Gen, GA_Engine, Job, maxFitJob, date \n'
-        }
-        fcsv << " $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $minIntersectRatio, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
-
-        File queryFileOut = new File('results/Queries.txt')
-        queryFileOut << "Total Docs: ${Indexes.indexReader.numDocs()} Index: ${Indexes.index} ${new Date()} \n"
-        queryFileOut << "UniqueHits: ${uniqueHits}  TotalHitsAllQueries: $totalHits  QuerySetf1: $qF1  qP: $qP qR: $qR ClassifierF1: $cF1  cP: $cP cR: $cR  setk: $setk CategoryCountError: $categoryCountErrorAbs  minIntersectRation: $minIntersectRatio \n"
-        queryFileOut << QuerySet.printQuerySet(queryMap)
-        queryFileOut << "************************************************ \n \n"
-
-        t15List << new Tuple15(setkDescription, qType, ie.name(), qF1, qP, qR, cF1, cP, cR, categoryCountErrorAbs, minIntersectRatio, uniqueHits, fitness, lcm, kPenalty)
-    }
 
     void reportMaxFitness(int job) {
 
@@ -53,11 +29,17 @@ class Reports {
 
         String setkDescription = setK ? 'k-discovered' : 'k-predefined';
         File fcsv = new File("results/resultsV.csv")
-        if (!fcsv.exists()) {
-            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, uniqueHits, classClusterLength, totalHits, numDocs, minIntersectRatio, kPenalty, useQueryOnly,onlyDocsInOneCluster, PopulationSize, Gen, Job, date \n'
-        }
         final int numDocs = ie.indexReader.numDocs()
-        fcsv <<  "$setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $lcm, ${t4vhc.v1}, ${t4vhc.v2}, ${t4vhc.v3}, ${t3Uhits.v2}, ${t3Uhits.v3}, ${t4vhc.v4}, $numDocs, $minIntersectRatio, $kPenalty, $useQueryOnly, $onlyDocsInOneCluster, $popSize, $gen, $job, ${new Date()}  \n"
+        int clusterLabelCount = t4vhc.v4
+        double percentClustered = (clusterLabelCount / numDocs)  * 100 as Double
+
+        if (!fcsv.exists()) {
+            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, clusterLabelsCount, totalUniqueHits, totalHitsAllQueries, numDocs, percentClustered, minIntersectRatio, kPenalty, useQueryOnly,onlyDocsInOneCluster, PopulationSize, Gen, Job, date \n'
+        }
+
+
+
+        fcsv <<  "$setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $lcm, ${t4vhc.v1}, ${t4vhc.v2}, ${t4vhc.v3}, ${t4vhc.v4}, ${t3Uhits.v2}, ${t3Uhits.v3}, $numDocs, ${percentClustered.round(2)}, $minIntersectRatio, $kPenalty, $useQueryOnly, $onlyDocsInOneCluster, $popSize, $gen, $job, ${new Date()}  \n"
                 //" $setkDescription, ${qType.getQueryDescription()}, ${ie.name()}, $qF1, $qP, $qR, $cF1, $cR, $cP, $uniqueHits, $fitness, $ie.numberOfCategories, $numberOfClusters, $categoryCountErrorAbs, $lcm, $minIntersectRatio, $kPenalty, $popSize, $numberOfSubpops, $genomeSize, $maxGene, $minIntersectRatio, $gen, $gaEngine, $job, $maxFitJob, ${new Date()} \n"
     }
 }
