@@ -27,7 +27,7 @@ enum QType {
 }
 
 @CompileStatic
-class QuerySet {
+class BuildQuerySet {
 
     static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
 

@@ -27,13 +27,7 @@ v = v_measure_score (classesL, clustersL)
 h = homogeneity_score (classesL, clustersL)
 c = completeness_score (classesL, clustersL)
 
-#print("v measure:    %.4f" % v_measure_score(classesL, clustersL))
-#print("homogenity:   %.4f" % homogeneity_score(classesL, clustersL))
-#print("completeness: %.4f " % completeness_score(classesL, clustersL))
-
-#resString = str(v) + ", " + str(h) + ", " + str(c) + "\n"
 resString = str(v) + ", " + str(h) + ", " + str(c)
-#print ("resString " + resString)
 print (resString)
 
 resultsFile = open (data_folder /"resultsPython.csv" , "a")

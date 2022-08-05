@@ -17,7 +17,7 @@ import groovy.json.JsonOutput
 
 class Effectiveness {
 
-    static Tuple4<Double, Double, Double, Integer> get_v_measure_h_c_sizOfAllClusters(Classifier classifier, int job, boolean queriesOnly) {
+    static Tuple4<Double, Double, Double, Integer> get_v_measure_h_c_sizOfAllClusters(Classifier classifier, boolean queriesOnly) {
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)

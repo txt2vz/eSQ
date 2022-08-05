@@ -49,7 +49,7 @@ class Classify {
             TopDocs topDocs = Indexes.indexSearcher.search(query, Integer.MAX_VALUE)
             ScoreDoc[] hits = topDocs.scoreDocs
 
-            println("$counter query ${query.toString(Indexes.FIELD_CONTENTS)}")
+          //  println("Query: ${query.toString(Indexes.FIELD_CONTENTS)}")
 
             for (ScoreDoc sd : hits) {
 
@@ -95,7 +95,7 @@ class Classify {
             }
             docInOneClusterQueries << bqbOneCategoryOnly.build()
         }
-        println "uniqueries $docInOneClusterQueries"
+        println "Queries returning unique documents: $docInOneClusterQueries"
         querySet = docInOneClusterQueries
     }
 
@@ -109,7 +109,7 @@ class Classify {
         TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(unassignedQ, Indexes.indexReader.numDocs())
         ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs;
 
-        println " in classifyUnassigned unAssignedHits size " + unAssignedHits.size()
+        println "In classifyUnassigned unAssignedHits size " + unAssignedHits.size()
 
         Classifier classifier
 
@@ -163,7 +163,7 @@ class Classify {
             counter++
         }
 
-        println " in setAllUnassigned $counter updated"
+        println "In setAllUnassigned $counter updated"
         indexWriter.forceMerge(1)
         indexWriter.commit()
        return indexWriter

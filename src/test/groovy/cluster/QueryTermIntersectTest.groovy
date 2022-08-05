@@ -1,12 +1,10 @@
 package cluster
 
-import index.ImportantTermQueries
+
 import index.IndexEnum
 import index.Indexes
-import org.apache.lucene.index.Term
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
-import org.apache.lucene.search.TermQuery
 import spock.lang.Specification
 
 class QueryTermIntersectTest extends Specification {
@@ -19,7 +17,7 @@ class QueryTermIntersectTest extends Specification {
         when:
         final int k = 3
         int[] genome3 =  new int[] {0, 1, 2}
-        List<BooleanQuery.Builder> bqbL =  QuerySet.getQueryBuilderList(genome3, k, QType.OR1)
+        List<BooleanQuery.Builder> bqbL =  BuildQuerySet.getQueryBuilderList(genome3, k, QType.OR1)
         Query q0 = bqbL[0].build()
         Query q1 = bqbL[1].build()
         Query q2 = bqbL[2].build()
@@ -42,7 +40,7 @@ class QueryTermIntersectTest extends Specification {
 
         when:
         int[] genome6 = [0, 2, 4, 1, 3, 7] as int[]
-        bqbL = QuerySet.getQueryBuilderList(genome6, k, QType.OR_INTERSECT)
+        bqbL = BuildQuerySet.getQueryBuilderList(genome6, k, QType.OR_INTERSECT)
 
         Query q3 = bqbL[0].build()
         Query q4 = bqbL[1].build()
@@ -56,7 +54,7 @@ class QueryTermIntersectTest extends Specification {
         when:
         Indexes.MIN_INTERSECT_RATIO = 0.2d
         genome3 = [0, 2, 4, 1, 3, 7] as int[]
-        bqbL = QuerySet.getQueryBuilderList(genome3, k, QType.OR_INTERSECT)
+        bqbL = BuildQuerySet.getQueryBuilderList(genome3, k, QType.OR_INTERSECT)
 
         Query q6 = bqbL[0].build()
         Query q7 = bqbL[1].build()
