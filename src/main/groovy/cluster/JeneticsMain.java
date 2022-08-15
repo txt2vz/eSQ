@@ -75,7 +75,7 @@ public class JeneticsMain {
         final boolean onlyDocsInOneClusterForClassifier = false;
         final double minIntersectRatio = 0.6d;
 
-        Reports reports = new Reports();
+        ReportsOld reports = new ReportsOld();
 
         ieList.stream().forEach(ie -> {
             Indexes.setIndex(ie, true);

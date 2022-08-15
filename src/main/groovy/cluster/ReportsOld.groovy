@@ -5,7 +5,7 @@ import index.IndexEnum
 import index.Indexes
 import org.apache.lucene.search.Query
 
-class Reports {
+class ReportsOld {
 
     List <Tuple6 <Double, IndexEnum, QType, String, LuceneClassifyMethod, Double>> tList = []
 
@@ -36,6 +36,7 @@ class Reports {
         File fcsv = new File("results/resultsV.csv")
         final int numDocs = ie.indexReader.numDocs()
         int clusterLabelCount = t4vhc.v4
+
 
         double percentClustered = (clusterLabelCount / numDocs)  * 100 as Double
 

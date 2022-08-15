@@ -80,24 +80,24 @@ class IndexUtils {
         return categoryFrequencies
     }
 
-    static List<Tuple2> vList(IndexSearcher indexSearcher) {
-        int x = 10;
-        List<Tuple2> vData = [];
-        Query qAll = new MatchAllDocsQuery()
-        TopDocs topDocs = indexSearcher.search(qAll, Integer.MAX_VALUE)
-        ScoreDoc[] allHits = topDocs.scoreDocs
-        // Tuple2 <String, String> t2
-
-        int y = 0;
-        for (ScoreDoc sd : allHits) {
-            Document d = indexSearcher.doc(sd.doc)
-
-            String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-            String assignedCat = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
-            vData.add(new Tuple2(category, assignedCat))
-        }
-        return vData
-    }
+//    static List<Tuple2> vList(IndexSearcher indexSearcher) {
+//        int x = 10;
+//        List<Tuple2> vData = [];
+//        Query qAll = new MatchAllDocsQuery()
+//        TopDocs topDocs = indexSearcher.search(qAll, Integer.MAX_VALUE)
+//        ScoreDoc[] allHits = topDocs.scoreDocs
+//        // Tuple2 <String, String> t2
+//
+//        int y = 0;
+//        for (ScoreDoc sd : allHits) {
+//            Document d = indexSearcher.doc(sd.doc)
+//
+//            String category = d.get(Indexes.FIELD_CATEGORY_NAME)
+//            String assignedCat = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
+//            vData.add(new Tuple2(category, assignedCat))
+//        }
+//        return vData
+//    }
 
     //get hits for a particular query using filter (e.g. a particular category)
     static int getQueryHitsWithFilter(IndexSearcher searcher, Query filter, Query q) {
