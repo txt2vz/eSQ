@@ -9,11 +9,11 @@ class Result {
     QType queryType
     IndexEnum indexEnum
     LuceneClassifyMethod classifyMethod
-    double v, h, c
-    double fitness
-    double kPenalty, intersectRatio
-    int clusterListSize, uniqueHits, totalHitsAllQueries
-    int popSize, job, generation
+    final double v, h, c
+    final double fitness
+    final double kPenalty, intersectRatio
+    final int clusterListSize, uniqueHits, totalHitsAllQueries
+    final int popSize, job, generation
 
     Result(boolean setK, IndexEnum indexEnum, QType qType, double v, double h, double c, int clusterListSize, LuceneClassifyMethod classifyMethod, double fitness, boolean queryOnly, boolean onlyDocsInOneCluster, int uniqueHits, int totalHitsAllQueries, double kPenalty, double intersectRatio, int popSize, int generation, int job) {
 

@@ -19,23 +19,23 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 4
+    final static int NUMBER_OF_JOBS = 2
+    final static int MAX_FIT_JOBS = 3
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
-    final static boolean queryOnly = true
+    //final static boolean queryOnly = true
 
     List<IndexEnum> indexList = [
-               IndexEnum.CRISIS3b,
+            IndexEnum.CRISIS3b,
             //        IndexEnum.NG3,
             //            IndexEnum.NG3Full,
 
-           // IndexEnum.R5,
-             //        IndexEnum.NG4,
-            //          IndexEnum.NG5,
-                     IndexEnum.NG6,
-            //            IndexEnum.R6
+            IndexEnum.R5,
+            //        IndexEnum.NG4,
+            IndexEnum.NG5,
+            //  IndexEnum.NG6,
+            IndexEnum.R6
 
     ]
 
@@ -50,8 +50,7 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-               QType.OR_INTERSECT,
-            QType.OR1
+            QType.OR_INTERSECT, QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -62,7 +61,6 @@ class ClusterMainECJ extends Evolve {
     ClusterMainECJ() {
 
         final Date startRun = new Date()
-        // ReportsOld reports = new ReportsOld();
 
         File timingFile = new File("results/timing.csv")
 
@@ -70,8 +68,8 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-        // [false].each { set_k ->
-        [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+         [false].each { set_k ->
+     ////   [true].each { set_k ->  //false to allow GA to know predefined number of clusters
             //       [true, false].each { set_k ->
             //  [true, false].each { set_k ->
 
@@ -94,6 +92,7 @@ class ClusterMainECJ extends Evolve {
 
                             NUMBER_OF_JOBS.times { job ->
                                 List<Result> resultList = []
+                                List<Result> queryOnlyResultList = []
 
                                 MAX_FIT_JOBS.times { maxFit ->
 
@@ -129,7 +128,6 @@ class ClusterMainECJ extends Evolve {
 
                                     final Date GATime = new Date()
                                     TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
-                                    //  timingFile << trainTestIndexes.v1.name() + ",  " + qType + ",  " + set_k + ", " + durationGA.toMilliseconds()
 
                                     Set<Query> queries = bestClusterFitness.queryMap.keySet().asImmutable()
                                     List<BooleanQuery.Builder> bqbList = bestClusterFitness.bqbList
@@ -137,9 +135,6 @@ class ClusterMainECJ extends Evolve {
                                     Tuple3<Map<Query, Integer>, Integer, Integer> t3_qMap_TotalUnique_TotalAllQ = UniqueHits.getUniqueHits(bqbList)
                                     Classify classify = new Classify(indexEnum, queries)
 
-                                    //false should be first as queries are modified
-                                    //     [false, true].each { onlyDocsInOneCluster ->
-                                    // Result reports = new Result()
                                     if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
 
                                     classify.updateAssignedField()
@@ -147,35 +142,28 @@ class ClusterMainECJ extends Evolve {
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod)
 
-                                        //  [true, false].each { queryOnly ->
+                                        [true, false].each { queryOnly ->
 
-                                        Tuple4<Double, Double, Double, Integer> t4vhcSize = Effectiveness.get_v_measure_h_c_sizOfAllClusters(classifier, queryOnly)
-                                        println "In main t4vhcSize: $t4vhcSize"
-                                        Result result = new Result(set_k, indexEnum, qType, t4vhcSize.v1, t4vhcSize.v2, t4vhcSize.v3, t4vhcSize.v4, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job)
-                                        resultList << result
-                                        result.report(new File('results/resultsv3.csv'))
-
-                                        // reports.reportV(ecjFitness, indexEnum, qType, set_k, classifyMethod, minIntersectRatio, kPenalty, popSize, job, state.generation, t4vhcSize, t3UniqueHits, queryOnly, onlyDocsInOneCluster)
-                                        // }
+                                            Tuple4<Double, Double, Double, Integer> t4vhcSize = Effectiveness.get_v_measure_h_c_sizOfAllClusters(classifier, queryOnly)
+                                            Result result = new Result(set_k, indexEnum, qType, t4vhcSize.v1, t4vhcSize.v2, t4vhcSize.v3, t4vhcSize.v4, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job)
+                                            queryOnly ? queryOnlyResultList << result : resultList << result
+                                            result.report(new File('results/resultsv3.csv'))
+                                        }
                                     }
-                                    //  }
+
                                     cleanup(state);
                                     println "--------END JOB $job  -----------------------------------------------"
                                 }
                                 Result maxFitResult = resultList.max { it.fitness }
-                                println "maxFitResult ${maxFitResult.toString()}"
+                                Result maxFitResultQueryOnly = queryOnlyResultList.max { it.fitness }
                                 maxFitResult.report(new File('results/maxFitResults.csv'))
+                                maxFitResultQueryOnly.report(new File('results/maxFitResults.csv'))
                             }
-
-                            //  reports.reportMaxFitness(job)
                         }
                     }
                 }
             }
         }
-
-        //      }
-        //  }
 
         final Date endRun = new Date()
         TimeDuration duration = TimeCategory.minus(endRun, startRun)
