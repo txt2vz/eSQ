@@ -7,12 +7,13 @@ class CallVmeasurePython {
 
     String proce() throws Exception {
 
-        ProcessBuilder processBuilder = new ProcessBuilder("python", /C:\Users\lauri\IdeaProjects\eSQ\src\main\python\vMeasure.py/ );
+        //ProcessBuilder processBuilder = new ProcessBuilder("python", /C:\Users\lauri\IdeaProjects\eSQ\src\main\python\vMeasure.py/ );
+        ProcessBuilder processBuilder = new ProcessBuilder("python", /src\main\python\vMeasure.py/ );
         processBuilder.redirectErrorStream(true);
 
         Process process = processBuilder.start();
-        def results =  process.text
-        println "Results in CallVmeasurePython: " + results
+        String results =  process.text
+        println "Results in CallVmeasurePython: $results"
 
         int exitCode = process.waitFor();
         return  results

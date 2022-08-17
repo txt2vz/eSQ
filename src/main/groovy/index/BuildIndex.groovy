@@ -57,7 +57,7 @@ class BuildIndex {
 
         def categoryNumber = 0
 
-        def dups = [] as Set
+        //def dups = [] as Set
         int docCount = 0
         new File(docsPath).eachDir {
 

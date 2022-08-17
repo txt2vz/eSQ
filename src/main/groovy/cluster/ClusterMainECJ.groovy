@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 2
+    final static int NUMBER_OF_JOBS = 1
     final static int MAX_FIT_JOBS = 3
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
@@ -27,16 +27,15 @@ class ClusterMainECJ extends Evolve {
     //final static boolean queryOnly = true
 
     List<IndexEnum> indexList = [
-            IndexEnum.CRISIS3b,
+           // IndexEnum.CRISIS3b,
             //        IndexEnum.NG3,
-            //            IndexEnum.NG3Full,
+            //        IndexEnum.NG3Full,
 
-            IndexEnum.R5,
-            //        IndexEnum.NG4,
+          //  IndexEnum.R5,
+         //           IndexEnum.NG4,
             IndexEnum.NG5,
-            //  IndexEnum.NG6,
-            IndexEnum.R6
-
+           //   IndexEnum.NG6,
+          //  IndexEnum.R6
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -50,12 +49,13 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-            QType.OR_INTERSECT, QType.OR1
+            QType.OR_INTERSECT,
+            QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
             LuceneClassifyMethod.KNN,
-            //   LuceneClassifyMethod.NB
+               LuceneClassifyMethod.NB
     ]
 
     ClusterMainECJ() {
@@ -68,8 +68,8 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-         [false].each { set_k ->
-     ////   [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+     //    [false].each { set_k ->
+       [true].each { set_k ->  //false to allow GA to know predefined number of clusters
             //       [true, false].each { set_k ->
             //  [true, false].each { set_k ->
 
@@ -144,8 +144,12 @@ class ClusterMainECJ extends Evolve {
 
                                         [true, false].each { queryOnly ->
 
-                                            Tuple4<Double, Double, Double, Integer> t4vhcSize = Effectiveness.get_v_measure_h_c_sizOfAllClusters(classifier, queryOnly)
-                                            Result result = new Result(set_k, indexEnum, qType, t4vhcSize.v1, t4vhcSize.v2, t4vhcSize.v3, t4vhcSize.v4, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job)
+                                            Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
+
+                                           // Tuple4<Double, Double, Double, Integer> t4vhcSize = Effectiveness.get_v_measure_h_c_sizOfAllClusters(classifier, queryOnly)
+
+//                                            Tuple4<Double, Double, Double, Integer> t4vhcSize = Effectiveness.get_v_measure_h_c_sizOfAllClusters(classifier, queryOnly)
+                                            Result result = new Result(set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job)
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/resultsv3.csv'))
                                         }
@@ -167,7 +171,7 @@ class ClusterMainECJ extends Evolve {
 
         final Date endRun = new Date()
         TimeDuration duration = TimeCategory.minus(endRun, startRun)
-        println " Duration:  $duration "
+        println "Duration: $duration"
     }
 
     static main(args) {

@@ -1,30 +1,34 @@
 package cluster
 
-import index.IndexEnum
-import index.IndexUtils
+import groovy.json.JsonOutput
 import index.Indexes
 import org.apache.lucene.classification.Classifier
-import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
 import org.apache.lucene.document.Document
-import org.apache.lucene.index.Term
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
-import org.apache.lucene.search.TermQuery
 import org.apache.lucene.search.TopDocs
-import org.apache.lucene.search.TotalHitCountCollector
-import groovy.json.JsonOutput
 
 class Effectiveness {
 
-    static Tuple4<Double, Double, Double, Integer> get_v_measure_h_c_sizOfAllClusters(Classifier classifier, boolean queriesOnly) {
+    File classesFile = new File(/results\classes.txt/)
+    File clustersFile = new File(/results\clusters.txt/)
+
+    double vMeasure
+    double homogeniety
+    double completness
+
+    int numberOfDocumentsInClusters
+    int clusterCountError
+
+    Effectiveness(Classifier classifier, boolean queriesOnly){
+
+        List<String> classes = []
+        List<String> clusters = []
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
         ScoreDoc[] allHits = topDocs.scoreDocs
-
-        List<String> classes = []
-        List<String> clusters = []
 
         int unasscount = 0
         int qOnlyCount = 0
@@ -57,20 +61,27 @@ class Effectiveness {
             }
         }
 
-        println "qonlycount $qOnlyCount"
-        println "in v measure unass count $unasscount"
+        clusterCountError = Math.abs(classes.toSet().size() - clusters.toSet().size())
 
+        assert classes.size() == clusters.size()
+        numberOfDocumentsInClusters = clusters.size()
+
+        println "qonlycount $qOnlyCount"
+        println "In v measure unassigned count $unasscount"
         println "In v measure classes leng ${classes.size()} clusters len ${clusters.size()}"
         println "in v measure toSet classess ${classes.toSet().size()} clust ${clusters.toSet().size()}"
 
-        String classesFileName = "classes.txt"
-        String clustersFileName = "clusters.txt"
-
-        File classesFile = new File(classesFileName)
-        File clustersFile = new File(clustersFileName)
-
         classesFile.write(JsonOutput.toJson(classes))
         clustersFile.write(JsonOutput.toJson(clusters))
+
+        List<String> resultsList = resultFromPython().split(',')
+
+        vMeasure = resultsList[0].toDouble()
+        homogeniety = resultsList[1].toDouble()
+        completness = resultsList[2].toDouble()
+    }
+
+    private static String resultFromPython(){
 
         String resultFromPython
 
@@ -79,16 +90,8 @@ class Effectiveness {
             resultFromPython = cp0.proce()
 
         } catch (Exception e) {
-            print " Exeception  in callVmeasurePython $e"
+            println "Exeception  in callVmeasurePython $e"
         }
-        List<String> resultsList = resultFromPython.split(',')
-
-        final double vMeasure = resultsList[0].toDouble()
-        final double homogeniety = resultsList[1].toDouble()
-        final double completness = resultsList[2].toDouble()
-
-        assert classes.size() == clusters.size()
-
-        return new Tuple4(vMeasure, homogeniety, completness, clusters.size())
+        return  resultFromPython
     }
 }

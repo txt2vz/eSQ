@@ -58,7 +58,6 @@ enum IndexEnum {
         Path path = Paths.get(pathString)
         Directory directory = FSDirectory.open(path)
         IndexReader ir = DirectoryReader.open(directory)
-        println "IndexReader: $ir"
         return ir
     }
 

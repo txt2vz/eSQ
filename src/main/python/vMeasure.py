@@ -11,8 +11,8 @@ from sklearn.metrics import f1_score
 import json
 
 data_folder = Path("C:/Users/lauri/IdeaProjects/eSQ/")
-classesFile = open( data_folder /"classes.txt", "r")
-clustersFile = open( data_folder /"clusters.txt", "r")
+classesFile = open( data_folder /"results/classes.txt", "r")
+clustersFile = open( data_folder /"results/clusters.txt", "r")
 
 classes = classesFile.read()
 clusters = clustersFile.read()
