@@ -7,27 +7,27 @@ import index.Indexes
 class Result {
 
     final boolean setK, queryOnly, onlyDocsInOneCluster
-    QType queryType
-    IndexEnum indexEnum
+    String queryTypeName
     LuceneClassifyMethod classifyMethod
     final double v, h, c
     final double fitness
     final double kPenalty, intersectRatio
     final int  uniqueHits, totalHitsAllQueries, numberOfDocumentsClustered, clusterCountError
     final int popSize, job, generation
+    String indexName
 
     Result(boolean setK, IndexEnum indexEnum, QType qType, Effectiveness effectiveness, LuceneClassifyMethod classifyMethod, double fitness, boolean queryOnly, boolean onlyDocsInOneCluster, int uniqueHits, int totalHitsAllQueries, double kPenalty, double intersectRatio, int popSize, int generation, int job) {
 
-        this.indexEnum = indexEnum
-        this.setK = setK
-        this.queryType = qType
+        indexName = indexEnum.name()
+        queryTypeName = qType.getQueryDescription()
         v = effectiveness.vMeasure
         h = effectiveness.homogeniety
         c = effectiveness.completness
         clusterCountError = effectiveness.clusterCountError
         numberOfDocumentsClustered = effectiveness.numberOfDocumentsInClusters
-        this.classifyMethod=classifyMethod
 
+        this.setK = setK
+        this.classifyMethod=classifyMethod
         this.fitness = fitness
         this.kPenalty = kPenalty
         this.intersectRatio = intersectRatio
@@ -50,6 +50,6 @@ class Result {
             fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, numberOfDocumentsClustered, numDocs, percentClustered, clusterCountError, fitness, queryOnly, onlyDocsInOneCluster, uniqueHits, totalHitsAllQueries, kPenalty, intersectRatio, popSize, generation, job \n'  //   ,   totalUniqueHits, totalHitsAllQueries, numDocs, percentClustered, minIntersectRatio, kPenalty, useQueryOnly,onlyDocsInOneCluster, PopulationSize, Gen, Job, date \n'
         }
 
-        fcsv <<  "$setkDescription, ${queryType.getQueryDescription()}, ${indexEnum.name()}, $classifyMethod, $v, $h, $c, $numberOfDocumentsClustered, $numDocs, $percentClustered, $clusterCountError, $fitness, $queryOnly, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $popSize, $generation, $job \n"
+        fcsv <<  "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $numberOfDocumentsClustered, $numDocs, $percentClustered, $clusterCountError, $fitness, $queryOnly, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $popSize, $generation, $job \n"
     }
 }
