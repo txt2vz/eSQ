@@ -11,9 +11,6 @@ import org.apache.lucene.search.TopDocs
 
 class Effectiveness {
 
-    File classesFile = new File(/results\classes.txt/)
-    File clustersFile = new File(/results\clusters.txt/)
-
     double vMeasure
     double homogeniety
     double completness
@@ -64,13 +61,16 @@ class Effectiveness {
         clusterCountError = Math.abs(classes.toSet().size() - clusters.toSet().size())
 
         assert classes.size() == clusters.size()
+        assert classes.size() > 0
         numberOfDocumentsInClusters = clusters.size()
 
         println "qonlycount $qOnlyCount"
-        println "In v measure unassigned count $unasscount"
-        println "In v measure classes leng ${classes.size()} clusters len ${clusters.size()}"
-        println "in v measure toSet classess ${classes.toSet().size()} clust ${clusters.toSet().size()}"
+        println "In Effectiveness unassigned count $unasscount"
+        println "In Effectiveness classes leng ${classes.size()} clusters len ${clusters.size()}"
+        println "in Effectiveness toSet classess ${classes.toSet().size()} clust ${clusters.toSet().size()}"
 
+        File classesFile = new File(/results\classes.txt/)
+        File clustersFile = new File(/results\clusters.txt/)
         classesFile.write(JsonOutput.toJson(classes))
         clustersFile.write(JsonOutput.toJson(clusters))
 
@@ -83,7 +83,7 @@ class Effectiveness {
 
     private static String resultFromPython(){
 
-        String resultFromPython
+        String resultFromPython = "no result from python"
 
         try {
             CallVmeasurePython cp0 = new CallVmeasurePython()

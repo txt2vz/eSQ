@@ -178,6 +178,5 @@ class Classify {
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer)
         iwc.setOpenMode(IndexWriterConfig.OpenMode.APPEND)
         IndexWriter indexWriter = new IndexWriter(directory, iwc)
-        indexWriter
     }
 }
