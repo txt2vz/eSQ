@@ -33,14 +33,14 @@ public class JeneticsMain {
 
     //static int k;
     static List<IndexEnum> ieList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CLASSIC4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6
+            IndexEnum.CRISIS3
+//            IndexEnum.CLASSIC4,
+//            IndexEnum.NG3,
+//            IndexEnum.NG5,
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+//            IndexEnum.R5,
+//            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -75,7 +75,7 @@ public class JeneticsMain {
         final boolean onlyDocsInOneClusterForClassifier = false;
         final double minIntersectRatio = 0.6d;
 
-        ReportsOld reports = new ReportsOld();
+       // ReportsOld reports = new ReportsOld();
 
         ieList.stream().forEach(ie -> {
             Indexes.setIndex(ie, true);
@@ -186,7 +186,7 @@ public class JeneticsMain {
 
                     //System.out.println("statistics " + statistics);
                 });
-                reports.reportMaxFitness(jobNumber);
+             //   reports.reportMaxFitness(jobNumber);
             });
         });
 

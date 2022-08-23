@@ -25,8 +25,8 @@ class Result {
         indexName = indexEnum.name()
         queryTypeName = qType.getQueryDescription()
         v = effectiveness.vMeasure
-        h = effectiveness.homogeniety
-        c = effectiveness.completness
+        h = effectiveness.homogeneity
+        c = effectiveness.completeness
         clusterCountError = effectiveness.clusterCountError
         numberOfDocumentsClustered = effectiveness.numberOfDocumentsInClusters
         percentClustered = (numberOfDocumentsClustered / numDocs)  * 100 as Double
@@ -50,9 +50,9 @@ class Result {
 
         //spreadsheet to be used with pivot table
         if (!fcsv.exists()) {
-            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, numberOfDocumentsClustered, numDocs, percentClustered, clusterCountError, fitness, queryOnly, onlyDocsInOneCluster, uniqueHits, totalHitsAllQueries, kPenalty, intersectRatio, popSize, generation, job, maxFitJob \n'  //   ,   totalUniqueHits, totalHitsAllQueries, numDocs, percentClustered, minIntersectRatio, kPenalty, useQueryOnly,onlyDocsInOneCluster, PopulationSize, Gen, Job, date \n'
+            fcsv << 'SetK, QueryType, Index, classifyMethod, v, homogeneity, completeness, numberOfDocumentsClustered, numDocs, percentClustered, clusterCountError, fitness, queryOnly, onlyDocsInOneCluster, uniqueHits, totalHitsAllQueries, kPenalty, intersectRatio, popSize, generation, job, maxFitJob, Date \n'  //   ,   totalUniqueHits, totalHitsAllQueries, numDocs, percentClustered, minIntersectRatio, kPenalty, useQueryOnly,onlyDocsInOneCluster, PopulationSize, Gen, Job, date \n'
         }
 
-        fcsv <<  "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $numberOfDocumentsClustered, $numDocs, $percentClustered, $clusterCountError, $fitness, $queryOnly, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $popSize, $generation, $job, $maxFitJob \n"
+        fcsv <<  "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $numberOfDocumentsClustered, $numDocs, $percentClustered, $clusterCountError, $fitness, $queryOnly, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $popSize, $generation, $job, $maxFitJob, ${new Date()} \n"
     }
 }

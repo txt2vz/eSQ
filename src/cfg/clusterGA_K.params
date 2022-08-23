@@ -13,7 +13,7 @@ stat = cluster.ClusterStatisticsECJ
 
 evalthreads =  auto
 breedthreads = auto
-generations = 100
+generations = 120
 
 pop.default-subpop =0
 breed.elite.0 = 2

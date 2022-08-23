@@ -18,28 +18,17 @@ import java.nio.file.Paths
 @CompileStatic
 enum IndexEnum {
 
+    CRISIS3('indexes/Crisis3', 3),
+    NG3('indexes/NG3', 3),
+
     R4('indexes/R4', 4),
-    R4TEST('indexes/R4Test', 4),
-    R5('indexes/R5Train', 5),
-    R5TEST('indexes/R5Test', 5),
-    R6('indexes/R6Train', 6),
-    R6TEST('indexes/R6Test', 6),
-
-    NG3('indexes/NG3Train', 3),
-    NG3TEST('indexes/NG3Test', 3),
-    NG5('indexes/NG5', 5),
-    NG5TEST('indexes/NG5Test', 5),
-    NG6('indexes/NG6Full', 6),
-    NG6TEST('indexes/NG6Test', 6),
     NG4('indexes/NG4', 4),
-    NG3Full('indexes/NG3Full', 3),
 
-    CLASSIC4('indexes/classic4Train', 4),
-    CLASSIC4TEST('indexes/classic4Test', 4),
+    R5('indexes/R5', 5),
+    NG5('indexes/NG5', 5),
 
-    CRISIS3('indexes/crisis3Train', 3),
-    CRISIS3b('indexes/crisis3b', 3),
-    CRISIS3TEST('indexes/crisis3Test', 3)
+    R6('indexes/R6', 6),
+    NG6('indexes/NG6', 6)
 
     // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
     String pathString
@@ -108,10 +97,10 @@ class Indexes {
         }
     }
 
-    static void setTermQueryLists(final double minIntersectRatio){
+    static void setTermQueryLists(final double minIntersectRatio) {
         MIN_INTERSECT_RATIO = minIntersectRatio
         termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable()
         println "termquery list $termQueryList"
-       // termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRatio) asImmutable()
+        // termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRatio) asImmutable()
     }
 }

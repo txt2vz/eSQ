@@ -19,24 +19,26 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 3
+    final static int NUMBER_OF_JOBS = 1
+    final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
     //final static boolean queryOnly = true
 
     List<IndexEnum> indexList = [
-            // IndexEnum.CRISIS3b,
-          //  IndexEnum.CRISIS3,
-            //        IndexEnum.NG3,
-         //   IndexEnum.NG3Full,
-        //    IndexEnum.R4,
-        //    IndexEnum.R5,
-                       IndexEnum.NG4,
-         //    IndexEnum.NG5,
-          //   IndexEnum.NG6,
-           // IndexEnum.R6 //not good
+
+            IndexEnum.CRISIS3,
+            IndexEnum.NG3,
+
+            IndexEnum.NG4,
+            IndexEnum.R4,
+
+            IndexEnum.R5,
+            IndexEnum.NG5,
+
+            IndexEnum.NG6,
+            IndexEnum.R6 //not good
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -45,7 +47,7 @@ class ClusterMainECJ extends Evolve {
 
     List<Double> intersectRatioList = [
             0.5d
-       //       0.4d,0.5d, 0.6d, 0.7d, 0.8d
+            //       0.4d,0.5d, 0.6d, 0.7d, 0.8d
             //     0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
@@ -56,7 +58,7 @@ class ClusterMainECJ extends Evolve {
 
     List<LuceneClassifyMethod> classifyMethodList = [
             LuceneClassifyMethod.KNN,
-       //     LuceneClassifyMethod.NB
+            //     LuceneClassifyMethod.NB
     ]
 
     ClusterMainECJ() {
@@ -70,8 +72,8 @@ class ClusterMainECJ extends Evolve {
         }
 
         //    [false].each { set_k ->
-      //  [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-                   [true, false].each { set_k ->
+          [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+      //  [true, false].each { set_k ->
             //  [true, false].each { set_k ->
 
             GA_TO_SETK = set_k
@@ -143,13 +145,14 @@ class ClusterMainECJ extends Evolve {
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod)
 
-                                        //[true, false].each { queryOnly ->
-                                        [false].each { queryOnly ->
+                                        [true, false].each { queryOnly ->
+                                        //[false].each { queryOnly ->
+                                       //     [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
                                             Result result = new Result(set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job, maxFitJob)
                                             queryOnly ? queryOnlyResultList << result : resultList << result
-                                            result.report(new File('results/resultsv3.csv'))
+                                            result.report(new File('results/results.csv'))
                                         }
                                     }
 

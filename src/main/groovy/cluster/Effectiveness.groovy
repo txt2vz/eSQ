@@ -12,8 +12,8 @@ import org.apache.lucene.search.TopDocs
 class Effectiveness {
 
     double vMeasure
-    double homogeniety
-    double completness
+    double homogeneity
+    double completeness
 
     int numberOfDocumentsInClusters
     int clusterCountError
@@ -77,10 +77,11 @@ class Effectiveness {
         List<String> resultsList = resultFromPython().split(',')
 
         vMeasure = resultsList[0].toDouble()
-        homogeniety = resultsList[1].toDouble()
-        completness = resultsList[2].toDouble()
+        homogeneity = resultsList[1].toDouble()
+        completeness = resultsList[2].toDouble()
     }
 
+    //call sklearn to get v measure
     private static String resultFromPython(){
 
         String resultFromPython = "no result from python"

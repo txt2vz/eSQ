@@ -32,11 +32,11 @@ class BuildIndex {
         String indexPath =
           //      'indexes/R4'
        //'indexes/NG4'
-                'indexes/NG6Full'
+                'indexes/NG4N'
 
         String docsPath =
         //     /C:\Data\NG4/
-        /C:\Data\NG6Full/
+        /C:\Data\NG4N/
          //         /C:\Data\R4/
 
 
@@ -57,7 +57,6 @@ class BuildIndex {
 
         def categoryNumber = 0
 
-        //def dups = [] as Set
         int docCount = 0
         new File(docsPath).eachDir {
 
@@ -75,8 +74,6 @@ class BuildIndex {
                     Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
                     doc.add(documentIDfield)
 
-                 //   Field pathField = new StringField(Indexes.FIELD_PATH, file.getPath(), Field.Store.YES);
-                 //   doc.add(pathField)
 
                     String parent = file.getParent()
                    // String grandParent = file.getParentFile().getParent()
@@ -84,13 +81,6 @@ class BuildIndex {
                     String catName = parent.substring(parent.lastIndexOf(File.separator) + 1, parent.length())
                     Field catNameField = new StringField(Indexes.FIELD_CATEGORY_NAME, catName.replaceAll(/\W/, '').toLowerCase(), Field.Store.YES);
                     doc.add(catNameField)
-
-                //    String test_train
-                  //     if (file.canonicalPath.contains("test")) test_train = "test" else test_train = "train"
-                  //  if (dirCount % 2 == 0) test_train = "train" else test_train = "test"
-
-                  //  Field ttField = new StringField(Indexes.FIELD_TEST_TRAIN, test_train, Field.Store.YES)
-                  //  doc.add(ttField)
 
                     Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES);
                     doc.add(assignedClass)
@@ -128,9 +118,6 @@ class BuildIndex {
         println(end.getTime() - start.getTime() + " total milliseconds");
         println "testTotal $testTotal trainTotal $trainTotal"
         println "catsNameFreq $catsNameFreq"
-
-       // Indexes.setIndex(IndexEnum.NG5Train)
-      //  IndexUtils.showCategoryFrequencies(Indexes.indexSearcher)
 
          Indexes.setIndex(IndexEnum.CRISIS3b)
          IndexUtils.categoryFrequencies(Indexes.indexSearcher)  //.showCategoryFrequencies(Indexes.indexSearcher)
