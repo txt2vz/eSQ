@@ -11,8 +11,12 @@ from sklearn.metrics import f1_score
 import json
 
 data_folder = Path("C:/Users/lauri/IdeaProjects/eSQ/")
-classesFile = open( data_folder /"results/classes.txt", "r")
-clustersFile = open( data_folder /"results/clusters.txt", "r")
+
+#classesFile = open( data_folder /"results/classes.txt", "r")
+#clustersFile = open( data_folder /"results/clusters.txt", "r")
+
+classesFile = open( "results/classes.txt", "r")
+clustersFile = open( "results/clusters.txt", "r")
 
 classes = classesFile.read()
 clusters = clustersFile.read()
@@ -30,6 +34,7 @@ c = completeness_score (classesL, clustersL)
 resString = str(v) + ", " + str(h) + ", " + str(c)
 print (resString)
 
-resultsFile = open (data_folder /"resultsPython.csv" , "a")
+#resultsFile = open (data_folder /"resultsPython.csv" , "a")
+resultsFile = open ("resultsPython.csv" , "a")
 resultsFile.write(resString)
 resultsFile.close()
