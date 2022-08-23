@@ -3,10 +3,7 @@ from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics.cluster import homogeneity_score
 from sklearn.metrics.cluster import completeness_score
 
-from sklearn.metrics import precision_recall_fscore_support
 import numpy as np
-from sklearn.metrics import precision_score
-from sklearn.metrics import f1_score
 
 import json
 
