@@ -6,3 +6,5 @@ Install support for Java and Groovy
 Install python
 
 pip3 install sklearn
+
+# http://shura.shu.ac.uk/15409/
