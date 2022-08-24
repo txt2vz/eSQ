@@ -19,8 +19,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 1
-    final static int MAX_FIT_JOBS = 1
+    final static int NUMBER_OF_JOBS = 5
+    final static int MAX_FIT_JOBS = 3
     final static String gaEngine = "ECJ";
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
@@ -37,8 +37,8 @@ class ClusterMainECJ extends Evolve {
             IndexEnum.R5,
             IndexEnum.NG5,
 
-            IndexEnum.NG6,
-            IndexEnum.R6 //not good
+           IndexEnum.NG6,
+           IndexEnum.R6
     ]
 
     List<Double> kPenalty = [0.03d]
@@ -71,12 +71,12 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-        //    [false].each { set_k ->
-          [true].each { set_k ->  //false to allow GA to know predefined number of clusters
-      //  [true, false].each { set_k ->
+            [false].each { ga_to_set_k ->
+     //     [true].each { set_k ->  //false to allow GA to know predefined number of clusters
+     //   [true, false].each { set_k ->
             //  [true, false].each { set_k ->
 
-            GA_TO_SETK = set_k
+            GA_TO_SETK = ga_to_set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
 
             queryTypesList.each { qType ->
@@ -145,12 +145,12 @@ class ClusterMainECJ extends Evolve {
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod)
 
-                                        [true, false].each { queryOnly ->
-                                        //[false].each { queryOnly ->
+                                     //   [true, false].each { queryOnly ->
+                                        [false].each { queryOnly ->
                                        //     [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
-                                            Result result = new Result(set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job, maxFitJob)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, popSize, state.generation, job, maxFitJob)
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))
                                         }

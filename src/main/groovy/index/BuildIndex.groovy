@@ -29,16 +29,9 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexPath =
-          //      'indexes/R4'
-       //'indexes/NG4'
-                'indexes/NG4N'
-
-        String docsPath =
-        //     /C:\Data\NG4/
-        /C:\Data\NG4N/
-         //         /C:\Data\R4/
-
+        String indexName = 'R6'
+        String indexPath = 'indexes' + /\$indexName/
+        String docsPath =  /C:\Data/ + /\$indexName/
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
@@ -73,7 +66,6 @@ class BuildIndex {
                     String fileName = file.getName().replaceAll(/\W/, '').toLowerCase() + 'id' + docCount
                     Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
                     doc.add(documentIDfield)
-
 
                     String parent = file.getParent()
                    // String grandParent = file.getParentFile().getParent()
@@ -119,8 +111,8 @@ class BuildIndex {
         println "testTotal $testTotal trainTotal $trainTotal"
         println "catsNameFreq $catsNameFreq"
 
-         Indexes.setIndex(IndexEnum.CRISIS3b)
-         IndexUtils.categoryFrequencies(Indexes.indexSearcher)  //.showCategoryFrequencies(Indexes.indexSearcher)
+       //  Indexes.setIndex(IndexEnum.CRISIS3b)
+         IndexUtils.categoryFrequencies(indexSearcher)  //.showCategoryFrequencies(Indexes.indexSearcher)
 
         println "numDocs " + indexReader.numDocs()
         println "End ***************************************************************"
