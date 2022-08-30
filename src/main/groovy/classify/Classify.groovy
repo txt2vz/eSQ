@@ -99,7 +99,7 @@ class Classify {
         querySet = docInOneClusterQueries
     }
 
-    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod) {
+    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn=20) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD);
@@ -121,7 +121,7 @@ class Classify {
                         new BM25Similarity(),
                         new StandardAnalyzer(),
                         unassignedQ,
-                        20,
+                        k_for_knn,
                         3,
                         1,
                         Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,

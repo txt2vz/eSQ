@@ -11,12 +11,12 @@ import org.apache.lucene.search.TopDocs
 
 class Effectiveness {
 
-    double vMeasure
-    double homogeneity
-    double completeness
+    final double vMeasure
+    final double homogeneity
+    final double completeness
 
-    int numberOfDocumentsInClusters
-    int clusterCountError
+    final int numberOfDocumentsInClusters
+    final int clusterCountError
 
     Effectiveness(Classifier classifier, boolean queriesOnly){
 
@@ -33,28 +33,27 @@ class Effectiveness {
         for (ScoreDoc sd : allHits) {
             Document d = Indexes.indexSearcher.doc(sd.doc)
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-            String contents = d.get(Indexes.FIELD_CONTENTS)
-            String queryAssignedCluster = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
-            String cluster = queryAssignedCluster
+            String clusterAssignedByQuery = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
+            String clusterAssignedByQueryThenByClassifier = clusterAssignedByQuery
 
-            if (cluster == 'unassigned') {
-                cluster = classifier.assignClass(contents).getAssignedClass().utf8ToString()
-            }
-
-            if (queryAssignedCluster == 'unassigned') {
+            if (clusterAssignedByQuery == 'unassigned') {
                 unasscount++;
+
+                if (!queriesOnly) {
+                    clusterAssignedByQueryThenByClassifier = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).getAssignedClass().utf8ToString()
+                }
             }
 
             if (queriesOnly) {
-                if (queryAssignedCluster != 'unassigned') {
+                if (clusterAssignedByQuery != 'unassigned') {
                     classes.add(category)
-                    clusters.add(cluster)
+                    clusters.add(clusterAssignedByQuery)
                     qOnlyCount++
                 }
             } else {
                 classes.add(category)
-                clusters.add(cluster)
+                clusters.add(clusterAssignedByQueryThenByClassifier)
             }
         }
 

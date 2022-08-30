@@ -17,7 +17,6 @@ import org.apache.lucene.search.TermQuery
 @CompileStatic
 public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
 
-   // List <TermQuery>  tql
     Map<TermQuery, List<TermQuery>> termIntersectMap
     static QType QUERY_TYPE
 
@@ -25,9 +24,7 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
 
         super.setup(state, base);
         println "ClusterQueryECJ Setup. Total docs for ClusterQueryECJ.groovy   " + Indexes.indexReader.numDocs()
-      //  tql = Indexes.termQueryList
-     //   termIntersectMap = Indexes.termQueryIntersectMap
-                //ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader) asImmutable()
+
     }
 
 
