@@ -19,8 +19,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 2
+    final static int NUMBER_OF_JOBS = 5
+    final static int MAX_FIT_JOBS = 3
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
