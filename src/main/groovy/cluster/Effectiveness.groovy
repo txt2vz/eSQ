@@ -17,6 +17,8 @@ class Effectiveness {
 
     final int numberOfDocumentsInClusters
     final int clusterCountError
+    final int numberOfClusters
+    final int numberOfClasses
 
     Effectiveness(Classifier classifier, boolean queriesOnly){
 
@@ -57,10 +59,16 @@ class Effectiveness {
             }
         }
 
-        clusterCountError = Math.abs(classes.toSet().size() - clusters.toSet().size())
+      //  clusterCountError = Math.abs(classes.toSet().size() - clusters.toSet().size())
+
+        numberOfClusters = clusters.toSet().size()
+        numberOfClasses = classes.toSet().size()
+        clusterCountError = numberOfClusters - numberOfClasses
 
         assert classes.size() == clusters.size()
         assert classes.size() > 0
+        assert numberOfClasses == Indexes.index.numberOfCategories
+
         numberOfDocumentsInClusters = clusters.size()
 
         println "qonlycount $qOnlyCount"

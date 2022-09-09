@@ -5,46 +5,49 @@ import java.nio.file.Paths
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-class CrisisToFileFromCSV {
+class CrisisTweetsToFileFromCSV {
 
-    Path docsPath = Paths.get(/C:\Users\lauri\OneDrive - Sheffield Hallam University\Research\DataSets\crisisData3/)
-    Path filesOut = Paths.get(/C:\Data\crisis3/)
+    Path docsPath = Paths.get('datasets/SourceData/crisis4Data/')
+    String filesOutPath = /C:\Data\crisis4/
 
-    def catsFreq = [:]
+    //   Path docsPath = Paths.get('datasets/SourceData/crisis4Data/')
+//    String filesOutPath = /C:\Data\crisis4/
 
     static main(args) {
-        def i = new CrisisToFileFromCSV()
-        i.buildIndex()
+        new CrisisTweetsToFileFromCSV().writeTweetsToFiles()
     }
 
-    def buildIndex() {
+    def writeTweetsToFiles() {
 
-        Date start = new Date();
         int categoryNumber = 0
-        int id = 0
 
         docsPath.toFile().eachFileRecurse { file ->
 
-            String catName = file.getName().take(6).replaceAll(/\W/, '').toLowerCase()
+            String catName = file.getName().take(8).replaceAll(/\W/, '').toLowerCase()
             catName = catName.replaceAll('_', '')
             println "File: $file  CatName: $catName"
 
-            int tweetCountPerFile = 0
+            String dirName = filesOutPath + '\\' + catName
+            println "dirName $dirName"
+            File dirfile = new File(dirName)
+
+            if (!dirfile.exists()) {
+                dirfile.mkdir()
+                println "made dir $dirfile"
+            }
+
             int fileID = 0
             file.splitEachLine(',') { fields ->
 
                 //line 0 are headings
                 if (fileID > 0 && fileID <= 500) {
 
-                    String tweetID = fields[0]
                     def textBody = fields[1]
 
-                    String fileName = 'C:\\Data\\crisis3\\' + catName + '\\' + fileID + '\\'
-                   // println "filename " + fileName
+                    String fileName = dirName + '\\' + fileID + '.txt'
+                    println "filename $fileName"
 
-                    Path filesOutP = Paths.get(fileName)
-
-                    if (textBody != " "   ) {// && textBody.size() > 10 ) {
+                    if (textBody != " ") {
 
                         byte[] bytes = textBody.getBytes()
                         String utf8String = new String(bytes, UTF_8);

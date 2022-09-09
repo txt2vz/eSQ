@@ -19,6 +19,7 @@ import java.nio.file.Paths
 enum IndexEnum {
 
     CRISIS3('indexes/Crisis3', 3),
+    CRISIS4('indexes/crisis4', 4),
     NG3('indexes/NG3', 3),
 
     R4('indexes/R4', 4),

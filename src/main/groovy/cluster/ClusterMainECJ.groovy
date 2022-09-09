@@ -19,8 +19,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 5
-    final static int MAX_FIT_JOBS = 3
+    final static int NUMBER_OF_JOBS = 2
+    final static int MAX_FIT_JOBS = 2
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
@@ -29,12 +29,13 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-            IndexEnum.CRISIS3,
-            IndexEnum.NG3,
-
-            IndexEnum.NG4,
+           IndexEnum.CRISIS3,
+           IndexEnum.NG3,
+//
+//            //IndexEnum.NG4,
+            IndexEnum.CRISIS4,
             IndexEnum.R4,
-
+//
             IndexEnum.R5,
             IndexEnum.NG5,
 
@@ -42,8 +43,10 @@ class ClusterMainECJ extends Evolve {
             IndexEnum.R6
     ]
 
-    List<Double> kPenalty = [0.03d]
-    //  [0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d ]
+    List<Double> kPenalty =  [0.03d]
+    //        [0.0d]
+   //   [0.00d, 0.03d, 0.05d, 0.07d, 0.1d ]
+ //   [0.01d, 0.02d, 0.04d, 0.06d, 0.08d ]
 //           [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
@@ -72,8 +75,8 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-         //   [false].each { ga_to_set_k ->
-     //     [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
+      //      [false].each { ga_to_set_k ->
+      //    [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
         [true, false].each { ga_to_set_k ->
           //    [true, false].each { ga_to_set_k ->
 
@@ -146,8 +149,8 @@ class ClusterMainECJ extends Evolve {
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)
 
-                                        [true, false].each { queryOnly ->
-                                    //    [false].each { queryOnly ->
+                                      //  [true, false].each { queryOnly ->
+                                        [false].each { queryOnly ->
                                         //    [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
