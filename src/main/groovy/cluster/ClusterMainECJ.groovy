@@ -19,8 +19,8 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 2
-    final static int MAX_FIT_JOBS = 2
+    final static int NUMBER_OF_JOBS = 3
+    final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
@@ -31,11 +31,11 @@ class ClusterMainECJ extends Evolve {
 
            IndexEnum.CRISIS3,
            IndexEnum.NG3,
-//
-//            //IndexEnum.NG4,
+////
+////            //IndexEnum.NG4,
             IndexEnum.CRISIS4,
             IndexEnum.R4,
-//
+////
             IndexEnum.R5,
             IndexEnum.NG5,
 
@@ -43,21 +43,22 @@ class ClusterMainECJ extends Evolve {
             IndexEnum.R6
     ]
 
-    List<Double> kPenalty =  [0.03d]
-    //        [0.0d]
+    List<Double> kPenalty = // [0.03d]
+            [0.03d]
    //   [0.00d, 0.03d, 0.05d, 0.07d, 0.1d ]
  //   [0.01d, 0.02d, 0.04d, 0.06d, 0.08d ]
-//           [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
+  //         [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
-            0.5d
+         0.5d
+      //        0.0d
             //       0.4d,0.5d, 0.6d, 0.7d, 0.8d
-          //       0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
+      //           0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
     List<QType> queryTypesList = [
             QType.OR_INTERSECT,
-            QType.OR1
+         //   QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -76,8 +77,8 @@ class ClusterMainECJ extends Evolve {
         }
 
       //      [false].each { ga_to_set_k ->
-      //    [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
-        [true, false].each { ga_to_set_k ->
+          [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
+     //   [true, false].each { ga_to_set_k ->
           //    [true, false].each { ga_to_set_k ->
 
             GA_TO_SETK = ga_to_set_k
@@ -137,6 +138,8 @@ class ClusterMainECJ extends Evolve {
                                     TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
 
                                     Set<Query> queries = bestClusterFitness.queryMap.keySet().asImmutable()
+                                    Map<Query, Integer> queryMap = bestClusterFitness.queryMap
+
                                     List<BooleanQuery.Builder> bqbList = bestClusterFitness.bqbList
 
                                     Tuple3<Map<Query, Integer>, Integer, Integer> t3_qMap_TotalUnique_TotalAllQ = UniqueHits.getUniqueHits(bqbList)
@@ -149,14 +152,15 @@ class ClusterMainECJ extends Evolve {
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)
 
-                                      //  [true, false].each { queryOnly ->
-                                        [false].each { queryOnly ->
+                                        [true, false].each { queryOnly ->
+                                       // [false].each { queryOnly ->
                                         //    [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
-                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t3_qMap_TotalUnique_TotalAllQ.v2, t3_qMap_TotalUnique_TotalAllQ.v3, kPenalty, minIntersectRatio, k_for_knn, queryMap, popSize, state.generation, job, maxFitJob)
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))
+                                            result.queryReport(new File('results/queries.txt'))
                                         }
                                     }
 
