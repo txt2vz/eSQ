@@ -20,16 +20,15 @@ enum IndexEnum {
 
     CRISIS3('indexes/Crisis3', 3),
     CRISIS4('indexes/crisis4', 4),
+
     NG3('indexes/NG3', 3),
+    NG5('indexes/NG5', 5),
+    NG6('indexes/NG6', 6),
 
     R4('indexes/R4', 4),
-    NG4('indexes/NG4', 4),
-
     R5('indexes/R5', 5),
-    NG5('indexes/NG5', 5),
+    R6('indexes/R6', 6)
 
-    R6('indexes/R6', 6),
-    NG6('indexes/NG6', 6)
 
     // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
     String pathString
@@ -88,20 +87,28 @@ class Indexes {
     static final Analyzer analyzer = new StandardAnalyzer()
     //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
-    static void setIndex(IndexEnum ie, boolean printDetails = false) {
+    static void setIndex(IndexEnum ie, final double minIntersectRatio) {
+
+        setIndex(ie)
+
+        MIN_INTERSECT_RATIO = minIntersectRatio
+        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader) asImmutable()
+        println "termquery list: $termQueryList"
+
+        println("Index details: ${ie.toString()}")
+    }
+
+    static void setIndex(IndexEnum ie ) {
         index = ie
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
-
-        if (printDetails) {
-            println "indexEnum $index maxDocs ${indexReader.maxDoc()}"
-        }
     }
 
-    static void setTermQueryLists(final double minIntersectRatio) {
-        MIN_INTERSECT_RATIO = minIntersectRatio
-        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable()
-        println "termquery list $termQueryList"
-        // termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRatio) asImmutable()
-    }
+//   // static void setTermQueryLists(final double minIntersectRatio) {
+//        static void setTermQueryLists() {
+//      //  MIN_INTERSECT_RATIO = minIntersectRatio
+//        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable()
+//        println "termquery list $termQueryList"
+//        // termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRatio) asImmutable()
+//    }
 }

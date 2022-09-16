@@ -29,18 +29,16 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-           IndexEnum.CRISIS3,
+//           IndexEnum.CRISIS3,
+//           IndexEnum.CRISIS4,
+//
            IndexEnum.NG3,
-////
-////            //IndexEnum.NG4,
-            IndexEnum.CRISIS4,
-            IndexEnum.R4,
-////
-            IndexEnum.R5,
-            IndexEnum.NG5,
+//           IndexEnum.NG5,
+//           IndexEnum.NG6,
 
-            IndexEnum.NG6,
-            IndexEnum.R6
+           IndexEnum.R4,
+           IndexEnum.R5,
+   //        IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
@@ -50,10 +48,10 @@ class ClusterMainECJ extends Evolve {
   //         [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
-         0.5d
-      //        0.0d
+           0.5d
+     //         0.1d
             //       0.4d,0.5d, 0.6d, 0.7d, 0.8d
-      //           0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
+     //            0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
     List<QType> queryTypesList = [
@@ -77,9 +75,9 @@ class ClusterMainECJ extends Evolve {
         }
 
       //      [false].each { ga_to_set_k ->
-          [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
-     //   [true, false].each { ga_to_set_k ->
-          //    [true, false].each { ga_to_set_k ->
+     //     [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
+        [true, false].each { ga_to_set_k ->
+        //      [true, false].each { ga_to_set_k ->
 
             GA_TO_SETK = ga_to_set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -92,8 +90,8 @@ class ClusterMainECJ extends Evolve {
                     indexList.each { IndexEnum indexEnum ->
 
                         println "Index Enum: $indexEnum"
-                        Indexes.setIndex(indexEnum)
-                        Indexes.setTermQueryLists(minIntersectRatio)
+                        Indexes.setIndex(indexEnum, minIntersectRatio)
+                      //  Indexes.setTermQueryLists(minIntersectRatio)
 
                         kPenalty.each { kPenalty ->
                             Indexes.K_PENALTY = kPenalty

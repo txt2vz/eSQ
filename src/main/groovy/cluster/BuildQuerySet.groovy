@@ -48,17 +48,24 @@ class BuildQuerySet {
 
     private static List<BooleanQuery.Builder> getIntersect(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
 
-        List<BooleanQuery.Builder> bqbL = []
+        BooleanQuery.Builder[] bqbL = new BooleanQuery.Builder [k]
+
+     //   List<BooleanQuery.Builder> bqbL = []
         Set<Integer> alleles = [] as Set<Integer>
 
-        for (int i = 0; i < k && i < intChromosome.size(); i++) {
-
+        int i=0
+        int acceptedWords = 0
+        while (acceptedWords < k  && i < intChromosome.size()){
             final int allele = intChromosome[i]
-            bqbL[i] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
-            alleles.add(allele)
+
+            if (alleles.add(allele) ){
+                bqbL[acceptedWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
+               acceptedWords++
+            }
+            i++
         }
 
-        for (int j = k; j < intChromosome.size(); j++) {
+        for (int j = i; j < intChromosome.size(); j++) {
 
             final int allele = intChromosome[j]
             final int clusterNumber = j % k
@@ -73,7 +80,8 @@ class BuildQuerySet {
         }
 
         assert bqbL.size() == k
-        return bqbL.asImmutable()
+       // return bqbL.asImmutable()
+        return bqbL.toList()
     }
 
     private static List<BooleanQuery.Builder> getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
@@ -106,7 +114,7 @@ class BuildQuerySet {
             for (int j = i + intersectGenomeStart; j < intChromosome.size(); j = j + k) {
                 final int newAllele = intChromosome[j]
 
-                assert Indexes.termQueryIntersectMap.containsKey(termQueryRoot)
+             //   assert Indexes.termQueryIntersectMap.containsKey(termQueryRoot)
 
                 List<Tuple2<TermQuery, Double>> intersectingTerms = Indexes.termQueryIntersectMap[termQueryRoot]
 
@@ -122,28 +130,6 @@ class BuildQuerySet {
         assert bqbL.size() == k
         return bqbL.asImmutable()
     }
-/*
-    static Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> querySetInfo(List<BooleanQuery.Builder> bqbList, boolean printQueries = false) {
-
-        Tuple3<Map<Query, Integer>, Integer, Integer> t3 = UniqueHits.getUniqueHits(bqbList);
-
-        Map<Query, Integer> queryMap = t3.v1
-        final int uniqueHits = t3.v2
-        final int totalHitsAllQueries = t3.v3
-
-        Tuple4<Double, Double, Double, List<Double>> t4QuerySetEffectiveness = Effectiveness.querySetEffectiveness(queryMap.keySet());
-        final double f1 = t4QuerySetEffectiveness.v1
-        final double precision = t4QuerySetEffectiveness.v2
-        final double recall = t4QuerySetEffectiveness.v3
-
-        if (printQueries) {
-            println printQuerySet(queryMap);
-        }
-
-        return new Tuple6(queryMap, uniqueHits, totalHitsAllQueries, f1, precision, recall)
-    }
-
- */
 
     static String printQuerySet(Map<Query, Integer> queryIntegerMap) {
         StringBuilder sb = new StringBuilder()

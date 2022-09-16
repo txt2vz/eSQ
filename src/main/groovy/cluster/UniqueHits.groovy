@@ -17,6 +17,7 @@ class UniqueHits {
         int totalUniqueHits = 0
         for (int i = 0; i < bqbList.size(); i++) {
             Query q = bqbList[i].build()
+
             totalHitsBQB.add(q, BooleanClause.Occur.SHOULD)
 
             BooleanQuery.Builder bqbOneCategoryOnly = new BooleanQuery.Builder()

@@ -1,5 +1,6 @@
 package classify
 
+import cluster.QueryTermIntersect
 import groovy.transform.CompileStatic
 import index.IndexEnum
 import index.IndexUtils
@@ -32,11 +33,18 @@ enum LuceneClassifyMethod {
 class Classify {
 
     private IndexEnum indexEnum
-    private Set<Query> querySet
+//    private Set<Query> querySet
+//    private Set <Query> queriesOriginal  //used for cluster labels
 
-    Classify(IndexEnum ie, Set<Query> queries) {
+    private Query[] queries
+    private Query[] queriesOriginal
+
+    Classify(IndexEnum ie, Set<Query> queriesSet) {
         indexEnum = ie
-        querySet = queries
+//        querySet = queries.toa
+//        queriesOriginal = queries
+        queries = queriesSet.toArray() as Query[]
+        queriesOriginal = queriesSet.toArray() as Query[]
     }
 
     void updateAssignedField() {
@@ -44,19 +52,26 @@ class Classify {
         IndexWriter indexWriter = setAllUnassigned()
 
         int counter = 0
-        querySet.each { Query query ->
 
-            TopDocs topDocs = Indexes.indexSearcher.search(query, Integer.MAX_VALUE)
+        for (int i = 0; i < queries.size(); i++) {
+            //  for (Query q : Q)
+            // queries.each {  Query query ->
+            // querySet.each { Query query ->
+            //  queriesOriginal.each {Query query ->
+
+            TopDocs topDocs = Indexes.indexSearcher.search(queries[i], Integer.MAX_VALUE)
             ScoreDoc[] hits = topDocs.scoreDocs
 
-          //  println("Query: ${query.toString(Indexes.FIELD_CONTENTS)}")
+            //  println("Query: ${query.toString(Indexes.FIELD_CONTENTS)}")
 
             for (ScoreDoc sd : hits) {
 
                 Document d = Indexes.indexSearcher.doc(sd.doc)
 
                 d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
-                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, query.toString(Indexes.FIELD_CONTENTS), Field.Store.YES);
+
+                //queryOriginal is an easier to read cluster label
+                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, queriesOriginal[i].toString(Indexes.FIELD_CONTENTS), Field.Store.YES);
                 d.add(assignedClass)
 
                 Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
@@ -75,32 +90,34 @@ class Classify {
         indexWriter.close()
 
         Indexes.setIndex(indexEnum)
-        IndexUtils.categoryFrequencies(Indexes.indexSearcher)
+        IndexUtils.categoryFrequencies(Indexes.indexSearcher, true)
     }
 
     //modify queries so that they do not return documents returned by any other query
     void modifyQuerySoDocsReturnedByOnlyOneQuery() {
 
-        Set<Query> docInOneClusterQueries = []
-        for (int i = 0; i < querySet.size(); i++) {
-            Query q = querySet[i]
+        //   Set<Query> docInOneClusterQueries = []
+        Query[] docInOneClusterQueries = new Query[queriesOriginal.size()]
+        for (int i = 0; i < queries.size(); i++) {
+            Query q = queries[i]
 
             BooleanQuery.Builder bqbOneCategoryOnly = new BooleanQuery.Builder()
             bqbOneCategoryOnly.add(q, BooleanClause.Occur.SHOULD)
 
-            for (int j = 0; j < querySet.size(); j++) {
+            for (int j = 0; j < queries.size(); j++) {
                 if (j != i) {
-                    bqbOneCategoryOnly.add(querySet[j], BooleanClause.Occur.MUST_NOT)
+                    bqbOneCategoryOnly.add(queries[j], BooleanClause.Occur.MUST_NOT)
                 }
             }
-            docInOneClusterQueries << bqbOneCategoryOnly.build()
+            //docInOneClusterQueries << bqbOneCategoryOnly.build()
+            docInOneClusterQueries[i] = bqbOneCategoryOnly.build()
         }
         println "Queries returning unique documents: $docInOneClusterQueries"
-        querySet = docInOneClusterQueries
+        queries = docInOneClusterQueries
     }
 
-    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn=20) {
-        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  'unassigned'))
+    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
+        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD);
         bqb.add(assignedTQ, BooleanClause.Occur.MUST_NOT)
@@ -166,7 +183,7 @@ class Classify {
         println "In setAllUnassigned $counter updated"
         indexWriter.forceMerge(1)
         indexWriter.commit()
-       return indexWriter
+        return indexWriter
     }
 
     private IndexWriter prepareIndex() {

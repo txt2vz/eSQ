@@ -54,6 +54,13 @@ class Result {
         this.totalHitsAllQueries = totalHitsAllQueries
         this.k_for_knn = k_for_knn
         this.queryMap = queryMap
+
+        if (!setK && clusterCountError != 0){
+            println "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX "
+            report(new File("error.csv"))
+            queryReport(new File("error.txt"))
+        }
+        if (!setK) assert clusterCountError == 0
     }
 
     void queryReport(File f){
@@ -62,7 +69,7 @@ class Result {
             sb << "Query: $index :  ${queryMap.get(q)}  ${q.toString(Indexes.FIELD_CONTENTS)} \n"
         }
 
-        f << "$setkDescription $queryTypeName $indexName intersectRatio: $intersectRatio $queryOnlyString v: $v  h: $h  c: $c  kPenalty $kPenalty: intersectRation: $intersectRatio \n"
+        f << "$setkDescription $queryTypeName $indexName intersectRatio: $intersectRatio $queryOnlyString v: $v  h: $h  c: $c  kPenalty $kPenalty: intersectRation: $intersectRatio  clusterCountError $clusterCountError\n"
         f<< sb.toString()
         f <<'\n'
     }

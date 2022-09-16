@@ -78,8 +78,8 @@ public class JeneticsMain {
        // ReportsOld reports = new ReportsOld();
 
         ieList.stream().forEach(ie -> {
-            Indexes.setIndex(ie, true);
-            Indexes.setTermQueryLists(minIntersectRatio);
+            Indexes.setIndex(ie, minIntersectRatio);
+          //  Indexes.setTermQueryLists(minIntersectRatio);
             List<Phenotype<IntegerGene, Double>> resultList = new ArrayList<Phenotype<IntegerGene, Double>>();
             indexEnum = ie;
             termQueryList = Indexes.getTermQueryList();
