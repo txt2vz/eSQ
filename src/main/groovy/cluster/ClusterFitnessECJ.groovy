@@ -3,16 +3,14 @@ package cluster
 import ec.simple.SimpleFitness
 import groovy.transform.CompileStatic
 import index.Indexes
-import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
-import org.apache.lucene.search.TotalHitCountCollector
 
 @CompileStatic
 public class ClusterFitnessECJ extends SimpleFitness {
 
     Map<Query, Integer> queryMap = [:]
-    List<BooleanQuery.Builder> bqbList =[]
+    BooleanQuery.Builder[] arrayOfQueryBuilders
     double baseFitness = 0.0  //for ECJ
     int uniqueHits = 0
     int totalHits = 0
@@ -22,14 +20,14 @@ public class ClusterFitnessECJ extends SimpleFitness {
         return baseFitness;
     }
 
-    void setClusterFitness( Tuple3 <Map<Query, Integer>, Integer, Integer> t3UniqueHits , List<BooleanQuery.Builder> bqbListIn, double f) {
+    void setClusterFitness( Tuple3 <Map<Query, Integer>, Integer, Integer> t3UniqueHits , BooleanQuery.Builder[] arrayOfQueryBuilders, double f) {
 
-        bqbList = bqbListIn
+        this.arrayOfQueryBuilders = arrayOfQueryBuilders
         baseFitness = f
         queryMap= t3UniqueHits.v1
         uniqueHits = t3UniqueHits.v2
         totalHits = t3UniqueHits.v3
-        k = bqbList.size()
+        k = this.arrayOfQueryBuilders.size()
     }
 
     void generationStats(long generation) {

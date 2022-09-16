@@ -19,7 +19,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
+    final static int NUMBER_OF_JOBS = 4
     final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
@@ -29,16 +29,16 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-//           IndexEnum.CRISIS3,
+           IndexEnum.CRISIS3,
            IndexEnum.CRISIS4,
-//
-//           IndexEnum.NG3,
-////           IndexEnum.NG5,
-////           IndexEnum.NG6,
-//
-//           IndexEnum.R4,
-//           IndexEnum.R5,
-   //        IndexEnum.R6
+////
+           IndexEnum.NG3,
+           IndexEnum.NG5,
+           IndexEnum.NG6,
+////
+           IndexEnum.R4,
+           IndexEnum.R5,
+           IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
@@ -56,7 +56,7 @@ class ClusterMainECJ extends Evolve {
 
     List<QType> queryTypesList = [
             QType.OR_INTERSECT,
-         //   QType.OR1
+            QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -138,9 +138,9 @@ class ClusterMainECJ extends Evolve {
                                     Set<Query> queries = bestClusterFitness.queryMap.keySet().asImmutable()
                                     Map<Query, Integer> queryMap = bestClusterFitness.queryMap
 
-                                    List<BooleanQuery.Builder> bqbList = bestClusterFitness.bqbList
+                                    BooleanQuery.Builder[] arrayOfQueryBuilders = bestClusterFitness.arrayOfQueryBuilders
 
-                                    Tuple3<Map<Query, Integer>, Integer, Integer> t3_qMap_TotalUnique_TotalAllQ = UniqueHits.getUniqueHits(bqbList)
+                                    Tuple3<Map<Query, Integer>, Integer, Integer> t3_qMap_TotalUnique_TotalAllQ = UniqueHits.getUniqueHits(arrayOfQueryBuilders)
                                     Classify classify = new Classify(indexEnum, queries)
 
                                     if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()

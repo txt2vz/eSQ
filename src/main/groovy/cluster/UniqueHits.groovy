@@ -10,22 +10,22 @@ import org.apache.lucene.search.TotalHitCountCollector
 @CompileStatic
 class UniqueHits {
 
-    static Tuple3<Map<Query, Integer>, Integer, Integer> getUniqueHits(List<BooleanQuery.Builder> bqbList) {
+    static Tuple3<Map<Query, Integer>, Integer, Integer> getUniqueHits(BooleanQuery.Builder[] arrayOfQueryBuilders) {
         Map<Query, Integer> qMap = new HashMap<Query, Integer>()
         BooleanQuery.Builder totalHitsBQB = new BooleanQuery.Builder()
 
         int totalUniqueHits = 0
-        for (int i = 0; i < bqbList.size(); i++) {
-            Query q = bqbList[i].build()
+        for (int i = 0; i < arrayOfQueryBuilders.size(); i++) {
+            Query q = arrayOfQueryBuilders[i].build()
 
             totalHitsBQB.add(q, BooleanClause.Occur.SHOULD)
 
             BooleanQuery.Builder bqbOneCategoryOnly = new BooleanQuery.Builder()
             bqbOneCategoryOnly.add(q, BooleanClause.Occur.SHOULD)
 
-            for (int j = 0; j < bqbList.size(); j++) {
+            for (int j = 0; j < arrayOfQueryBuilders.size(); j++) {
                 if (j != i) {
-                    bqbOneCategoryOnly.add(bqbList[j].build(), BooleanClause.Occur.MUST_NOT)
+                    bqbOneCategoryOnly.add(arrayOfQueryBuilders[j].build(), BooleanClause.Occur.MUST_NOT)
                 }
             }
 

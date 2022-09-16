@@ -33,16 +33,11 @@ enum LuceneClassifyMethod {
 class Classify {
 
     private IndexEnum indexEnum
-//    private Set<Query> querySet
-//    private Set <Query> queriesOriginal  //used for cluster labels
-
     private Query[] queries
     private Query[] queriesOriginal
 
     Classify(IndexEnum ie, Set<Query> queriesSet) {
         indexEnum = ie
-//        querySet = queries.toa
-//        queriesOriginal = queries
         queries = queriesSet.toArray() as Query[]
         queriesOriginal = queriesSet.toArray() as Query[]
     }
@@ -54,10 +49,6 @@ class Classify {
         int counter = 0
 
         for (int i = 0; i < queries.size(); i++) {
-            //  for (Query q : Q)
-            // queries.each {  Query query ->
-            // querySet.each { Query query ->
-            //  queriesOriginal.each {Query query ->
 
             TopDocs topDocs = Indexes.indexSearcher.search(queries[i], Integer.MAX_VALUE)
             ScoreDoc[] hits = topDocs.scoreDocs
