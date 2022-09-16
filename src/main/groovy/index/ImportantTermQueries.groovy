@@ -17,7 +17,6 @@ class ImportantTermQueries {
 
     static Set<String> stopSet = StopSet.getStopSetFromFile()
     final static int MAX_TERMQUERYLIST_SIZE = 120
-    //final static int MAX_INTERSECT_LIST_SIZE = 40
 
     static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {
 
@@ -76,33 +75,6 @@ class ImportantTermQueries {
 
         return true
     }
-
-    // for each term find and store intersecting terms
-//    static Map<TermQuery, List<Tuple2<TermQuery, Double>>> getTermIntersectMapSorted(List<TermQuery> tqList) {
-//
-//        Map<TermQuery, List<Tuple2<TermQuery, Double>>> termIntersectMapLocal = [:]
-//
-//        tqList.each { TermQuery tqRoot ->
-//
-//            List<TermQuery> tqListMinus = tqList - tqRoot
-//            List<Tuple2<TermQuery, Double>> listRelatedTuples = []
-//
-//            tqListMinus.each { TermQuery tqRelated ->
-//
-//                final double intersectValue = QueryTermIntersect.getIntersectValue(tqRoot, tqRelated)
-//
-//                if (intersectValue >= Indexes.MIN_INTERSECT_RATIO) {
-//
-//                    listRelatedTuples << new Tuple2(tqRelated, intersectValue)
-//                }
-//            }
-//
-//            listRelatedTuples.sort { -it.v2 }.take(MAX_INTERSECT_LIST_SIZE)
-//            termIntersectMapLocal << [(tqRoot): listRelatedTuples]
-//        }
-//
-//        return termIntersectMapLocal
-//    }
 
 
     static void main(String[] args) {

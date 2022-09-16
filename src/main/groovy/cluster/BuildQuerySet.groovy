@@ -29,7 +29,8 @@ enum QType {
 @CompileStatic
 class BuildQuerySet {
 
-    static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
+  //  static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
+    static BooleanQuery.Builder[] getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
 
         switch (qType) {
             case QType.OR1:
@@ -46,11 +47,11 @@ class BuildQuerySet {
         }
     }
 
-    private static List<BooleanQuery.Builder> getIntersect(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
+    private static BooleanQuery.Builder[]  getIntersect(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
 
-        BooleanQuery.Builder[] bqbL = new BooleanQuery.Builder [k]
+        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
 
-     //   List<BooleanQuery.Builder> bqbL = []
+     //   List<BooleanQuery.Builder> arrayOfBuilders = []
         Set<Integer> alleles = [] as Set<Integer>
 
         int i=0
@@ -59,7 +60,7 @@ class BuildQuerySet {
             final int allele = intChromosome[i]
 
             if (alleles.add(allele) ){
-                bqbL[acceptedWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
+                arrayOfBuilders[acceptedWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
                acceptedWords++
             }
             i++
@@ -70,65 +71,33 @@ class BuildQuerySet {
             final int allele = intChromosome[j]
             final int clusterNumber = j % k
 
-            BooleanQuery rootq = bqbL[clusterNumber].build()
+            BooleanQuery rootq = arrayOfBuilders[clusterNumber].build()
             Query tq0 = rootq.clauses().first().getQuery()
             TermQuery tqNew = termQueryList[allele]
 
             if (alleles.add(allele) && (QueryTermIntersect.isValidIntersect(tq0, tqNew))) {
-                bqbL[clusterNumber].add(tqNew, booleanClauseOccur)
+                arrayOfBuilders[clusterNumber].add(tqNew, booleanClauseOccur)
             }
         }
 
-        assert bqbL.size() == k
-       // return bqbL.asImmutable()
-        return bqbL.toList()
+        assert arrayOfBuilders.size() == k
+        return arrayOfBuilders  //.asImmutable()
+      //  return arrayOfBuilders.toList()
     }
 
-    private static List<BooleanQuery.Builder> getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
+    private static  BooleanQuery.Builder[] getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
 
-        List<BooleanQuery.Builder> bqbL = []
+       // List<BooleanQuery.Builder> arrayOfBuilders = []
+        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
 
         for (int i = 0; i < k && i < intChromosome.size(); i++) {
 
             final int allele = intChromosome[i]
-            bqbL[i] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
+            arrayOfBuilders[i] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
         }
 
-        assert bqbL.size() == k
-        return bqbL.asImmutable()
-    }
-
-    private static List<BooleanQuery.Builder> getIntersectWithMap(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
-
-        List<BooleanQuery.Builder> bqbL = []
-        Set<Integer> alleleSet = [] as Set<Integer>
-
-        final int intersectGenomeStart = 9
-
-        for (int i = 0; i < k; i++) {
-
-            final int rootAllele = intChromosome[i]
-            TermQuery termQueryRoot = termQueryList[rootAllele]
-            bqbL[i] = new BooleanQuery.Builder().add(termQueryRoot, booleanClauseOccur)
-
-            for (int j = i + intersectGenomeStart; j < intChromosome.size(); j = j + k) {
-                final int newAllele = intChromosome[j]
-
-             //   assert Indexes.termQueryIntersectMap.containsKey(termQueryRoot)
-
-                List<Tuple2<TermQuery, Double>> intersectingTerms = Indexes.termQueryIntersectMap[termQueryRoot]
-
-                if (intersectingTerms.size() > 0 && newAllele >= 0 && newAllele < intersectingTerms.size() && (alleleSet.add(newAllele))) {
-
-                    TermQuery tqNew = intersectingTerms[newAllele].v1
-
-                    assert bqbL[i].add(tqNew, booleanClauseOccur)
-                }
-            }
-        }
-
-        assert bqbL.size() == k
-        return bqbL.asImmutable()
+        assert arrayOfBuilders.size() == k
+        return arrayOfBuilders
     }
 
     static String printQuerySet(Map<Query, Integer> queryIntegerMap) {

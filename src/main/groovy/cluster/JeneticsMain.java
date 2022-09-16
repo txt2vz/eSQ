@@ -46,7 +46,7 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
         final int k = getK(gt, indexEnum, SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
-        List<BooleanQuery.Builder> bqbList = BuildQuerySet.getQueryBuilderList(intArray, k, qType);
+        List<BooleanQuery.Builder> bqbList = Arrays.asList( BuildQuerySet.getQueryBuilderList(intArray, k, qType) );
         final int uniqueHits = UniqueHits.getUniqueHits(bqbList).getV2();
         final int totalHits = UniqueHits.getUniqueHits(bqbList).getV3();
         final int multi_hits = totalHits - uniqueHits;
@@ -146,7 +146,7 @@ public class JeneticsMain {
 
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        List<BooleanQuery.Builder> bqbList = BuildQuerySet.getQueryBuilderList(termQintArray, k, qType);
+                                        List<BooleanQuery.Builder> bqbList = Arrays.asList( BuildQuerySet.getQueryBuilderList(termQintArray, k, qType) );
                          //              Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> queryDataGen = QuerySet.querySetInfo(bqbList, true);
                                      //   System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                         System.out.println();
@@ -162,7 +162,7 @@ public class JeneticsMain {
                     int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
                     final int k = getK(g, ie, SETK);
 
-                    List<BooleanQuery.Builder> bqbList = BuildQuerySet.getQueryBuilderList(intArrayBestOfRun, k, qType);
+                    List<BooleanQuery.Builder> bqbList = Arrays.asList( BuildQuerySet.getQueryBuilderList(intArrayBestOfRun, k, qType));
            //         Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(bqbList);
 
 

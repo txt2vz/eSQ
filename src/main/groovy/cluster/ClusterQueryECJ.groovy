@@ -41,7 +41,7 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
         final int   k = (ClusterMainECJ.GA_TO_SETK) ? genomeOrig[0] :  Indexes.index.numberOfCategories
         final int[] genome = (ClusterMainECJ.GA_TO_SETK) ? genomeOrig[1.. genomeOrig.size()-1] as int[] : genomeOrig
 
-        List<BooleanQuery.Builder> bqbList = BuildQuerySet.getQueryBuilderList(genome, k, QUERY_TYPE);
+        List<BooleanQuery.Builder> bqbList = BuildQuerySet.getQueryBuilderList(genome, k, QUERY_TYPE).toList()
         Tuple3<Map<Query, Integer>, Integer, Integer> uniqueHitsTuple = UniqueHits.getUniqueHits(bqbList);
 
         final int uniqueHits = uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
