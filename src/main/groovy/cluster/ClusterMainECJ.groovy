@@ -23,7 +23,7 @@ class ClusterMainECJ extends Evolve {
     final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
-    final static boolean onlyDocsInOneCluster = false
+    final static boolean onlyDocsInOneCluster = true
     final static int k_for_knn = 10
     //final static boolean queryOnly = true
 
@@ -56,7 +56,7 @@ class ClusterMainECJ extends Evolve {
 
     List<QType> queryTypesList = [
             QType.OR_INTERSECT,
-     //       QType.OR1
+           QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -74,9 +74,9 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-            [false].each { ga_to_set_k ->
+     //       [false].each { ga_to_set_k ->
        //   [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
-  //      [true, false].each { ga_to_set_k ->
+        [true, false].each { ga_to_set_k ->
         //      [true, false].each { ga_to_set_k ->
 
             GA_TO_SETK = ga_to_set_k
@@ -140,12 +140,12 @@ class ClusterMainECJ extends Evolve {
 
                                     BooleanQuery.Builder[] arrayOfQueryBuilders = bestClusterFitness.arrayOfQueryBuilders
 
-                                    Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> t4_qMap_uniqueHitCount_TotalHitCountAllQ_UniqueQueryArray = DistinctHits.distinctQueries(arrayOfQueryBuilders)
-                                    Classify classify = new Classify(indexEnum, queryArray, t4_qMap_uniqueHitCount_TotalHitCountAllQ_UniqueQueryArray.v4)
+                                    Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray = QuerySetFeatures.getQuerySetFeatures(arrayOfQueryBuilders)
+                                    Classify classify = new Classify(indexEnum, queryArray, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4)
 
                                     //if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
 
-                                    onlyDocsInOneCluster ?  classify.updateAssignedField(t4_qMap_uniqueHitCount_TotalHitCountAllQ_UniqueQueryArray.v4) : classify.updateAssignedField(queryArray)
+                                    onlyDocsInOneCluster ?  classify.updateAssignedField(t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4) : classify.updateAssignedField(queryArray)
 
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)
@@ -155,7 +155,7 @@ class ClusterMainECJ extends Evolve {
                                         //    [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
-                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t4_qMap_uniqueHitCount_TotalHitCountAllQ_UniqueQueryArray.v2, t4_qMap_uniqueHitCount_TotalHitCountAllQ_UniqueQueryArray.v3, kPenalty, minIntersectRatio, k_for_knn, queryMap, popSize, state.generation, job, maxFitJob)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v2, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v3, kPenalty, minIntersectRatio, k_for_knn, queryMap, popSize, state.generation, job, maxFitJob)
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))
                                             result.queryReport(new File('results/queriesReturningUniqueDocuments.txt'))

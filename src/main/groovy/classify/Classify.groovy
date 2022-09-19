@@ -35,9 +35,9 @@ class Classify {
     private Query[] queriesReturningUniqueDocuments
     private Query[] queriesOriginal
 
-    Classify(IndexEnum ie, Query[] queries, Query[] queriesReturningUniqueDocuments) {
+    Classify(IndexEnum ie, Query[] queries, Query[] queriesReturningDistinctDocuments) {
         indexEnum = ie
-        this.queriesReturningUniqueDocuments = queriesReturningUniqueDocuments
+        this.queriesReturningUniqueDocuments = queriesReturningDistinctDocuments
         queriesOriginal = queries
     }
 
