@@ -2,7 +2,6 @@ package cluster
 
 import groovy.transform.CompileStatic
 import index.Indexes
-import org.apache.lucene.index.Term
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
@@ -30,7 +29,7 @@ enum QType {
 class BuildQuerySet {
 
   //  static List<BooleanQuery.Builder> getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
-    static BooleanQuery.Builder[] getQueryBuilderList(int[] intChromosome, final int k, QType qType) {
+    static BooleanQuery.Builder[] getQueryBuilderArray(int[] intChromosome, final int k, QType qType) {
 
         switch (qType) {
             case QType.OR1:
@@ -38,7 +37,7 @@ class BuildQuerySet {
                 break
 
             case QType.OR_INTERSECT:
-                return getIntersect(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
+                return getMultiWordQueryPerClusterWithIntersectCheck(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
                 break
 
 //            case QType.AND_INTERSECT:
@@ -47,21 +46,21 @@ class BuildQuerySet {
         }
     }
 
-    private static BooleanQuery.Builder[]  getIntersect(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
+    private static BooleanQuery.Builder[] getMultiWordQueryPerClusterWithIntersectCheck(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
-
-     //   List<BooleanQuery.Builder> arrayOfBuilders = []
         Set<Integer> alleles = [] as Set<Integer>
 
         int i=0
-        int acceptedWords = 0
-        while (acceptedWords < k  && i < intChromosome.size()){
+        int uniqueWords = 0
+
+        //populate set of unique root words
+        while (uniqueWords < k  && i < intChromosome.size()){
             final int allele = intChromosome[i]
 
             if (alleles.add(allele) ){
-                arrayOfBuilders[acceptedWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
-               acceptedWords++
+                arrayOfBuilders[uniqueWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
+               uniqueWords++
             }
             i++
         }
@@ -80,15 +79,12 @@ class BuildQuerySet {
             }
         }
 
-        assert arrayOfBuilders.size() == k
-        return arrayOfBuilders  //.asImmutable()
-      //  return arrayOfBuilders.toList()
+        return arrayOfBuilders
     }
 
     private static  BooleanQuery.Builder[] getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
 
-       // List<BooleanQuery.Builder> arrayOfBuilders = []
-        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
+        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
 
         for (int i = 0; i < k && i < intChromosome.size(); i++) {
 
@@ -96,7 +92,6 @@ class BuildQuerySet {
             arrayOfBuilders[i] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
         }
 
-        assert arrayOfBuilders.size() == k
         return arrayOfBuilders
     }
 

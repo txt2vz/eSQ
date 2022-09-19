@@ -9,7 +9,7 @@ import org.apache.lucene.search.Query
 @CompileStatic
 public class ClusterFitnessECJ extends SimpleFitness {
 
-    Map<Query, Integer> queryMap = [:]
+    Map<Query, Integer> queryMap//= [:]
     BooleanQuery.Builder[] arrayOfQueryBuilders
     double baseFitness = 0.0  //for ECJ
     int uniqueHits = 0
@@ -20,7 +20,7 @@ public class ClusterFitnessECJ extends SimpleFitness {
         return baseFitness;
     }
 
-    void setClusterFitness( Tuple3 <Map<Query, Integer>, Integer, Integer> t3UniqueHits , BooleanQuery.Builder[] arrayOfQueryBuilders, double f) {
+    void setClusterFitness( Tuple4 <Map<Query, Integer>, Integer, Integer, Query[]> t3UniqueHits , BooleanQuery.Builder[] arrayOfQueryBuilders, double f) {
 
         this.arrayOfQueryBuilders = arrayOfQueryBuilders
         baseFitness = f

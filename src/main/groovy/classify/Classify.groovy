@@ -1,6 +1,5 @@
 package classify
 
-import cluster.QueryTermIntersect
 import groovy.transform.CompileStatic
 import index.IndexEnum
 import index.IndexUtils
@@ -33,16 +32,39 @@ enum LuceneClassifyMethod {
 class Classify {
 
     private IndexEnum indexEnum
-    private Query[] queries
+    private Query[] queriesReturningUniqueDocuments
     private Query[] queriesOriginal
 
-    Classify(IndexEnum ie, Set<Query> queriesSet) {
+    Classify(IndexEnum ie, Query[] queries, Query[] queriesReturningUniqueDocuments) {
         indexEnum = ie
-        queries = queriesSet.toArray() as Query[]
-        queriesOriginal = queriesSet.toArray() as Query[]
+        this.queriesReturningUniqueDocuments = queriesReturningUniqueDocuments
+        queriesOriginal = queries
     }
 
-    void updateAssignedField() {
+//    //modify queriesReturningUniqueDocuments so that they do not return documents returned by any other query
+//    void modifyQuerySoDocsReturnedByOnlyOneQuery() {
+//
+//        Query[] docInOneClusterQueries = new Query[queriesOriginal.size()]
+//        for (int i = 0; i < queriesReturningUniqueDocuments.size(); i++) {
+//            Query q = queriesReturningUniqueDocuments[i]
+//
+//            BooleanQuery.Builder bqbOneCategoryOnly = new BooleanQuery.Builder()
+//            bqbOneCategoryOnly.add(q, BooleanClause.Occur.SHOULD)
+//
+//            for (int j = 0; j < queriesReturningUniqueDocuments.size(); j++) {
+//                if (j != i) {
+//                    bqbOneCategoryOnly.add(queriesReturningUniqueDocuments[j], BooleanClause.Occur.MUST_NOT)
+//                }
+//            }
+//
+//            docInOneClusterQueries[i] = bqbOneCategoryOnly.build()
+//        }
+//        println "Queries returning unique documents: $docInOneClusterQueries"
+//        queriesReturningUniqueDocuments = docInOneClusterQueries
+//    }
+
+    //  void updateAssignedField() {
+    void updateAssignedField(Query[] queries) {
 
         IndexWriter indexWriter = setAllUnassigned()
 
@@ -52,8 +74,6 @@ class Classify {
 
             TopDocs topDocs = Indexes.indexSearcher.search(queries[i], Integer.MAX_VALUE)
             ScoreDoc[] hits = topDocs.scoreDocs
-
-            //  println("Query: ${query.toString(Indexes.FIELD_CONTENTS)}")
 
             for (ScoreDoc sd : hits) {
 
@@ -84,28 +104,6 @@ class Classify {
         IndexUtils.categoryFrequencies(Indexes.indexSearcher, true)
     }
 
-    //modify queries so that they do not return documents returned by any other query
-    void modifyQuerySoDocsReturnedByOnlyOneQuery() {
-
-        //   Set<Query> docInOneClusterQueries = []
-        Query[] docInOneClusterQueries = new Query[queriesOriginal.size()]
-        for (int i = 0; i < queries.size(); i++) {
-            Query q = queries[i]
-
-            BooleanQuery.Builder bqbOneCategoryOnly = new BooleanQuery.Builder()
-            bqbOneCategoryOnly.add(q, BooleanClause.Occur.SHOULD)
-
-            for (int j = 0; j < queries.size(); j++) {
-                if (j != i) {
-                    bqbOneCategoryOnly.add(queries[j], BooleanClause.Occur.MUST_NOT)
-                }
-            }
-            //docInOneClusterQueries << bqbOneCategoryOnly.build()
-            docInOneClusterQueries[i] = bqbOneCategoryOnly.build()
-        }
-        println "Queries returning unique documents: $docInOneClusterQueries"
-        queries = docInOneClusterQueries
-    }
 
     Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
