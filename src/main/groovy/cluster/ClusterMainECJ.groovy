@@ -23,7 +23,7 @@ class ClusterMainECJ extends Evolve {
     final static int MAX_FIT_JOBS = 2
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
-    final static boolean onlyDocsInOneCluster = true
+    final static boolean useNonIntersectingClustersForTraining = true
     final static int k_for_knn = 10
     //final static boolean queryOnly = true
 
@@ -141,7 +141,7 @@ class ClusterMainECJ extends Evolve {
                                     Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray = QuerysetFeatures.getQuerysetFeatures(arrayOfQueryBuilders)
 
                                     Classify classify = new Classify(queryArray, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4)
-                                    classify.updateAssignedField(onlyDocsInOneCluster)
+                                    classify.updateAssignedField(useNonIntersectingClustersForTraining)
 
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)
@@ -151,10 +151,10 @@ class ClusterMainECJ extends Evolve {
                                         //    [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
-                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, onlyDocsInOneCluster, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v2, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v3, kPenalty, minIntersectRatio, k_for_knn, queryMap, popSize, state.generation, job, maxFitJob)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, useNonIntersectingClustersForTraining, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v2, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v3, kPenalty, minIntersectRatio, k_for_knn, queryMap, popSize, state.generation, job, maxFitJob)
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))
-                                            result.queryReport(new File('results/queriesReturningUniqueDocuments.txt'))
+                                            result.queryReport(new File('results/queries.txt'))
                                         }
                                     }
 

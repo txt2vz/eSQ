@@ -173,7 +173,7 @@ public class JeneticsMain {
                 //    updateAssignedFieldInIndex.updateAssignedField(t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
 
                //     Classify classify = new Classify(indexEnum, t6QuerySetResult.getV1().keySet());
-                //    if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
+                //    if (useNonIntersectingClustersForTraining) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
                 //    classify.updateAssignedField();
 
               //      Classifier classifier = classify.getClassifier(LuceneClassifyMethod.KNN);

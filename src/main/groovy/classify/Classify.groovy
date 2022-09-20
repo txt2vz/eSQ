@@ -38,6 +38,7 @@ class Classify {
 
         queriesOriginal = queries
         queriesReturningDistinctDocuments = modifiedQueries
+        assert queriesOriginal.size() == queriesReturningDistinctDocuments.size()
     }
 
     void updateAssignedField(boolean useQueriesReturningDistinctDocuments) {
