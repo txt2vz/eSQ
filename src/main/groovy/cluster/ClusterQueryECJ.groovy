@@ -42,7 +42,7 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
         final int[] genome = (ClusterMainECJ.GA_TO_SETK) ? genomeOrig[1.. genomeOrig.size()-1] as int[] : genomeOrig
 
         BooleanQuery.Builder[] arrayOfQueryBuilders = BuildQuerySet.getQueryBuilderArray(genome, k, QUERY_TYPE) //.toList()
-        Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> uniqueHitsTuple = QuerySetFeatures.getQuerySetFeatures(arrayOfQueryBuilders);
+        Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> uniqueHitsTuple = QuerysetFeatures.getQuerysetFeatures(arrayOfQueryBuilders);
 
         final int uniqueHits = uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
 

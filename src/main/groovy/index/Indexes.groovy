@@ -1,8 +1,6 @@
 package index
 
-import cluster.QueryTermIntersect
 import groovy.transform.CompileStatic
-import groovy.transform.Immutable
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.DirectoryReader
@@ -103,12 +101,4 @@ class Indexes {
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
     }
-
-//   // static void setTermQueryLists(final double minIntersectRatio) {
-//        static void setTermQueryLists() {
-//      //  MIN_INTERSECT_RATIO = minIntersectRatio
-//        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(getIndexReader()) asImmutable()
-//        println "termquery list $termQueryList"
-//        // termQueryIntersectMap = ImportantTermQueries.getTermIntersectMapSorted(termQueryList, minIntersectRatio) asImmutable()
-//    }
 }

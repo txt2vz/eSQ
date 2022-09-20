@@ -55,11 +55,6 @@ class Result {
         this.k_for_knn = k_for_knn
         this.queryMap = queryMap
 
-        if (!setK && clusterCountError != 0){
-            println "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX "
-            report(new File("error.csv"))
-            queryReport(new File("error.txt"))
-        }
         if (!setK) assert clusterCountError == 0
     }
 

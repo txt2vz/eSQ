@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 1
+    final static int MAX_FIT_JOBS = 2
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean onlyDocsInOneCluster = true
@@ -77,7 +77,6 @@ class ClusterMainECJ extends Evolve {
      //       [false].each { ga_to_set_k ->
        //   [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
         [true, false].each { ga_to_set_k ->
-        //      [true, false].each { ga_to_set_k ->
 
             GA_TO_SETK = ga_to_set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -137,15 +136,12 @@ class ClusterMainECJ extends Evolve {
 
                                     Query[] queryArray = bestClusterFitness.queryMap.keySet().toArray() as Query[]
                                     Map<Query, Integer> queryMap = bestClusterFitness.queryMap
-
                                     BooleanQuery.Builder[] arrayOfQueryBuilders = bestClusterFitness.arrayOfQueryBuilders
 
-                                    Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray = QuerySetFeatures.getQuerySetFeatures(arrayOfQueryBuilders)
-                                    Classify classify = new Classify(indexEnum, queryArray, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4)
+                                    Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray = QuerysetFeatures.getQuerysetFeatures(arrayOfQueryBuilders)
 
-                                    //if (onlyDocsInOneCluster) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
-
-                                    onlyDocsInOneCluster ?  classify.updateAssignedField(t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4) : classify.updateAssignedField(queryArray)
+                                    Classify classify = new Classify(queryArray, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4)
+                                    classify.updateAssignedField(onlyDocsInOneCluster)
 
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)

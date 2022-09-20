@@ -47,8 +47,8 @@ public class JeneticsMain {
         final int k = getK(gt, indexEnum, SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
         BooleanQuery.Builder[] bqbList = BuildQuerySet.getQueryBuilderArray(intArray, k, qType) ;
-        final int uniqueHits = QuerySetFeatures.getQuerySetFeatures(bqbList).getV2();
-        final int totalHits = QuerySetFeatures.getQuerySetFeatures(bqbList).getV3();
+        final int uniqueHits = QuerysetFeatures.getQuerysetFeatures(bqbList).getV2();
+        final int totalHits = QuerysetFeatures.getQuerysetFeatures(bqbList).getV3();
         final int multi_hits = totalHits - uniqueHits;
         final int totalHitsMinus = totalHits - multi_hits;
 

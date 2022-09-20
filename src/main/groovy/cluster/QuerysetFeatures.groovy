@@ -8,9 +8,9 @@ import org.apache.lucene.search.Query
 import org.apache.lucene.search.TotalHitCountCollector
 
 @CompileStatic
-class QuerySetFeatures {
+class QuerysetFeatures {
 
-    static Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> getQuerySetFeatures(BooleanQuery.Builder[] arrayOfQueryBuilders) {
+    static Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> getQuerysetFeatures(BooleanQuery.Builder[] arrayOfQueryBuilders) {
         Map<Query, Integer> qMap = new HashMap<Query, Integer>()
         BooleanQuery.Builder totalHitsBQB = new BooleanQuery.Builder()
 
@@ -35,10 +35,10 @@ class QuerySetFeatures {
             TotalHitCountCollector distinctHitCollector = new TotalHitCountCollector()
             nonIntersectingQueries[i] = builderForNonIntersectingQuery.build()
             Indexes.indexSearcher.search(nonIntersectingQueries[i], distinctHitCollector)
-            final int qUniqueHits = distinctHitCollector.getTotalHits()
+            final int qDistinctHits = distinctHitCollector.getTotalHits()
 
-            qMap.put(q, qUniqueHits)
-            totalDocumentsReturnedByOnlyOneQuery += qUniqueHits
+            qMap.put(q, qDistinctHits)
+            totalDocumentsReturnedByOnlyOneQuery += qDistinctHits
         }
 
         TotalHitCountCollector collector = new TotalHitCountCollector();

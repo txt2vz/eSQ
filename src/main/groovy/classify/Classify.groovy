@@ -31,42 +31,19 @@ enum LuceneClassifyMethod {
 @CompileStatic
 class Classify {
 
-    private IndexEnum indexEnum
-    private Query[] queriesReturningUniqueDocuments
+    private Query[] queriesReturningDistinctDocuments
     private Query[] queriesOriginal
 
-    Classify(IndexEnum ie, Query[] queries, Query[] queriesReturningDistinctDocuments) {
-        indexEnum = ie
-        this.queriesReturningUniqueDocuments = queriesReturningDistinctDocuments
+    Classify(Query[] queries, Query[] modifiedQueries) {
+
         queriesOriginal = queries
+        queriesReturningDistinctDocuments = modifiedQueries
     }
 
-//    //modify queriesReturningUniqueDocuments so that they do not return documents returned by any other query
-//    void modifyQuerySoDocsReturnedByOnlyOneQuery() {
-//
-//        Query[] docInOneClusterQueries = new Query[queriesOriginal.size()]
-//        for (int i = 0; i < queriesReturningUniqueDocuments.size(); i++) {
-//            Query q = queriesReturningUniqueDocuments[i]
-//
-//            BooleanQuery.Builder bqbOneCategoryOnly = new BooleanQuery.Builder()
-//            bqbOneCategoryOnly.add(q, BooleanClause.Occur.SHOULD)
-//
-//            for (int j = 0; j < queriesReturningUniqueDocuments.size(); j++) {
-//                if (j != i) {
-//                    bqbOneCategoryOnly.add(queriesReturningUniqueDocuments[j], BooleanClause.Occur.MUST_NOT)
-//                }
-//            }
-//
-//            docInOneClusterQueries[i] = bqbOneCategoryOnly.build()
-//        }
-//        println "Queries returning unique documents: $docInOneClusterQueries"
-//        queriesReturningUniqueDocuments = docInOneClusterQueries
-//    }
-
-    //  void updateAssignedField() {
-    void updateAssignedField(Query[] queries) {
+    void updateAssignedField(boolean useQueriesReturningDistinctDocuments) {
 
         IndexWriter indexWriter = setAllUnassigned()
+        Query[] queries = useQueriesReturningDistinctDocuments ? queriesReturningDistinctDocuments : queriesOriginal
 
         int counter = 0
 
@@ -78,7 +55,6 @@ class Classify {
             for (ScoreDoc sd : hits) {
 
                 Document d = Indexes.indexSearcher.doc(sd.doc)
-
                 d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
                 //queryOriginal is an easier to read cluster label
@@ -99,8 +75,7 @@ class Classify {
         println "Max docs: " + indexWriter.maxDoc() + " numDocs: " + indexWriter.numDocs()
 
         indexWriter.close()
-
-        Indexes.setIndex(indexEnum)
+        Indexes.setIndex(Indexes.index)
         IndexUtils.categoryFrequencies(Indexes.indexSearcher, true)
     }
 
@@ -176,7 +151,7 @@ class Classify {
     }
 
     private IndexWriter prepareIndex() {
-        Indexes.setIndex(indexEnum)
+        Indexes.setIndex(Indexes.index)
         String indexPath = Indexes.index.pathString
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
