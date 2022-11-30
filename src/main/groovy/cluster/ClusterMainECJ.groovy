@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 1
+    final static int MAX_FIT_JOBS = 3
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean useNonIntersectingClustersForTraining = true
@@ -29,24 +29,24 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-           IndexEnum.CRISIS3,
-           IndexEnum.NG3,
-
-           IndexEnum.CRISIS4,
-           IndexEnum.R4,
-
-           IndexEnum.NG5,
-           IndexEnum.R5,
+//           IndexEnum.CRISIS3,
+//           IndexEnum.NG3,
+//
+//           IndexEnum.CRISIS4,
+//           IndexEnum.R4,
+//
+//           IndexEnum.NG5,
+//           IndexEnum.R5,
 
            IndexEnum.NG6,
            IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
-  //          [0.03d]
+            [0.03d]
    //   [0.00d, 0.03d, 0.05d, 0.07d, 0.1d ]
  //   [0.01d, 0.02d, 0.04d, 0.06d, 0.08d ]
-           [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
+ //          [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
            0.5d
