@@ -29,7 +29,7 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'NG6'
+        String indexName = 'crisis5'
         String indexPath = 'indexes' + /\$indexName/
         String docsPath =  /C:\Data/ + /\$indexName/
 

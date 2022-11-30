@@ -7,8 +7,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 class CrisisTweetsToFileFromCSV {
 
-    Path docsPath = Paths.get('datasets/SourceData/crisis4Data/')
-    String filesOutPath = /C:\Data\crisis4/
+    Path docsPath = Paths.get('datasets/SourceData/crisis5Data/')
+    String filesOutPath = /C:\Data\crisis5/
 
     //   Path docsPath = Paths.get('datasets/SourceData/crisis4Data/')
 //    String filesOutPath = /C:\Data\crisis4/
@@ -43,11 +43,12 @@ class CrisisTweetsToFileFromCSV {
                 if (fileID > 0 && fileID <= 500) {
 
                     def textBody = fields[1]
+                    def ontopic = fields[3]
 
                     String fileName = dirName + '\\' + fileID + '.txt'
                     println "filename $fileName"
 
-                    if (textBody != " ") {
+                    if (textBody != " " && ontopic == "on-topic") {
 
                         byte[] bytes = textBody.getBytes()
                         String utf8String = new String(bytes, UTF_8);
