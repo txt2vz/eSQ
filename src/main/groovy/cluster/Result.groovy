@@ -22,7 +22,7 @@ class Result {
     String setkDescription
     Map<Query, Integer> queryMap
 
-    Result(boolean setK, IndexEnum indexEnum, QType qType, Effectiveness effectiveness, LuceneClassifyMethod classifyMethod, double fitness, boolean queryOnly, boolean onlyDocsInOneCluster, int uniqueHits, int totalHitsAllQueries, double kPenalty, double intersectRatio, int k_for_knn,  Map<Query, Integer> queryMap, int popSize, int generation, int job, int maxFitJob) {
+    Result(boolean setK, IndexEnum indexEnum, QType qType, Effectiveness effectiveness, double fitness,  QuerySet querySet, LuceneClassifyMethod classifyMethod, boolean queryOnly, boolean onlyDocsInOneCluster, double kPenalty, double intersectRatio, int k_for_knn, int popSize, int generation, int job, int maxFitJob) {
 
         setkDescription = setK ? 'k-discovered' : 'k-predefined'
         indexName = indexEnum.name()
@@ -49,10 +49,10 @@ class Result {
         this.job = job
         this.maxFitJob = maxFitJob
         this.onlyDocsInOneCluster = onlyDocsInOneCluster
-        this.uniqueHits = uniqueHits
-        this.totalHitsAllQueries = totalHitsAllQueries
+        this.uniqueHits =  querySet.totalHitsReturnedByOnlyOneQuery//uniqueHits
+        this.totalHitsAllQueries =  querySet.totalHitsAllQueries   //totalHitsAllQueries
         this.k_for_knn = k_for_knn
-        this.queryMap = queryMap
+        this.queryMap = querySet.getQueryMap()
 
         if (!setK) assert clusterCountError == 0
     }
@@ -72,7 +72,8 @@ class Result {
 
         //spreadsheet to be used with pivot table
         if (!fcsv.exists()) {
-            fcsv << 'SetK,QueryType,Index,classifyMethod,v,homogeneity,completeness,numberOfDocumentsClustered,numDocs,percentClustered,numberOfClasses,numberOfClusters,clusterCountError,fitness,queryOnly,useNonIntersectingClustersForTraining,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,Date \n'  //   ,   totalUniqueHits, totalHitsAllQueries, numDocs, percentClustered, minIntersectRatio, kPenalty, useQueryOnly,useNonIntersectingClustersForTraining, PopulationSize, Gen, Job, date \n'
+            fcsv << 'SetK,QueryType,Index,classifyMethod,v,homogeneity,completeness,numberOfDocumentsClustered,numDocs,percentClustered,numberOfClasses,numberOfClusters,clusterCountError,fitness,queryOnly,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,Date \n'
+
         }
 
         fcsv << "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $numberOfDocumentsClustered, $numDocs, $percentClustered, $numberOfClasses, $numberOfClusters, $clusterCountError, $fitness, $queryOnlyString, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob, ${new Date()} \n"

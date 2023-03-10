@@ -10,7 +10,6 @@ import ec.vector.IntegerVectorIndividual
 import groovy.transform.CompileStatic
 import index.Indexes
 import org.apache.lucene.search.BooleanQuery
-import org.apache.lucene.search.Query
 import org.apache.lucene.search.TermQuery
 
 
@@ -41,16 +40,16 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
         final int   k = (ClusterMainECJ.GA_TO_SETK) ? genomeOrig[0] :  Indexes.index.numberOfCategories
         final int[] genome = (ClusterMainECJ.GA_TO_SETK) ? genomeOrig[1.. genomeOrig.size()-1] as int[] : genomeOrig
 
-        BooleanQuery.Builder[] arrayOfQueryBuilders = BuildQuerySet.getQueryBuilderArray(genome, k, QUERY_TYPE) //.toList()
-        Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> uniqueHitsTuple = QuerysetFeatures.getQuerysetFeatures(arrayOfQueryBuilders);
+        BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getQueryBuilderArray(genome, k, QUERY_TYPE)
+        QuerySet querySetFeatures = new QuerySet(arrayOfQueryBuilders)
 
-        final int uniqueHits = uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
+        final int uniqueHits =  querySetFeatures.totalHitsReturnedByOnlyOneQuery    //uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
 
         final double f = (ClusterMainECJ.GA_TO_SETK) ? uniqueHits * (1.0 - (Indexes.K_PENALTY * k)) as double : uniqueHits as double
 
         final double rawfitness= (f > 0) ? f : 0.0d;
 
-        fitness.setClusterFitness(uniqueHitsTuple, arrayOfQueryBuilders, rawfitness )
+        fitness.setClusterFitness(querySetFeatures, arrayOfQueryBuilders, rawfitness )
 
         ((SimpleFitness) intVectorIndividual.fitness).setFitness(state, rawfitness, false)
         ind.evaluated = true

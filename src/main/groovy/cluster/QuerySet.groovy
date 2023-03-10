@@ -8,18 +8,32 @@ import org.apache.lucene.search.Query
 import org.apache.lucene.search.TotalHitCountCollector
 
 @CompileStatic
-class QuerysetFeatures {
+class QuerySet {
 
-    static Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> getQuerysetFeatures(BooleanQuery.Builder[] arrayOfQueryBuilders) {
-        Map<Query, Integer> qMap = new HashMap<Query, Integer>()
+    //holds the original query and the result of running the non-intersecting query
+    Map<Query, Integer> queryMap
+    Query[] queryArray
+    int totalHitsReturnedByOnlyOneQuery
+    int totalHitsAllQueries
+
+    // modified queries which do not return documents returned by any other query
+    Query[] nonIntersectingQueries
+
+    QuerySet(BooleanQuery.Builder[] arrayOfQueryBuilders){
+
+        queryMap = new HashMap<Query, Integer>()
+        queryArray = new Query[arrayOfQueryBuilders.size()]
         BooleanQuery.Builder totalHitsBQB = new BooleanQuery.Builder()
 
-       // modified queries which do not return documents returned by any other query
-        Query[] nonIntersectingQueries = new Query[arrayOfQueryBuilders.size()]
+        // modified queries which do not return documents returned by any other query
+        nonIntersectingQueries = new Query[arrayOfQueryBuilders.size()]
 
-        int totalDocumentsReturnedByOnlyOneQuery = 0
+        totalHitsAllQueries = 0
+        totalHitsReturnedByOnlyOneQuery =0
+
         for (int i = 0; i < arrayOfQueryBuilders.size(); i++) {
             Query q = arrayOfQueryBuilders[i].build()
+            queryArray[i] = q
 
             totalHitsBQB.add(q, BooleanClause.Occur.SHOULD)
 
@@ -37,14 +51,12 @@ class QuerysetFeatures {
             Indexes.indexSearcher.search(nonIntersectingQueries[i], distinctHitCollector)
             final int qDistinctHits = distinctHitCollector.getTotalHits()
 
-            qMap.put(q, qDistinctHits)
-            totalDocumentsReturnedByOnlyOneQuery += qDistinctHits
+            queryMap.put(q, qDistinctHits)
+            totalHitsReturnedByOnlyOneQuery += qDistinctHits
         }
 
         TotalHitCountCollector collector = new TotalHitCountCollector();
         Indexes.indexSearcher.search(totalHitsBQB.build(), collector);
-        final int totalHitsAllQueries = collector.getTotalHits();
-
-        return new Tuple4(qMap, totalDocumentsReturnedByOnlyOneQuery, totalHitsAllQueries, nonIntersectingQueries)
+        totalHitsAllQueries = collector.getTotalHits();
     }
 }

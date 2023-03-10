@@ -20,13 +20,13 @@ public class ClusterFitnessECJ extends SimpleFitness {
         return baseFitness;
     }
 
-    void setClusterFitness( Tuple4 <Map<Query, Integer>, Integer, Integer, Query[]> t3UniqueHits , BooleanQuery.Builder[] arrayOfQueryBuilders, double f) {
+    void setClusterFitness(QuerySet querySetFeatures, BooleanQuery.Builder[] arrayOfQueryBuilders, double f) {
 
         this.arrayOfQueryBuilders = arrayOfQueryBuilders
         baseFitness = f
-        queryMap= t3UniqueHits.v1
-        uniqueHits = t3UniqueHits.v2
-        totalHits = t3UniqueHits.v3
+        queryMap= querySetFeatures.queryMap
+        uniqueHits = querySetFeatures.totalHitsReturnedByOnlyOneQuery
+        totalHits = querySetFeatures.totalHitsAllQueries
         k = this.arrayOfQueryBuilders.size()
     }
 
@@ -50,6 +50,6 @@ public class ClusterFitnessECJ extends SimpleFitness {
     }
 
     public String toString(int gen) {
-        return "Gen: $gen ClusterQuery Fitness: ${this.fitness()} qMap: $queryMap}"
+        return "Gen: $gen ClusterQuery Fitness: ${this.fitness()} queryMap: $queryMap}"
     }
 }

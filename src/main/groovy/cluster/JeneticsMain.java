@@ -1,17 +1,20 @@
 package cluster;
 
+import classify.Classify;
 import classify.LuceneClassifyMethod;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 import index.*;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.IntRange;
+import org.apache.lucene.classification.Classifier;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.util.Factory;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
@@ -20,24 +23,28 @@ import index.IndexEnum;
 
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
+
 public class JeneticsMain {
 
-    static List<TermQuery> termQueryList;
-    static QType qType = //QType.OR1;
-            QType.OR_INTERSECT;
+    final static boolean useNonIntersectingClustersForTrainingKNN = true;
+    final static int k_for_knn = 10;
+    //LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+    //static List<TermQuery> termQueryList;
+    final static QType qType =// QType.OR1;
+      QType.OR_INTERSECT;
     static IndexEnum indexEnum;
     // static IndexReader ir;
-    final static boolean SETK = true;
+    final static boolean SETK = false;
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
 
-    //static int k;
-    static List<IndexEnum> ieList = Arrays.asList(
-            IndexEnum.CRISIS3
+
+    static List<IndexEnum> indexList = Arrays.asList(
+            //         IndexEnum.CRISIS3
 //            IndexEnum.CLASSIC4,
 //            IndexEnum.NG3,
-//            IndexEnum.NG5,
-//            IndexEnum.NG6,
+            IndexEnum.NG5,
+            IndexEnum.NG6
 //            IndexEnum.R4,
 //            IndexEnum.R5,
 //            IndexEnum.R6
@@ -46,43 +53,33 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
         final int k = getK(gt, indexEnum, SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
-        BooleanQuery.Builder[] bqbList = BuildQuerySet.getQueryBuilderArray(intArray, k, qType) ;
-        final int uniqueHits = QuerysetFeatures.getQuerysetFeatures(bqbList).getV2();
-        final int totalHits = QuerysetFeatures.getQuerysetFeatures(bqbList).getV3();
-        final int multi_hits = totalHits - uniqueHits;
-        final int totalHitsMinus = totalHits - multi_hits;
-
+        BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
+        QuerySet querySet = new QuerySet(bqbArray);
+        final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         final double f = (SETK) ? uniqueHits * (1.0 - (kPenalty * k)) : uniqueHits;
-       // final double f = uniqueHits;
-       //final double f = uniqueHits - multi_hits ;
-       // final double f = (SETK) ? totalHitsMinus * (1.0 - (kPenalty * k)) : totalHitsMinus;
-
         return (f > 0) ? f : 0.0d;
     }
 
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 256;
+        final int popSize = 250;
         final int maxGen = 120;
-        final int maxGene = 110;
+        final int maxGene = 100;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int setkMax = 9;
-        final int numberOfJobs = 5;
-        final int numberMaxFitJobs = 3;
+        final int numberOfJobs = 2;
+        final int numberMaxFitJobs = 1;
         final int numberOfSubPops = 1;
         final int maxGenomeLength = 19;
         final boolean onlyDocsInOneClusterForClassifier = false;
-        final double minIntersectRatio = 0.6d;
+        final double minIntersectRatio = 0.5d;
 
-       // ReportsOld reports = new ReportsOld();
-
-        ieList.stream().forEach(ie -> {
-            Indexes.setIndex(ie, minIntersectRatio);
-          //  Indexes.setTermQueryLists(minIntersectRatio);
+        indexList.stream().forEach(index -> {
+            Indexes.setIndex(index, minIntersectRatio);
             List<Phenotype<IntegerGene, Double>> resultList = new ArrayList<Phenotype<IntegerGene, Double>>();
-            indexEnum = ie;
-            termQueryList = Indexes.getTermQueryList();
+            indexEnum = index;
+            List<TermQuery> termQueryList = Indexes.getTermQueryList();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
@@ -93,13 +90,13 @@ public class JeneticsMain {
                     final Factory<Genotype<IntegerGene>> gtf =
                             (SETK) ?
                                     Genotype.of(
-                                        //    IntegerChromosome.of(0, maxGene, genomeLength),
+                                            //    IntegerChromosome.of(0, maxGene, genomeLength),
                                             IntegerChromosome.of(0, maxGene, IntRange.of(setkMax, 30)),
-                                            IntegerChromosome.of(2, 9, 1) ) :  //psossible values for k
+                                            IntegerChromosome.of(2, 9, 1)) :  //psossible values for k
 
                                     Genotype.of(
                                             IntegerChromosome.of(0, maxGene, IntRange.of(setkMax, 30)));
-                                         //   IntegerChromosome.of(0, maxGene, genomeLength));
+                    //   IntegerChromosome.of(0, maxGene, genomeLength));
 
                     final Engine<IntegerGene, Double> engine = Engine.
                             builder(
@@ -110,25 +107,25 @@ public class JeneticsMain {
                             // StochasticUniversalSelector<>()).offspringSelector(new
                             // TournamentSelector<>(5))
 
-                           // .survivorsSelector(new TournamentSelector<>(5))
-                          //  .survivorsSelector(new EliteSelector<>(2))
-                         //   .offspringSelector(new TournamentSelector<>(5))
-            //                .alterers(
+                            // .survivorsSelector(new TournamentSelector<>(5))
+                            //  .survivorsSelector(new EliteSelector<>(2))
+                            //   .offspringSelector(new TournamentSelector<>(5))
+                            //                .alterers(
 //                                    new Mutator<>(0.03) ,
 //                                    new MeanAlterer <>(0.6) )
-                     //               new Mutator<>(0.2), new MultiPointCrossover<>())
-                        //    .alterers(
-                           //         new Mutator<>(0.03) ,
+                            //               new Mutator<>(0.2), new MultiPointCrossover<>())
+                            //    .alterers(
+                            //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
 
-                        //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
-                         //   .offspringSelector(new TournamentSelector<>(5))
-                        //   .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
+                            //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
+                            //   .offspringSelector(new TournamentSelector<>(5))
+                            //   .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
 
-                           //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
-                                   //  new MeanAlterer <>(0.6))
-                                    //new Mutator<>(0.2), new MultiPointCrossover<>())
-                                 //   new SinglePointCrossover<>(0.7))
+                            //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
+                            //  new MeanAlterer <>(0.6))
+                            //new Mutator<>(0.2), new MultiPointCrossover<>())
+                            //   new SinglePointCrossover<>(0.7))
                             .build();
 
                     final EvolutionStatistics<Double, ?>
@@ -142,51 +139,43 @@ public class JeneticsMain {
                                     .peek(ind -> {
                                         Genotype<IntegerGene> g = ind.bestPhenotype().genotype();
                                         int[] termQintArray = ((IntegerChromosome) g.get(0)).toArray();
-                                        final int k = getK(g, ie, SETK);
+                                        final int k = getK(g, index, SETK);
 
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        List<BooleanQuery.Builder> bqbList = Arrays.asList( BuildQuerySet.getQueryBuilderArray(termQintArray, k, qType) );
-                         //              Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> queryDataGen = QuerySet.querySetInfo(arrayOfQueryBuilders, true);
-                                     //   System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
-                                        System.out.println();
+                                        System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness());   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
+
 
                                     })
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
 
-                    System.out.println("Final result  " + result);
+
                     resultList.add(result);
                     Genotype<IntegerGene> g = result.genotype();
 
                     int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
-                    final int k = getK(g, ie, SETK);
+                    final int k = getK(g, index, SETK);
 
-                    List<BooleanQuery.Builder> bqbList = Arrays.asList( BuildQuerySet.getQueryBuilderArray(intArrayBestOfRun, k, qType));
-           //         Tuple6<Map<Query, Integer>, Integer, Integer, Double, Double, Double> t6QuerySetResult = QuerySet.querySetInfo(arrayOfQueryBuilders);
+                    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getQueryBuilderArray(intArrayBestOfRun, k, qType);
 
+                    QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
 
-                    //Classifier classifier = ClassifyUnassigned.getClassifier(ie, LuceneClassifyMethod.KNN);
+                    Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
 
-                  //  UpdateAssignedFieldInIndex.updateAssignedField(ie, t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
-                  //  Classify updateAssignedFieldInIndex = new Classify(indexEnum);
-                //    updateAssignedFieldInIndex.updateAssignedField(t6QuerySetResult.getV1().keySet(), onlyDocsInOneClusterForClassifier);
+                    classify.updateAssignedField(useNonIntersectingClustersForTrainingKNN);
+                    Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn);
 
-               //     Classify classify = new Classify(indexEnum, t6QuerySetResult.getV1().keySet());
-                //    if (useNonIntersectingClustersForTraining) classify.modifyQuerySoDocsReturnedByOnlyOneQuery()
-                //    classify.updateAssignedField();
+                    Effectiveness effectiveness = new Effectiveness(classifier, false);
 
-              //      Classifier classifier = classify.getClassifier(LuceneClassifyMethod.KNN);
+                    System.out.println(" result  " + result + " gen " + result.generation() + " v " + effectiveness.getvMeasure() );
 
-                    //Tuple3<Double, Double, Double> t3ClassiferResult = Effectiveness.classifierEffectiveness(classifier, ie, k);
+                    Result results = new Result(SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob);
 
-                  //  System.out.println("Best of run **********************************  classifierF1 " + t3ClassiferResult.getV1() + " " + ie.name() + '\n');
+                    results.report(new File("results//resultsJenetics.csv"));
+                    results.queryReport(new File("results//jeneticsQueries.txt"));
 
-                   // reports.reports(ie, t6QuerySetResult.getV1(), t6QuerySetResult.getV2(), t6QuerySetResult.getV3(), t6QuerySetResult.getV4(), t6QuerySetResult.getV5(), t6QuerySetResult.getV6(), t3ClassiferResult.getV1(), t3ClassiferResult.getV2(), t3ClassiferResult.getV3(), fitness.get(), qType, SETK, classifyMethod, minIntersectRatio, kPenalty, popSize, numberOfSubPops, g.chromosome().length(), maxGene, maxGen, gaEngine, jobNumber, maxFitjob);
-
-                    //System.out.println("statistics " + statistics);
                 });
-             //   reports.reportMaxFitness(jobNumber);
             });
         });
 
@@ -197,7 +186,7 @@ public class JeneticsMain {
 
     static int getK(Genotype g, IndexEnum indexEnum, final boolean setk) {
 
-        return (setk) ? ((IntegerChromosome) g.get(1)).get(0).allele(): //  .gene().allele() :
+        return (setk) ? ((IntegerChromosome) g.get(1)).get(0).allele() : //  .gene().allele() :
                 indexEnum.getNumberOfCategories();
     }
 }

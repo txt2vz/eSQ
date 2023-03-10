@@ -14,16 +14,15 @@ import index.IndexEnum
 import index.Indexes
 import org.apache.lucene.classification.Classifier
 import org.apache.lucene.search.BooleanQuery
-import org.apache.lucene.search.Query
 
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 3
+    final static int NUMBER_OF_JOBS = 2
+    final static int MAX_FIT_JOBS = 2
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
-    final static boolean useNonIntersectingClustersForTraining = true
+    final static boolean useNonIntersectingClustersForTrainingKNN = true
     final static int k_for_knn = 10
     //final static boolean queryOnly = true
 
@@ -35,11 +34,11 @@ class ClusterMainECJ extends Evolve {
 //           IndexEnum.CRISIS4,
 //           IndexEnum.R4,
 //
-//           IndexEnum.NG5,
+           IndexEnum.NG5,
 //           IndexEnum.R5,
 
-           IndexEnum.NG6,
-           IndexEnum.R6
+ //        IndexEnum.NG6,
+  //         IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
@@ -57,7 +56,7 @@ class ClusterMainECJ extends Evolve {
 
     List<QType> queryTypesList = [
             QType.OR_INTERSECT,
-           QType.OR1
+         //  QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -75,9 +74,9 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-         //   [false].each { ga_to_set_k ->
+            [true].each { ga_to_set_k ->
    //       [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
-        [true, false].each { ga_to_set_k ->
+       // [true, false].each { ga_to_set_k ->
 
             GA_TO_SETK = ga_to_set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -135,14 +134,12 @@ class ClusterMainECJ extends Evolve {
                                     final Date GATime = new Date()
                                     TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
 
-                                    Query[] queryArray = bestClusterFitness.queryMap.keySet().toArray() as Query[]
-                                    Map<Query, Integer> queryMap = bestClusterFitness.queryMap
                                     BooleanQuery.Builder[] arrayOfQueryBuilders = bestClusterFitness.arrayOfQueryBuilders
 
-                                    Tuple4<Map<Query, Integer>, Integer, Integer, Query[]> t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray = QuerysetFeatures.getQuerysetFeatures(arrayOfQueryBuilders)
+                                    QuerySet querySet = new QuerySet((arrayOfQueryBuilders))
 
-                                    Classify classify = new Classify(queryArray, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v4)
-                                    classify.updateAssignedField(useNonIntersectingClustersForTraining)
+                                    Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries())
+                                    classify.updateAssignedField(useNonIntersectingClustersForTrainingKNN)
 
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)
@@ -152,7 +149,8 @@ class ClusterMainECJ extends Evolve {
                                      //       [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
-                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, classifyMethod, ecjFitness, queryOnly, useNonIntersectingClustersForTraining, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v2, t4_qMap_uniqueHitCount_TotalHitCountAllQ_DistinctQueryArray.v3, kPenalty, minIntersectRatio, k_for_knn, queryMap, popSize, state.generation, job, maxFitJob)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob)
+
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))
                                             result.queryReport(new File('results/queries.txt'))
