@@ -36,14 +36,14 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-//            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS3,
 //            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-//            IndexEnum.NG5,
+//          IndexEnum.NG3,
+//           IndexEnum.NG5,
 //            IndexEnum.NG6,
-//            IndexEnum.R4,
-            IndexEnum.R5
-  //          IndexEnum.R6
+//           IndexEnum.R4,
+//          IndexEnum.R5,
+            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -59,11 +59,13 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 120;
-        final int maxGen = 300;
+        final int popSize = 256;
+        final int maxGen = 400;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
+        final int minGenomeLength = 16;
+        final int maxGenomeLength = 30;
         final int numberOfJobs = 2;
         final int numberMaxFitJobs = 1;
         final int numberOfSubPops = 1;
@@ -74,7 +76,6 @@ public class JeneticsMain {
             Indexes.setIndex(index, minIntersectRatio);
             List<Phenotype<IntegerGene, Double>> resultList = new ArrayList<Phenotype<IntegerGene, Double>>();
             indexEnum = index;
-            //List<TermQuery> termQueryList = Indexes.getTermQueryList();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
@@ -82,24 +83,27 @@ public class JeneticsMain {
                     final Factory<Genotype<IntegerGene>> gtf =
                             (SETK) ?
                                     Genotype.of(
-                                            IntegerChromosome.of(0, maxWordListValue, genomeLength),//IntRange.of(genomeLength, 10)),
+                                           // IntegerChromosome.of(0, maxWordListValue, genomeLength),//IntRange.of(genomeLength, 10)),
+                                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
                                             IntegerChromosome.of(2, 8, 1)) :  //psossible values for k
 
                                     Genotype.of(
-                                            IntegerChromosome.of(0, maxWordListValue, genomeLength));   //IntRange.of(genomeLength, 10)));
-
+                                       //     IntegerChromosome.of(0, maxWordListValue, genomeLength));   //IntRange.of(genomeLength, 10)));
+                                             IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
 
                     final Engine<IntegerGene, Double> engine = Engine.
                             builder(
                                     JeneticsMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
+
+
                             // .survivorsSelector(new
                             // StochasticUniversalSelector<>()).offspringSelector(new
                             // TournamentSelector<>(5))
 
-                            // .survivorsSelector(new TournamentSelector<>(5))
+                             .survivorsSelector(new TournamentSelector<>(3))
                             //  .survivorsSelector(new EliteSelector<>(2))
-                            //   .offspringSelector(new TournamentSelector<>(5))
+                               .offspringSelector(new TournamentSelector<>(3))
                             //                .alterers(
 //                                    new Mutator<>(0.03) ,
 //                                    new MeanAlterer <>(0.6) )
@@ -114,8 +118,8 @@ public class JeneticsMain {
 
                             //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
                             //  new MeanAlterer <>(0.6))
-                            //  .alterers(new Mutator<>(0.2), new MultiPointCrossover<>())
-                            //   new SinglePointCrossover<>(0.7))
+                              .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
+                          //  .alterers( new SinglePointCrossover<>(0.7))
                             .build();
 
                     final EvolutionStatistics<Double, ?>
@@ -132,7 +136,7 @@ public class JeneticsMain {
 
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        //     System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " ko " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
+                                          System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " ko " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                     })
                                     .peek(statistics)
                                     .collect(toBestPhenotype());

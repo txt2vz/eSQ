@@ -19,7 +19,7 @@ import org.apache.lucene.search.BooleanQuery
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 2
-    final static int MAX_FIT_JOBS = 2
+    final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean useNonIntersectingClustersForTrainingKNN = true
@@ -114,7 +114,8 @@ class ClusterMainECJ extends Evolve {
                                     //  state.parameters.set(new Parameter("generations"), "7")
                                     state.output.systemMessage("Job: " + job);
                                     state.job = new Object[1]
-                                    state.job[0] = new Integer(job)
+                                    state.job[0] = Integer.valueOf(job)
+                                         //   new Integer(job)
 
                                     state.run(EvolutionState.C_STARTED_FRESH);
                                     int popSize = 0;
