@@ -94,11 +94,11 @@ class QueryBuilders {
         return arrayOfBuilders
     }
 
-    static String printQuerySet(Map<Query, Integer> queryIntegerMap) {
-        StringBuilder sb = new StringBuilder()
-        queryIntegerMap.keySet().eachWithIndex { Query q, int index ->
-            sb << "ClusterQuery: $index :  ${queryIntegerMap.get(q)}  ${q.toString(Indexes.FIELD_CONTENTS)}  \n"
-        }
-        return sb.toString()
-    }
+//    static String printQuerySet(Map<Query, Integer> queryIntegerMap) {
+//        StringBuilder sb = new StringBuilder()
+//        queryIntegerMap.keySet().eachWithIndex { Query q, int index ->
+//            sb << "ClusterQuery: $index :  ${queryIntegerMap.get(q)}  ${q.toString(Indexes.FIELD_CONTENTS)}  \n"
+//        }
+//        return sb.toString()
+//    }
 }

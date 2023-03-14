@@ -32,6 +32,7 @@ class QuerySet {
         totalHitsReturnedByOnlyOneQuery =0
 
         for (int i = 0; i < arrayOfQueryBuilders.size(); i++) {
+            if (arrayOfQueryBuilders[i] == null) println "null and i is " + i
             Query q = arrayOfQueryBuilders[i].build()
             queryArray[i] = q
 

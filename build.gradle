@@ -19,7 +19,7 @@ dependencies {
     //  compile group: 'io.jenetics', name: 'jenetics', version: '6.0.0'
 
     // https://mvnrepository.com/artifact/io.jenetics/jenetics
-    implementation group: 'io.jenetics', name: 'jenetics', version: '6.2.0'
+    implementation group: 'io.jenetics', name: 'jenetics', version: '6.3.0'
 
     // https://mvnrepository.com/artifact/io.jenetics/jenetics
     //implementation group: 'io.jenetics', name: 'jenetics', version: '7.1.2'
@@ -39,8 +39,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-
-
 
 
     //  testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
