@@ -91,8 +91,7 @@ public class JeneticsMain {
 
                     final Engine<IntegerGene, Double> engine = Engine.
                             builder(
-                                    JeneticsMain::searchQueryFitness,
-                                    gtf)
+                                    JeneticsMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
                             // .survivorsSelector(new
                             // StochasticUniversalSelector<>()).offspringSelector(new
