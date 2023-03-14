@@ -10,7 +10,7 @@ import org.apache.lucene.search.TotalHitCountCollector
 @CompileStatic
 class QuerySet {
 
-    //holds the original query and the result of running the non-intersecting query
+    //holds the original query(for reporting) and the result of running the non-intersecting query
     Map<Query, Integer> queryMap
     Query[] queryArray
     int totalHitsReturnedByOnlyOneQuery
