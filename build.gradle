@@ -3,9 +3,6 @@ plugins {
     id 'java'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
@@ -24,12 +21,6 @@ dependencies {
     implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '7.4.0'
     implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '7.4.0'
 
-    // https://mvnrepository.com/artifact/junit/junit
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.3-groovy-4.0'
 
     repositories {
@@ -38,7 +29,7 @@ dependencies {
         }
     }
 
-    dependencies { implementation name: 'ecj-27' }
+    dependencies { implementation group: 'cs.gmu.edu', name: 'ecj-27', version: '27' }
 }
 
 test {
