@@ -150,7 +150,7 @@ class ClusterMainECJ extends Evolve {
                                      //       [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
-                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob,gaEngine)
 
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))

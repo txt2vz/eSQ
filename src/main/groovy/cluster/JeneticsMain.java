@@ -36,18 +36,18 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-           IndexEnum.CRISIS3,
-           IndexEnum.CRISIS4,
-           IndexEnum.NG3,
-           IndexEnum.NG5,
+            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
             IndexEnum.NG6,
-           IndexEnum.R4,
-         IndexEnum.R5,
-          IndexEnum.R6
+            IndexEnum.R4,
+            IndexEnum.R5,
+            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
-        final int k = getK(gt, indexEnum, SETK);;
+        final int k = getK(gt, indexEnum, SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
         BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
         QuerySet querySet = new QuerySet(bqbArray);
@@ -59,14 +59,14 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 256;
-        final int maxGen = 700;
+        final int popSize = 512;
+        final int maxGen = 800;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 30;
-        final int numberOfJobs = 7;
+        final int numberOfJobs = 11;
         final int numberMaxFitJobs = 5;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
@@ -78,29 +78,29 @@ public class JeneticsMain {
             indexEnum = index;
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
-                List <Result> resultList1 = new ArrayList<>();
+                List<Result> resultList1 = new ArrayList<>();
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
                     final Factory<Genotype<IntegerGene>> gtf =
                             (SETK) ?
                                     Genotype.of(
-                                           // IntegerChromosome.of(0, maxWordListValue, genomeLength)
+                                            // IntegerChromosome.of(0, maxWordListValue, genomeLength)
                                             IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
                                             IntegerChromosome.of(2, 8, 1)) :  //psossible values for k
 
                                     Genotype.of(
-                                       //     IntegerChromosome.of(0, maxWordListValue, genomeLength));
-                                             IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
+                                            //     IntegerChromosome.of(0, maxWordListValue, genomeLength));
+                                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
 
                     final Engine<IntegerGene, Double> engine = Engine.
                             builder(
                                     JeneticsMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
 
-                             .survivorsSelector(new TournamentSelector<>(3))
+                            .survivorsSelector(new TournamentSelector<>(3))
                             //  .survivorsSelector(new EliteSelector<>(2))
-                             .offspringSelector(new TournamentSelector<>(3))
+                            .offspringSelector(new TournamentSelector<>(3))
 
                             //    .alterers(
                             //         new Mutator<>(0.03) ,
@@ -110,7 +110,7 @@ public class JeneticsMain {
                             //   .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
                             //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
                             //  new MeanAlterer <>(0.6))
-                              .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
+                            .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
                             .build();
 
                     final EvolutionStatistics<Double, ?>
@@ -127,7 +127,7 @@ public class JeneticsMain {
 
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                          System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " ko " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
+                                        System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " ko " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                     })
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
@@ -152,16 +152,16 @@ public class JeneticsMain {
 
                     System.out.println(" result  " + result + " gen " + result.generation() + " v " + effectiveness.getvMeasure());
 
-                    Result results = new Result(SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob);
+                    Result results = new Result(SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
 
-                    results.report(new File("results//resultsJenetics2.csv"));
-                    results.queryReport(new File("results//jeneticsQueries2.txt"));
+                    results.report(new File("results//results.csv"));
+                    results.queryReport(new File("results//jeneticsQueries3.txt"));
                     resultList1.add(results);
                 });
 
                 Optional<Result> maxR = resultList1.stream().max(Comparator.comparing(Result::getFitness));
                 System.out.println("max r fit " + maxR.get().getFitness());
-                maxR.get().report(new File("results//maxFresultsJenetics.csv"));
+                maxR.get().report(new File("results//maxFitResults.csv"));
             });
         });
 
