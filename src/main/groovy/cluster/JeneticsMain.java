@@ -36,13 +36,13 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
+//            IndexEnum.CRISIS3,
+//            IndexEnum.CRISIS4,
+//            IndexEnum.NG3,
+//            IndexEnum.NG5,
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+//            IndexEnum.R5,
             IndexEnum.R6
     );
 
@@ -59,14 +59,14 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 512;
+        final int popSize = 100;
         final int maxGen = 800;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 30;
-        final int numberOfJobs = 11;
+        final int numberOfJobs = 3;
         final int numberMaxFitJobs = 5;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
@@ -127,7 +127,7 @@ public class JeneticsMain {
 
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        System.out.println("Gen: " + ind.generation() + " bestPhenoFit " + ind.bestPhenotype().fitness() + " fitness: " + ind.bestFitness() + " ko " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
+                                        System.out.println("Gen: " + ind.generation() + " bestPhenoFit " +  " fitness: " + ind.bestFitness() + " k " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                     })
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
@@ -154,14 +154,14 @@ public class JeneticsMain {
 
                     Result results = new Result(SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
 
-                    results.report(new File("results//results.csv"));
+                    results.report(new File("results//resultsRA.csv"));
                     results.queryReport(new File("results//jeneticsQueries3.txt"));
                     resultList1.add(results);
                 });
 
                 Optional<Result> maxR = resultList1.stream().max(Comparator.comparing(Result::getFitness));
                 System.out.println("max r fit " + maxR.get().getFitness());
-                maxR.get().report(new File("results//maxFitResults.csv"));
+                maxR.get().report(new File("results//maxFitResultsRA.csv"));
             });
         });
 

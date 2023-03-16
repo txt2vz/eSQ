@@ -10,7 +10,7 @@ class Result {
     final boolean setK, onlyDocsInOneCluster
     String queryTypeName, queryOnlyString
     LuceneClassifyMethod classifyMethod
-    final double v, h, c
+    final double v, h, c, adjusted_rand
     final double fitness
     final double kPenalty, intersectRatio
     final double percentClustered
@@ -32,6 +32,7 @@ class Result {
         v = effectiveness.vMeasure
         h = effectiveness.homogeneity
         c = effectiveness.completeness
+        adjusted_rand = effectiveness.adjusted_rand
         clusterCountError = effectiveness.clusterCountError
 
         numberOfDocumentsClustered = effectiveness.numberOfDocumentsInClusters
@@ -74,10 +75,10 @@ class Result {
 
         //spreadsheet to be used with pivot table
         if (!fcsv.exists()) {
-            fcsv << 'SetK,QueryType,Index,classifyMethod,v,homogeneity,completeness,fitness,numberOfDocumentsClustered,numDocs,percentClustered,numberOfClasses,numberOfClusters,clusterCountError,queryOnly,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
+            fcsv << 'SetK,QueryType,Index,classifyMethod,v,homogeneity,completeness,adjusted_rand,fitness,numberOfDocumentsClustered,numDocs,percentClustered,numberOfClasses,numberOfClusters,clusterCountError,queryOnly,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
 
         }
 
-        fcsv << "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $fitness, $numberOfDocumentsClustered, $numDocs, $percentClustered, $numberOfClasses, $numberOfClusters, $clusterCountError, $queryOnlyString, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
+        fcsv << "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c,$adjusted_rand, $fitness, $numberOfDocumentsClustered, $numDocs, $percentClustered, $numberOfClasses, $numberOfClusters, $clusterCountError, $queryOnlyString, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
     }
 }

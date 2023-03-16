@@ -18,7 +18,7 @@ import org.apache.lucene.search.BooleanQuery
 @CompileStatic
 class ClusterMainECJ extends Evolve {
 
-    final static int NUMBER_OF_JOBS = 2
+    final static int NUMBER_OF_JOBS = 3
     final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
@@ -28,17 +28,17 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-//           IndexEnum.CRISIS3,
-//           IndexEnum.NG3,
-//
-//           IndexEnum.CRISIS4,
-//           IndexEnum.R4,
-//
-           IndexEnum.NG5,
-//           IndexEnum.R5,
+           IndexEnum.CRISIS3,
+           IndexEnum.NG3,
 
- //        IndexEnum.NG6,
-  //         IndexEnum.R6
+           IndexEnum.CRISIS4,
+           IndexEnum.R4,
+
+           IndexEnum.NG5,
+           IndexEnum.R5,
+
+         IndexEnum.NG6,
+           IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
@@ -153,7 +153,7 @@ class ClusterMainECJ extends Evolve {
                                             Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob,gaEngine)
 
                                             queryOnly ? queryOnlyResultList << result : resultList << result
-                                            result.report(new File('results/results.csv'))
+                                            result.report(new File('results/resultsA.csv'))
                                             result.queryReport(new File('results/queries.txt'))
                                         }
                                     }
@@ -163,9 +163,9 @@ class ClusterMainECJ extends Evolve {
                                 }
                                 Result maxFitResult = resultList.max { it.fitness }
                                 Result maxFitResultQueryOnly = queryOnlyResultList.max { it.fitness }
-                                maxFitResult.report(new File('results/maxFitResults.csv'))
+                                maxFitResult.report(new File('results/maxFitResultsAb.csv'))
                                 if (maxFitResultQueryOnly)
-                                    maxFitResultQueryOnly.report(new File('results/maxFitResults.csv'))
+                                    maxFitResultQueryOnly.report(new File('results/maxFitResultsAb.csv'))
                             }
                         }
                     }

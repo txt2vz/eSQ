@@ -14,6 +14,7 @@ class Effectiveness {
     final double vMeasure
     final double homogeneity
     final double completeness
+    final double adjusted_rand
 
     final int numberOfDocumentsInClusters
     final int clusterCountError
@@ -86,6 +87,7 @@ class Effectiveness {
         vMeasure = resultsList[0].toDouble()
         homogeneity = resultsList[1].toDouble()
         completeness = resultsList[2].toDouble()
+        adjusted_rand = resultsList[3].toDouble()
     }
 
     //call sklearn to get v measure

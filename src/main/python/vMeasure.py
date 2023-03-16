@@ -2,6 +2,7 @@ from pathlib import Path
 from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics.cluster import homogeneity_score
 from sklearn.metrics.cluster import completeness_score
+from sklearn.metrics.cluster import adjusted_rand_score
 
 import numpy as np
 
@@ -23,7 +24,9 @@ v = v_measure_score (classesL, clustersL)
 h = homogeneity_score (classesL, clustersL)
 c = completeness_score (classesL, clustersL)
 
-resString = str(v) + ", " + str(h) + ", " + str(c)
+adjusted_rand_score = adjusted_rand_score(classesL, clustersL)
+
+resString = str(v) + ", " + str(h) + ", " + str(c) + ", " + str(adjusted_rand_score)
 print (resString)
 
 resultsFile = open ("results/resultsPython.csv" , "w")

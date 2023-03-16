@@ -1,5 +1,5 @@
 # https://scikit-learn.org/stable/auto_examples/text/plot_document_clustering.html
-# Author: Peter Prettenhofer <peter.prettenhofer@gmail.com>  zz
+# Author: Peter Prettenhofer <peter.prettenhofer@gmail.com>
 #         Lars Buitinck
 # License: BSD 3 clause
 
@@ -21,6 +21,7 @@ from optparse import OptionParser
 import sys
 from time import time
 import numpy as np
+import os
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
@@ -92,32 +93,32 @@ if len(args) > 0:
 # Load some categories from the training set
 # ------------------------------------------
 
-categories = [
+#categories = [
     #  "alt.atheism",
     #  "talk.religion.misc",
     #  "comp.graphics",
-    "sci.space",
-    "rec.sport.hockey",
-    "soc.religion.christian"
-]
+#    "sci.space",
+#    "rec.sport.hockey",
+#    "soc.religion.christian"
+#]
 # Uncomment the following to do the analysis on all the categories
 # categories = None
 
 # print("Loading 20 newsgroups dataset for categories:")
 # print(categories)
 
-d_folder = "C:/Data/"
+d_folder = "C:/Data/DataSetForPaper2023/"
 # collection_name = "R4"
 # collection_name = "NG4"
 # collection_name = "crisis3"
 # collection_name = "NG5"
 # collection_name = "NG6Full"
 # collection_name = "NG3N"
-collection_name = "NG4N"
+#collection_name = "NG4N"
 
-collection_list = ["crisis3", "NG3", "NG4", "R4", "NG5", "R5"]
-collection_list = ["crisis3", "NG3"]
-
+collection_list = ["crisis3", "NG3", "crisis4", "R4", "NG5", "R5", "NG6", "R6"]
+#collection_list = ["crisis5"]
+#collection_list = ["crisis3"]
 
 # container_path = Path("C:/Data/N3")
 # container_path = Path("C:/Data/NG3Full")
@@ -129,11 +130,10 @@ collection_list = ["crisis3", "NG3"]
 # loop here?
 for collectionName in collection_list:
 
-
     container_path = Path(d_folder + collectionName)
 
     datan = sklearn.datasets.load_files(container_path,  description=None, categories=None, load_content=True,
-                                    shuffle=True, encoding='utf-8', decode_error='ignore', random_state=0, allowed_extensions=None)
+                                        shuffle=True, encoding='utf-8', decode_error='ignore', random_state=0, allowed_extensions=None)
 # print("%d categories  " % len(datan))
 
 # dataset = fetch_20newsgroups(
@@ -158,95 +158,102 @@ for collectionName in collection_list:
     t0 = time()
 
     if opts.use_hashing:
-      if opts.use_idf:
-          # Perform an IDF normalization on the output of HashingVectorizer
-          hasher = HashingVectorizer(
-              n_features=opts.n_features,
-              stop_words="english",
-              alternate_sign=False,
-              norm=None,
-          )
-          vectorizer = make_pipeline(hasher, TfidfTransformer())
-      else:
-          vectorizer = HashingVectorizer(
-              n_features=opts.n_features,
-              stop_words="english",
-              alternate_sign=False,
-              norm="l2",
-          )
+        if opts.use_idf:
+            # Perform an IDF normalization on the output of HashingVectorizer
+            hasher = HashingVectorizer(
+                n_features=opts.n_features,
+                stop_words="english",
+                alternate_sign=False,
+                norm=None,
+            )
+            vectorizer = make_pipeline(hasher, TfidfTransformer())
+        else:
+            vectorizer = HashingVectorizer(
+                n_features=opts.n_features,
+                stop_words="english",
+                alternate_sign=False,
+                norm="l2",
+            )
     else:
-      print("tfidf vectorizer")
-      vectorizer = TfidfVectorizer(
-          max_df=0.5,
-          max_features=opts.n_features,
-          min_df=2,
-          stop_words="english",
-          use_idf=opts.use_idf,
+        print("tfidf vectorizer")
+        vectorizer = TfidfVectorizer(
+            max_df=0.5,
+            max_features=opts.n_features,
+            min_df=2,
+            stop_words="english",
+            use_idf=opts.use_idf,
 
-      )
+        )
 
 # clustering runs
     for i in range(2):
-      X = vectorizer.fit_transform(dataset.data)
+        X = vectorizer.fit_transform(dataset.data)
 
-      print("done in %fs" % (time() - t0))
-      print("n_samples: %d, n_features: %d" % X.shape)
-      print()
+        print("done in %fs" % (time() - t0))
+        print("n_samples: %d, n_features: %d" % X.shape)
+        numDocs = X.shape[0]
 
-      km = KMeans(
-        n_clusters=true_k,
-        init="k-means++",
-        max_iter=100,
-        n_init=1,
-        verbose=opts.verbose,
-      )
+        print
+        print()
 
-      print("kMeans ++ run number: " + str(i))
-      print("Clustering sparse data with %s" % km)
-      t0 = time()
-      km.fit(X)
-      print("done in %0.3fs" % (time() - t0))
+        km = KMeans(
+            n_clusters=true_k,
+            init="k-means++",
+            max_iter=100,
+            n_init=1,
+            verbose=opts.verbose,
+        )
+
+        print("kMeans ++ run number: " + str(i))
+        print("Clustering sparse data with %s" % km)
+        t0 = time()
+        km.fit(X)
+        print("done in %0.3fs" % (time() - t0))
 
 # %%
 # Performance metrics
 # -------------------
 
-    v = metrics.v_measure_score (labels, km.labels_)
-    h = metrics.homogeneity_score(labels, km.labels_)
-    c = metrics.completeness_score(labels, km.labels_)
+        v = metrics.v_measure_score(labels, km.labels_)
+        h = metrics.homogeneity_score(labels, km.labels_)
+        c = metrics.completeness_score(labels, km.labels_)
+        adjustedRand = metrics.adjusted_rand_score(labels, km.labels_)
 
-    print("V-measure: %0.3f" % v)
-    print("Homogeneity: %0.3f" % h)
-    print("Completeness: %0.3f" % c)
+        print("V-measure: %0.3f" % v)
+        print("Homogeneity: %0.3f" % h)
+        print("Completeness: %0.3f" % c)
 
-    print("Adjusted Rand-Index: %.3f" %
-        metrics.adjusted_rand_score(labels, km.labels_))
-    print(
-      "Silhouette Coefficient: %0.3f"
-      % metrics.silhouette_score(X, km.labels_, sample_size=1000)
-    )
+        print("Adjusted Rand-Index: %.3f" %
+              metrics.adjusted_rand_score(labels, km.labels_))
+        print("Silhouette Coefficient: %0.3f" %
+              metrics.silhouette_score(X, km.labels_, sample_size=1000))
 
-    resultsFile = open ("resultsK.csv" , "a")
-    resultsFile.write(collection_name + ", "  + str(v) + " \n")
-resultsFile.close()
+        filePath = "resultsKpython.csv"
+        resultsFile = open(filePath, "a")
 
-print()
+        if os.path.getsize(filePath) == 0:
+            resultsFile.write("index, v, h, c, adjustRand, numDocs \n")
 
+        resultsFile.write(collectionName + ", " + str(v) +
+                          ", " + str(h) + ", " + str(c) +  ", " + str(adjustedRand) + ", " + str(numDocs) + "\n")
 
+        print()
 # %%
 
-if not opts.use_hashing:
-    print("Top terms per cluster:")
+        if not opts.use_hashing:
+            print("Top terms per cluster:")
 
-    if opts.n_components:
-        original_space_centroids = svd.inverse_transform(km.cluster_centers_)
-        order_centroids = original_space_centroids.argsort()[:, ::-1]
-    else:
-        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+            if opts.n_components:
+                original_space_centroids = svd.inverse_transform(
+                    km.cluster_centers_)
+                order_centroids = original_space_centroids.argsort()[:, ::-1]
+            else:
+                order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 
-    terms = vectorizer.get_feature_names_out()
-    for i in range(true_k):
-        print("Cluster %d:" % i, end="")
-        for ind in order_centroids[i, :10]:
-            print(" %s" % terms[ind], end="")
-        print()
+            terms = vectorizer.get_feature_names_out()
+            for i in range(true_k):
+                print("Cluster %d:" % i, end="")
+                for ind in order_centroids[i, :10]:
+                    print(" %s" % terms[ind], end="")
+                print()
+        resultsFile.close()
