@@ -105,7 +105,6 @@ public class JeneticsMain {
                             //    .alterers(
                             //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
-
                             //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
                             //   .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
                             //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
