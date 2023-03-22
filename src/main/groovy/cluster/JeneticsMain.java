@@ -154,7 +154,7 @@ public class JeneticsMain {
                     Result results = new Result(SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
 
                     results.report(new File("results//resultsRA.csv"));
-                    results.queryReport(new File("results//jeneticsQueries3.txt"));
+                    results.queryReport(new File("results//jeneticsQueries.txt"));
                     resultList1.add(results);
                 });
 

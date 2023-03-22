@@ -19,7 +19,7 @@ import org.apache.lucene.search.BooleanQuery
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 3
-    final static int MAX_FIT_JOBS = 1
+    final static int MAX_FIT_JOBS = 3
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean useNonIntersectingClustersForTrainingKNN = true
@@ -37,15 +37,15 @@ class ClusterMainECJ extends Evolve {
            IndexEnum.NG5,
            IndexEnum.R5,
 
-         IndexEnum.NG6,
+           IndexEnum.NG6,
            IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
-            [0.03d]
+     //       [0.03d]
    //   [0.00d, 0.03d, 0.05d, 0.07d, 0.1d ]
  //   [0.01d, 0.02d, 0.04d, 0.06d, 0.08d ]
- //          [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d, 0.08d, 0.09d, 0.1d]
+          [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d]//, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
            0.5d
@@ -153,7 +153,7 @@ class ClusterMainECJ extends Evolve {
                                             Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob,gaEngine)
 
                                             queryOnly ? queryOnlyResultList << result : resultList << result
-                                            result.report(new File('results/resultsA.csv'))
+                                            result.report(new File('results/results.csv'))
                                             result.queryReport(new File('results/queries.txt'))
                                         }
                                     }
@@ -162,10 +162,10 @@ class ClusterMainECJ extends Evolve {
                                     println "--------END JOB $job  -----------------------------------------------"
                                 }
                                 Result maxFitResult = resultList.max { it.fitness }
-                                Result maxFitResultQueryOnly = queryOnlyResultList.max { it.fitness }
-                                maxFitResult.report(new File('results/maxFitResultsAb.csv'))
-                                if (maxFitResultQueryOnly)
-                                    maxFitResultQueryOnly.report(new File('results/maxFitResultsAb.csv'))
+                               // Result maxFitResultQueryOnly = queryOnlyResultList.max { it.fitness }
+                                maxFitResult.report(new File('results/maxFitResults.csv'))
+                               // if (maxFitResultQueryOnly)
+                                //    maxFitResultQueryOnly.report(new File('results/maxFitResults.csv'))
                             }
                         }
                     }
