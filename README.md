@@ -1,5 +1,5 @@
 # eSQ evolved search queries for document clustering
-## Uses a GA to create queries
+Uses a GA to create Apache Lucene ( https://lucene.apache.org/ ) queries
 
 Install support for Java (17) and Groovy
 Install python
