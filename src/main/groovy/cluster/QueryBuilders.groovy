@@ -50,21 +50,21 @@ class QueryBuilders {
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
         Set<Integer> alleles = [] as Set<Integer>
 
-        int i=0
+        int gene=0
         int uniqueWords = 0
 
         //populate set of unique root words
-        while (uniqueWords < k  && i < intChromosome.size()){
-            final int allele = intChromosome[i]
+        while (uniqueWords < k  && gene < intChromosome.size()){
+            final int allele = intChromosome[gene]
 
             if (alleles.add(allele) ){
                 arrayOfBuilders[uniqueWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
                uniqueWords++
             }
-            i++
+            gene++
         }
 
-        for (int j = i; j < intChromosome.size(); j++) {
+        for (int j = gene; j < intChromosome.size(); j++) {
 
             final int allele = intChromosome[j]
             final int clusterNumber = j % k
@@ -85,20 +85,12 @@ class QueryBuilders {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
 
-        for (int i = 0; i < k && i < intChromosome.size(); i++) {
+        for (int gene = 0; gene < k && gene < intChromosome.size(); gene++) {
 
-            final int allele = intChromosome[i]
-            arrayOfBuilders[i] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
+            final int allele = intChromosome[gene]
+            arrayOfBuilders[gene] = new BooleanQuery.Builder().add(termQueryList[allele], BooleanClause.Occur.SHOULD)
         }
 
         return arrayOfBuilders
     }
-
-//    static String printQuerySet(Map<Query, Integer> queryIntegerMap) {
-//        StringBuilder sb = new StringBuilder()
-//        queryIntegerMap.keySet().eachWithIndex { Query q, int index ->
-//            sb << "ClusterQuery: $index :  ${queryIntegerMap.get(q)}  ${q.toString(Indexes.FIELD_CONTENTS)}  \n"
-//        }
-//        return sb.toString()
-//    }
 }

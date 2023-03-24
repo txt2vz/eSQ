@@ -60,14 +60,14 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 100;
-        final int maxGen = 800;
+        final int maxGen = 200;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 30;
-        final int numberOfJobs = 3;
-        final int numberMaxFitJobs = 5;
+        final int numberOfJobs = 2;
+        final int numberMaxFitJobs = 3;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
         final double minIntersectRatio = 0.5d;
@@ -153,14 +153,14 @@ public class JeneticsMain {
 
                     Result results = new Result(SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
 
-                    results.report(new File("results//resultsRA.csv"));
+                    results.report(new File("results//resultsJenetics.csv"));
                     results.queryReport(new File("results//jeneticsQueries.txt"));
                     resultList1.add(results);
                 });
 
                 Optional<Result> maxR = resultList1.stream().max(Comparator.comparing(Result::getFitness));
                 System.out.println("max r fit " + maxR.get().getFitness());
-                maxR.get().report(new File("results//maxFitResultsRA.csv"));
+                maxR.get().report(new File("results//maxFitResultsJenetics.csv"));
             });
         });
 

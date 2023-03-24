@@ -3,7 +3,7 @@ Uses a GA to create Apache Lucene ( https://lucene.apache.org/ ) queries
 
 Install support for Java (17), Groovy and Python
 
-pip3 install sklearn for cluster evaluation
+Install sklearn (https://scikit-learn.org/stable/) for cluster evaluation
 
 ## GA Engines 
 1. You can run eSQ using ECJ (https://cs.gmu.edu/~eclab/projects/ecj/ ) via https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/ClusterMainECJ.groovy 
