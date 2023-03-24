@@ -8,3 +8,9 @@ Install python
 pip3 install sklearn
 # https://shura.shu.ac.uk/28567/
 # http://shura.shu.ac.uk/15409/
+
+#GA Engines 
+You can run eSQ using ECJ via https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/ClusterMainECJ.groovy 
+Alternatively you can use the more modern Jenetics.IO https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/JeneticsMain.java
+
+We have found ECJ to produce slightly better results which we believe may be to do with the use of subpopulations
