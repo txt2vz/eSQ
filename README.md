@@ -1,13 +1,14 @@
 # eSQ evolved search queries for document clustering
-## Usese GA to create queries
-### Has been tested with IntelliJ
-Install support for Java (17) and Groovy
+## Uses GA to create queries
 
+Install support for Java (17) and Groovy
 Install python
 
 pip3 install sklearn
-# https://shura.shu.ac.uk/28567/
-# http://shura.shu.ac.uk/15409/
+
+# Papers
+## https://shura.shu.ac.uk/28567/
+## http://shura.shu.ac.uk/15409/
 
 # GA Engines 
 You can run eSQ using ECJ (https://cs.gmu.edu/~eclab/projects/ecj/ ) via https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/ClusterMainECJ.groovy 
