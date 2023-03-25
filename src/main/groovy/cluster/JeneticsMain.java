@@ -60,7 +60,7 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 100;
-        final int maxGen = 200;
+        final int maxGen = 400;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
