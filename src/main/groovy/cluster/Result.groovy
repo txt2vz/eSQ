@@ -18,6 +18,7 @@ class Result {
     final int  uniqueHits, totalHitsAllQueries, numberOfDocumentsClustered, clusterCountError, numberOfClusters, numberOfClasses
     final int popSize, job, maxFitJob, generation
     final int numDocs = Indexes.indexReader.numDocs()
+    final int absClusterCountError
     String indexName
     String setkDescription
     String gaEngine
@@ -40,6 +41,8 @@ class Result {
         numberOfClasses = effectiveness.numberOfClasses
         percentClustered = (numberOfDocumentsClustered / numDocs)  * 100 as Double
         queryOnlyString = queryOnly ? 'docsMatchingQueryOnly' : 'allDocuments'
+        absClusterCountError = Math.abs(clusterCountError)
+
 
         this.setK = setK
         this.classifyMethod = classifyMethod
@@ -56,6 +59,7 @@ class Result {
         this.k_for_knn = k_for_knn
         this.queryMap = querySet.getQueryMap()
         this.gaEngine = gaEngine
+
 
         if (!setK) assert clusterCountError == 0
     }
@@ -75,10 +79,10 @@ class Result {
 
         //spreadsheet to be used with pivot table
         if (!fcsv.exists()) {
-            fcsv << 'SetK,QueryType,Index,classifyMethod,v,homogeneity,completeness,adjusted_rand,fitness,numberOfDocumentsClustered,numDocs,percentClustered,numberOfClasses,numberOfClusters,clusterCountError,queryOnly,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
+            fcsv << 'SetK,QueryType,Index,classifyMethod,v,homogeneity,completeness,adjusted_rand,fitness,numberOfDocumentsClustered,numDocs,percentClustered,numberOfClasses,numberOfClusters,clusterCountError,absClusterCountError,queryOnly,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
 
         }
 
-        fcsv << "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $adjusted_rand, $fitness, $numberOfDocumentsClustered, $numDocs, $percentClustered, $numberOfClasses, $numberOfClusters, $clusterCountError, $queryOnlyString, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
+        fcsv << "$setkDescription, $queryTypeName, $indexName, $classifyMethod, $v, $h, $c, $adjusted_rand, $fitness, $numberOfDocumentsClustered, $numDocs, $percentClustered, $numberOfClasses, $numberOfClusters, $clusterCountError, $absClusterCountError, $queryOnlyString, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
     }
 }
