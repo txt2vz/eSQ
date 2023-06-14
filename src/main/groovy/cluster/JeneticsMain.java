@@ -36,7 +36,7 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-//            IndexEnum.CRISIS3,
+           IndexEnum.CRISIS3,
 //            IndexEnum.CRISIS4,
 //            IndexEnum.NG3,
 //            IndexEnum.NG5,
@@ -60,14 +60,14 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 100;
-        final int maxGen = 400;
+        final int maxGen = 300;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 30;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 3;
+        final int numberMaxFitJobs = 2;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
         final double minIntersectRatio = 0.5d;
@@ -87,7 +87,7 @@ public class JeneticsMain {
                                     Genotype.of(
                                             // IntegerChromosome.of(0, maxWordListValue, genomeLength)
                                             IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
-                                            IntegerChromosome.of(2, 8, 1)) :  //psossible values for k
+                                            IntegerChromosome.of(2, 9, 1)) :  //psossible values for k
 
                                     Genotype.of(
                                             //     IntegerChromosome.of(0, maxWordListValue, genomeLength));
