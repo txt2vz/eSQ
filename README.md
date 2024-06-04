@@ -11,7 +11,10 @@ Install sklearn (https://scikit-learn.org/stable/) for cluster evaluation
 
 We have found ECJ to produce slightly better results which we believe may be to do with the use of subpopulations
 
+## Indexes
+Lucene is used for indexing and several pre-built indexes are included in the 'indexes' folder.  
+You can build your own index by using https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/index/BuildIndex.groovy
 
 ## Papers
 1. https://shura.shu.ac.uk/28567/ 
-2.  http://shura.shu.ac.uk/15409/
+2. http://shura.shu.ac.uk/15409/
