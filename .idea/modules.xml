@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/eSQ.iml" filepath="$PROJECT_DIR$/.idea/eSQ.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/eSQ.iml" filepath="$PROJECT_DIR$/.idea/modules/eSQ.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/eSQ.main.iml" filepath="$PROJECT_DIR$/.idea/modules/eSQ.main.iml" />
     </modules>
   </component>

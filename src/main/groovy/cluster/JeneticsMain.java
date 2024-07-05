@@ -28,22 +28,23 @@ public class JeneticsMain {
     final static boolean useNonIntersectingClustersForTrainingKNN = true;
     final static int k_for_knn = 10;
 
-    final static QType qType = //QType.OR1;
-            QType.OR_INTERSECT;
+    final static QType qType = QType.OR1;
+            //QType.OR_INTERSECT;
     static IndexEnum indexEnum;
     // static IndexReader ir;
     final static boolean SETK = true;
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-           IndexEnum.CRISIS3,
+  //       IndexEnum.NG4b
+            //  IndexEnum.CRISIS3,
 //            IndexEnum.CRISIS4,
-//            IndexEnum.NG3,
+            IndexEnum.NG3
 //            IndexEnum.NG5,
 //            IndexEnum.NG6,
 //            IndexEnum.R4,
 //            IndexEnum.R5,
-            IndexEnum.R6
+ //           IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -60,13 +61,13 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 100;
-        final int maxGen = 300;
+        final int maxGen = 80;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 30;
-        final int numberOfJobs = 2;
+        final int numberOfJobs = 1;
         final int numberMaxFitJobs = 2;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;

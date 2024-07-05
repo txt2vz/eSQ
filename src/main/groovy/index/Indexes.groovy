@@ -20,6 +20,7 @@ enum IndexEnum {
     CRISIS4('indexes/crisis4', 4),
 
     NG3('indexes/NG3', 3),
+    NG4b('indexes/NG4b', 4),
     NG5('indexes/NG5', 5),
     NG6('indexes/NG6', 6),
 
@@ -90,7 +91,11 @@ class Indexes {
         setIndex(ie)
 
         MIN_INTERSECT_RATIO = minIntersectRatio
-        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader) asImmutable()
+        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader)
+                //ImportantTQ.getTFIDFTermQueryList(ie)
+
+                //
+                // ImportantTermQueries.getTFIDFTermQueryList(indexReader) asImmutable()
         println "termquery list: $termQueryList"
 
         println("Index details: ${ie.toString()}")

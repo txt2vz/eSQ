@@ -16,10 +16,22 @@ dependencies {
     implementation group: 'io.jenetics', name: 'jenetics', version: '7.1.2'
 
     // https://mvnrepository.com/artifact/org.apache.lucene/lucene-core
-    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '7.4.0'
-    implementation group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.4.0'
-    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '7.4.0'
-    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '7.4.0'
+//    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '7.4.0'
+//    implementation group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.4.0'
+//    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '7.4.0'
+//    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '7.4.0'
+
+//    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '8.11.3'
+//    implementation group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.11.3'
+//    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '8.11.3'
+//    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.11.3'
+
+    // https://mvnrepository.com/artifact/org.apache.lucene/lucene-core
+    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '9.11.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-analysis-common', version: '9.11.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '9.11.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '9.11.1'
+
 
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.3-groovy-4.0'
 

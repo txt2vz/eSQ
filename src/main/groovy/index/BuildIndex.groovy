@@ -29,9 +29,9 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'crisis5'
+        String indexName = 'R6'
         String indexPath = 'indexes' + /\$indexName/
-        String docsPath =  /C:\Data/ + /\$indexName/
+        String docsPath =  'datasets' + /\$indexName/
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
@@ -89,7 +89,7 @@ class BuildIndex {
             }
             categoryNumber++
         }
-        println "Total docs: " + writer.maxDoc()
+        println "Total docs: " + writer.numRamDocs()//  .maxDoc()
         writer.commit()
         writer.close()
         IndexReader indexReader = DirectoryReader.open(directory)

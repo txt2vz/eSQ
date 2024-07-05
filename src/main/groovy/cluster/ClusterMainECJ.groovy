@@ -19,7 +19,7 @@ import org.apache.lucene.search.BooleanQuery
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 2
-    final static int MAX_FIT_JOBS = 3
+    final static int MAX_FIT_JOBS = 1
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean useNonIntersectingClustersForTrainingKNN = true
@@ -29,15 +29,15 @@ class ClusterMainECJ extends Evolve {
     List<IndexEnum> indexList = [
 
            IndexEnum.CRISIS3,
-//           IndexEnum.NG3,
-//
-//           IndexEnum.CRISIS4,
-//           IndexEnum.R4,
-//
-//           IndexEnum.NG5,
-//           IndexEnum.R5,
-//
-//           IndexEnum.NG6,
+           IndexEnum.NG3,
+
+           IndexEnum.CRISIS4,
+           IndexEnum.R4,
+
+           IndexEnum.NG5,
+           IndexEnum.R5,
+
+           IndexEnum.NG6,
            IndexEnum.R6
     ]
 
@@ -55,7 +55,7 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-            QType.OR_INTERSECT,
+     //       QType.OR_INTERSECT,
            QType.OR1
     ]
 
@@ -74,7 +74,7 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-            [true].each { ga_to_set_k ->
+            [false].each { ga_to_set_k ->
    //       [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
   //      [true, false].each { ga_to_set_k ->
 
@@ -134,6 +134,7 @@ class ClusterMainECJ extends Evolve {
 
                                     final Date GATime = new Date()
                                     TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
+                                  //  timingFile <<  " ${indexEnum.name()},  $qType,   ${durationGA.toMilliseconds()}  \n"
 
                                     BooleanQuery.Builder[] arrayOfQueryBuilders = bestClusterFitness.arrayOfQueryBuilders
 
@@ -150,6 +151,10 @@ class ClusterMainECJ extends Evolve {
                                      //       [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
+                                            TimeDuration durationKNN = TimeCategory.minus(new Date(), indexTime)
+
+                                            timingFile <<  " ${indexEnum.name()},  $qType, $GA_TO_SETK(),  ${durationGA.toMilliseconds()} , ${durationKNN.toMilliseconds()} \n"
+
                                             Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob,gaEngine)
 
                                             queryOnly ? queryOnlyResultList << result : resultList << result
