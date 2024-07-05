@@ -90,19 +90,7 @@ class BuildIndex {
         writer.close()
         IndexReader indexReader = DirectoryReader.open(directory)
         IndexSearcher indexSearcher = new IndexSearcher(indexReader)
-        println "Total docs: ${indexReader.numDocs()}" //+ writer.numRamDocs()//  .maxDoc()
-
-       /* TotalHitCountCollector trainCollector = new TotalHitCountCollector();
-        final TermQuery trainQ = new TermQuery(new Term(Indexes.FIELD_TEST_TRAIN, "train"))
-
-        TotalHitCountCollector testCollector = new TotalHitCountCollector();
-        final TermQuery testQ = new TermQuery(new Term(Indexes.FIELD_TEST_TRAIN, "test"))
-
-        indexSearcher.search(trainQ, trainCollector);
-        def trainTotal = trainCollector.getTotalHits();
-
-        indexSearcher.search(testQ, testCollector);
-        def testTotal = testCollector.getTotalHits(); */
+        println "Total docs: ${indexReader.numDocs()}"
 
         final Date end = new Date()
         TimeDuration duration = TimeCategory.minus(end, start)
@@ -110,7 +98,7 @@ class BuildIndex {
 
         println "catsNameFreq $catsNameFreq"
 
-        IndexUtils.categoryFrequencies(indexSearcher, true)  //.showCategoryFrequencies(Indexes.indexSearcher)
+        IndexUtils.categoryFrequencies(indexSearcher, true)
 
         println "numDocs " + indexReader.numDocs()
         println "End ***************************************************************"
