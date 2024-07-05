@@ -73,7 +73,7 @@ class Classify {
 
         indexWriter.forceMerge(1)
         indexWriter.commit()
-        println "Max docs: " + indexWriter.maxDoc() + " numDocs: " + indexWriter.numDocs()
+//        println "Max docs: " + indexWriter.maxDoc() + " numDocs: " + indexWriter.numDocs()
 
         indexWriter.close()
         Indexes.setIndex(Indexes.index)
