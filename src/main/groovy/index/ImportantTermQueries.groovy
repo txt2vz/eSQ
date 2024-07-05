@@ -23,9 +23,8 @@ class ImportantTermQueries {
     static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {
 
         Map<TermQuery, Double> termQueryMap = [:]
-       // BytesRef termbr;
+
         TFIDFSimilarity tfidfSim = new ClassicSimilarity()
-        final int numDocs = indexReader.numDocs()
 
         for (LeafReaderContext context : indexReader.leaves()) {
             LeafReader leafReader = context.reader();
@@ -45,20 +44,12 @@ class ImportantTermQueries {
                     PostingsEnum postingsEnum = termsEnum.postings(null, PostingsEnum.FREQS);
                     while (postingsEnum.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
 
-                        // Get document ID
-                       // int docID = postingsEnum.docID();
 
                         // Get term frequency for the current document
                         int termFreqInCurrentDoc = postingsEnum.freq();
 
-                        //   final double tfidf = tfidfSim.tf(freq) * tfidfSim.idf(indexReader.numDocs(), docFreq)
-                        // final double tfidf = tfidfSim.tf(termFreqInCurrentDoc) * tfidfSim.idf(docFreq, indexReader.numDocs())
-                        // a puzzle - I have the parameters for idf the wrong way round but it works?
+                        // a puzzle -  the parameters for idf the wrong way round but it works?
                         final double tfidf = tfidfSim.tf(termFreqInCurrentDoc) * tfidfSim.idf(indexReader.numDocs(), docFreq)
-
-                        // Output document ID and term frequency
-                     //   if (t.text() == 'christ')
-                       //     println("DocID: $docID tfidftotal $tfidfTotal   Term Frequency in current doc: $termFreqInCurrentDoc  docFreq $docFreq  Term  ${t.text()}  tfidf $tfidf");
 
                         tfidfTotal += tfidf
                     }
@@ -67,14 +58,10 @@ class ImportantTermQueries {
             }
         }
 
-        println " Before sort termQueryMap size: ${termQueryMap.size()} "
-
-        println "termQueryMap (40) ${termQueryMap.take(40)}"
-
         termQueryMap = termQueryMap.sort { a, b -> a.value <=> b.value }
         List<TermQuery> tql = new ArrayList<TermQuery>(termQueryMap.keySet().take(maxSize))
 
-        println "After sort termQueryMap size: ${termQueryMap.size()}  termQuerylist size: ${tql.size()}  termQuerylist (first 80): ${tql.take(80)}"
+        println "After sort termQueryMap size: ${termQueryMap.size()}  termQuerylist size: ${tql.size()}  termQuerylist (first 40): ${tql.take(40)}"
         println "termQueryMap (40) ${termQueryMap.take(40)}"
         return tql.asImmutable()
     }
@@ -100,7 +87,7 @@ class ImportantTermQueries {
 
         final Date start = new Date()
 
-        def l = getTFIDFTermQueryList(IndexEnum.CRISIS3.indexReader)
+        def l = getTFIDFTermQueryList(IndexEnum.NG3.indexReader)
         println "Important word list:  $l"
 
         final Date end = new Date()
