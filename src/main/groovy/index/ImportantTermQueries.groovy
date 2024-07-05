@@ -39,27 +39,26 @@ class ImportantTermQueries {
 
                 Term t = new Term(Indexes.FIELD_CONTENTS, term);
                 long docFreq = indexReader.docFreq(t);
-              //  long totalTermFreq = indexReader.totalTermFreq(t);
-              //  double idf = Math.log(numDocs / (double) (docFreq + 1)) + 1.0;
-               // double tf = totalTermFreq / (double) numDocs;
 
                 if (isUsefulTerm(docFreq, t.text())) {
                     double tfidfTotal = 0
                     PostingsEnum postingsEnum = termsEnum.postings(null, PostingsEnum.FREQS);
                     while (postingsEnum.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
+
                         // Get document ID
-                        int docID = postingsEnum.docID();
+                       // int docID = postingsEnum.docID();
 
                         // Get term frequency for the current document
-                        int termFreqinCurrentDoc = postingsEnum.freq();
+                        int termFreqInCurrentDoc = postingsEnum.freq();
 
                         //   final double tfidf = tfidfSim.tf(freq) * tfidfSim.idf(indexReader.numDocs(), docFreq)
-                        // final double tfidf = tfidfSim.tf(termFreqinCurrentDoc) * tfidfSim.idf(docFreq, indexReader.numDocs())
-                        final double tfidf = tfidfSim.tf(termFreqinCurrentDoc) * tfidfSim.idf(indexReader.numDocs(), docFreq)
+                        // final double tfidf = tfidfSim.tf(termFreqInCurrentDoc) * tfidfSim.idf(docFreq, indexReader.numDocs())
+                        // a puzzle - I have the parameters for idf the wrong way round but it works?
+                        final double tfidf = tfidfSim.tf(termFreqInCurrentDoc) * tfidfSim.idf(indexReader.numDocs(), docFreq)
 
                         // Output document ID and term frequency
                      //   if (t.text() == 'christ')
-                       //     println("DocID: $docID tfidftotal $tfidfTotal   Term Frequency in current doc: $termFreqinCurrentDoc  docFreq $docFreq  Term  ${t.text()}  tfidf $tfidf");
+                       //     println("DocID: $docID tfidftotal $tfidfTotal   Term Frequency in current doc: $termFreqInCurrentDoc  docFreq $docFreq  Term  ${t.text()}  tfidf $tfidf");
 
                         tfidfTotal += tfidf
                     }
