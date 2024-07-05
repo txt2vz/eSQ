@@ -91,11 +91,8 @@ class Indexes {
         setIndex(ie)
 
         MIN_INTERSECT_RATIO = minIntersectRatio
-        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader)
-                //ImportantTQ.getTFIDFTermQueryList(ie)
+        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader) asImmutable()
 
-                //
-                // ImportantTermQueries.getTFIDFTermQueryList(indexReader) asImmutable()
         println "termquery list: $termQueryList"
 
         println("Index details: ${ie.toString()}")
