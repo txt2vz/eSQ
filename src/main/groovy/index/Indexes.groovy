@@ -26,7 +26,9 @@ enum IndexEnum {
 
     R4('indexes/R4', 4),
     R5('indexes/R5', 5),
-    R6('indexes/R6', 6)
+    R6('indexes/R6', 6),
+
+    space('indexes/space', 1)
 
 
     // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
@@ -91,7 +93,7 @@ class Indexes {
         setIndex(ie)
 
         MIN_INTERSECT_RATIO = minIntersectRatio
-        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader) asImmutable()
+        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
 
         println "termquery list: $termQueryList"
 
