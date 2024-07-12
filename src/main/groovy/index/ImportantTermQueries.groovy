@@ -64,8 +64,8 @@ class ImportantTermQueries {
         def termQueryMapDescend = termQueryMap.sort { a, b -> a.value <=> b.value }
 
         def tql = new ArrayList<TermQuery>(termQueryMapDescend.keySet().take(maxSize))
-        println "termQueryMapDescend first (40) ${termQueryMapDescend.take(40)}"
-        println "termQueryList first (40) ${tql.take(40)}"
+        println "termQueryMapDescend first (40): ${termQueryMapDescend.take(40)}"
+        println "termQueryList first (40): ${tql.take(40)}"
 
         List<TermQuery> tql40 = tql.take(40)
         print "Important words: "
@@ -98,7 +98,6 @@ class ImportantTermQueries {
         final Date start = new Date()
 
         def l = getTFIDFTermQueryList(IndexEnum.NG3.indexReader)
-        // println "Important word list:  $l"
 
         final Date end = new Date()
         TimeDuration duration = TimeCategory.minus(end, start)
