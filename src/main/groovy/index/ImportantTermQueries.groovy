@@ -41,9 +41,7 @@ class ImportantTermQueries {
                     assert totalDocs > 0
 
                     double idf = Math.log((double) (totalDocs) / (double) (docFreq))  + 1.0
-//                    double idf2 = Math.log((double) (docFreq) / (double) (totalDocs))  + 1.0
-//                    double idf3 = totalDocs / docFreq
-//                    double idf4 = docFreq / totalDocs
+
                     double tfidfTotal = 0
                     double tfidf
                     PostingsEnum postingsEnum = termsEnum.postings(null, PostingsEnum.FREQS);
