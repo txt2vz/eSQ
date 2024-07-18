@@ -31,14 +31,14 @@ class ClusterMainECJ extends Evolve {
            IndexEnum.CRISIS3,
            IndexEnum.NG3,
 
-           IndexEnum.CRISIS4,
-           IndexEnum.R4,
-
-           IndexEnum.NG5,
-           IndexEnum.R5,
-
-           IndexEnum.NG6,
-           IndexEnum.R6
+//           IndexEnum.CRISIS4,
+//           IndexEnum.R4,
+//
+//           IndexEnum.NG5,
+ //          IndexEnum.R5,
+//
+//           IndexEnum.NG6,
+//           IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
@@ -55,8 +55,8 @@ class ClusterMainECJ extends Evolve {
     ]
 
     List<QType> queryTypesList = [
-     //       QType.OR_INTERSECT,
-           QType.OR1
+            QType.OR_INTERSECT,
+      //     QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -74,7 +74,7 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-            [false].each { ga_to_set_k ->
+            [true].each { ga_to_set_k ->
    //       [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
   //      [true, false].each { ga_to_set_k ->
 

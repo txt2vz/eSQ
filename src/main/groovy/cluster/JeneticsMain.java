@@ -28,8 +28,8 @@ public class JeneticsMain {
     final static boolean useNonIntersectingClustersForTrainingKNN = true;
     final static int k_for_knn = 10;
 
-    final static QType qType = QType.OR1;
-            //QType.OR_INTERSECT;
+    final static QType qType =// QType.OR1;
+            QType.OR_INTERSECT;
     static IndexEnum indexEnum;
     // static IndexReader ir;
     final static boolean SETK = true;
@@ -50,6 +50,15 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
         final int k = getK(gt, indexEnum, SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
+
+      //  int[] newArray = new int[intArray.length - 1];
+
+//       if (SETK) {
+//           System.arraycopy(intArray, 1, newArray, 0, intArray.length - 1);
+//           newArray = Arrays.copyOfRange(intArray, 1, intArray.length);
+//           intArray = newArray;
+//       }
+
         BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
@@ -60,13 +69,13 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 100;
-        final int maxGen = 80;
+        final int popSize = 200;
+        final int maxGen = 480;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
         final int minGenomeLength = 16;
-        final int maxGenomeLength = 30;
+        final int maxGenomeLength = 40;
         final int numberOfJobs = 1;
         final int numberMaxFitJobs = 2;
         final int numberOfSubPops = 1;
@@ -88,7 +97,7 @@ public class JeneticsMain {
                                     Genotype.of(
                                             // IntegerChromosome.of(0, maxWordListValue, genomeLength)
                                             IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
-                                            IntegerChromosome.of(2, 9, 1)) :  //psossible values for k
+                                            IntegerChromosome.of(2, 9, 4)) :  //psossible values for k
 
                                     Genotype.of(
                                             //     IntegerChromosome.of(0, maxWordListValue, genomeLength));
@@ -99,18 +108,18 @@ public class JeneticsMain {
                                     JeneticsMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
 
-                            .survivorsSelector(new TournamentSelector<>(3))
-                            //  .survivorsSelector(new EliteSelector<>(2))
-                            .offspringSelector(new TournamentSelector<>(3))
+                            .survivorsSelector(new TournamentSelector<>(5))
+                            //  .survivorsSelector(new EliteSelector<>(1))
+                            .offspringSelector(new TournamentSelector<>(5))
 
                             //    .alterers(
                             //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
                             //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
-                            //   .alterers(new Mutator<>(0.2),  new SinglePointCrossover<>(0.7))
+                               .alterers(new Mutator<>(0.3),  new SinglePointCrossover<>(0.6))
                             //     .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
                             //  new MeanAlterer <>(0.6))
-                            .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
+                         //   .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
                             .build();
 
                     final EvolutionStatistics<Double, ?>
