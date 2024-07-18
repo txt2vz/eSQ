@@ -53,10 +53,11 @@ class ImportantTermQueries {
                         // Get term frequency for the current document
                         int termFreqInCurrentDoc = postingsEnum.freq();
 
-                        double tf = Math.sqrt((double) termFreqInCurrentDoc)
-                      //  tf = termFreqInCurrentDoc
+                        //double tf = Math.sqrt((double) termFreqInCurrentDoc)
+                        //double  tf = termFreqInCurrentDoc
                        // tfidf = tf * idf2
-                        tfidf = tf * (2 - idf)
+                      //  tfidf = tf * (2 - idf)
+                        tfidf = termFreqInCurrentDoc * (2 - idf)
                      //   tfidf = tf * idf4
                         tfidfTotal += tfidf
                     }
