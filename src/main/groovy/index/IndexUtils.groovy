@@ -18,38 +18,6 @@ class IndexUtils {
         categoryFrequencies(Indexes.indexSearcher, true)
     }
 
-    static Tuple3<String, Integer, Integer> getMostFrequentCategoryForQuery(Query q, boolean printDetails = false) {
-        Map<String, Integer> categoryFrequencyMap = [:]
-        TopScoreDocCollector collector = TopScoreDocCollector.create(Indexes.indexReader.numDocs());
-        Indexes.indexSearcher.search(q, collector);
-        ScoreDoc[] hits = collector.topDocs().scoreDocs;
-
-        hits.each { ScoreDoc sd ->
-            final int docId = sd.doc
-            Document d = Indexes.indexSearcher.doc(docId)
-            String categoryName = d.get(Indexes.FIELD_CATEGORY_NAME)
-            final int n = categoryFrequencyMap.get((categoryName)) ?: 0
-            categoryFrequencyMap.put((categoryName), n + 1)
-        }
-
-        String mostFrequentCategoryName = 'not determined'
-        int mostFrequentCategoryHits = 0
-
-        Map.Entry<String, Integer> mostFrequentCategory = categoryFrequencyMap?.max { it?.value }
-
-        if (mostFrequentCategory) {
-
-            mostFrequentCategoryName = mostFrequentCategory?.key
-            mostFrequentCategoryHits = mostFrequentCategory?.value
-        }
-
-        if (printDetails) {
-            println "CategoryFrequencyMap: $categoryFrequencyMap for query: ${q.toString(Indexes.FIELD_CONTENTS)} mostFrequentCategory: $mostFrequentCategory queryHits ${hits.size()} "
-        }
-
-        return new Tuple3<String, Integer, Integer>(mostFrequentCategoryName, mostFrequentCategoryHits, hits.size())
-    }
-
     static Map<String, Integer> categoryFrequencies(IndexSearcher indexSearcher, boolean printDetails = false) {
 
         Query qAll = new MatchAllDocsQuery()
@@ -79,25 +47,6 @@ class IndexUtils {
 
         return categoryFrequencies
     }
-
-//    static List<Tuple2> vList(IndexSearcher indexSearcher) {
-//        int x = 10;
-//        List<Tuple2> vData = [];
-//        Query qAll = new MatchAllDocsQuery()
-//        TopDocs topDocs = indexSearcher.search(qAll, Integer.MAX_VALUE)
-//        ScoreDoc[] allHits = topDocs.scoreDocs
-//        // Tuple2 <String, String> t2
-//
-//        int y = 0;
-//        for (ScoreDoc sd : allHits) {
-//            Document d = indexSearcher.doc(sd.doc)
-//
-//            String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-//            String assignedCat = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
-//            vData.add(new Tuple2(category, assignedCat))
-//        }
-//        return vData
-//    }
 
     //get hits for a particular query using filter (e.g. a particular category)
     static int getQueryHitsWithFilter(IndexSearcher searcher, Query filter, Query q) {

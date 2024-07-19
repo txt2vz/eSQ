@@ -46,7 +46,6 @@ class ImportantTermQueries {
 
                     while (postingsEnum.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
 
-                        // Get term frequency for the current document
                         int termFreqInCurrentDoc = postingsEnum.freq();
 
                         //double tf = Math.sqrt((double) termFreqInCurrentDoc)

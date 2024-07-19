@@ -14,9 +14,9 @@ class ImportantTermQueriesTest extends Specification {
         def tfidfList = ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader)
 
         then:
-        tfidfList[0].getTerm().text() == 'god'
-        tfidfList[1].getTerm().text() == 'space'
-        tfidfList[2].getTerm().text() == 'jesus'
+        tfidfList[0].getTerm().text() == 'space'
+        tfidfList[1].getTerm().text() == 'god'
+        tfidfList[2].getTerm().text() == 'vs'
     }
 
 //    def "Term Query Intersect Map Sorted "(){

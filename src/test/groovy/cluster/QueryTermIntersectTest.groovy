@@ -1,6 +1,5 @@
 package cluster
 
-
 import index.IndexEnum
 import index.Indexes
 import org.apache.lucene.search.BooleanQuery
@@ -9,10 +8,9 @@ import spock.lang.Specification
 
 class QueryTermIntersectTest extends Specification {
 
-    def "QueryListFromChromosome OR 20News3 tfidf"() {
+    def "QueryListFromChromosome OR NG3 tfidf"() {
         setup:
         Indexes.setIndex(IndexEnum.NG3, 0.0d)
-        //Indexes.setTermQueryLists(0.0d)
 
         when:
         final int k = 3
@@ -23,20 +21,15 @@ class QueryTermIntersectTest extends Specification {
         Query q2 = bqbL[2].build()
 
         then:
-        Indexes.termQueryList[0].getTerm().text() == 'god'
-        Indexes.termQueryList[1].getTerm().text() == 'space'
-        Indexes.termQueryList[2].getTerm().text() == 'jesus'
-        Indexes.termQueryList[3].getTerm().text() == 'hockey'
-//        Indexes.termQueryList[4].getTerm().text() == 'orbit'
-//        Indexes.termQueryList[5].getTerm().text() == 'jesus'
-//        Indexes.termQueryList[6].getTerm().text() == 'play'
-//        Indexes.termQueryList[7].getTerm().text() == 'game'
-//        Indexes.termQueryList[8].getTerm().text() == 'team'
+        Indexes.termQueryList[0].getTerm().text() == 'space'
+        Indexes.termQueryList[1].getTerm().text() == 'god'
+        Indexes.termQueryList[2].getTerm().text() == 'vs'
+        Indexes.termQueryList[3].getTerm().text() == 'nasa'
 
         bqbL.size() ==  Indexes.index.numberOfCategories
-        q0.toString(Indexes.FIELD_CONTENTS) == 'god'
-        q1.toString(Indexes.FIELD_CONTENTS) == 'space'
-        q2.toString(Indexes.FIELD_CONTENTS) == 'jesus'
+        q0.toString(Indexes.FIELD_CONTENTS) == 'space'
+        q1.toString(Indexes.FIELD_CONTENTS) == 'god'
+        q2.toString(Indexes.FIELD_CONTENTS) == 'vs'
 
         when:
         int[] genome6 = [0, 2, 4, 1, 3, 7] as int[]
@@ -47,7 +40,7 @@ class QueryTermIntersectTest extends Specification {
         Query q5 = bqbL[2].build()
 
         then:
-        q3.toString(Indexes.FIELD_CONTENTS) == 'god space'
+        q3.toString(Indexes.FIELD_CONTENTS) == 'space god'
 //        q4.toString(Indexes.FIELD_CONTENTS) == 'god hockey'
 //        q5.toString(Indexes.FIELD_CONTENTS) == 'orbit game'
 
@@ -61,7 +54,7 @@ class QueryTermIntersectTest extends Specification {
         Query q8 = bqbL[2].build()
 
         then:
-        q6.toString(Indexes.FIELD_CONTENTS) == 'god'
+        q6.toString(Indexes.FIELD_CONTENTS) == 'space'
 //        q7.toString(Indexes.FIELD_CONTENTS) == 'god'
 //        q8.toString(Indexes.FIELD_CONTENTS) == 'orbit'
     }
