@@ -69,7 +69,7 @@ class Indexes {
     static IndexEnum index
     static IndexSearcher indexSearcher
     static IndexReader indexReader
-    static List<TermQuery> termQueryList
+    public static List<TermQuery> termQueryList
     static Map<TermQuery, List<Tuple2<TermQuery, Double>>> termQueryIntersectMap
 
     //globals

@@ -36,7 +36,7 @@ class QueryBuilders {
                 break
 
             case QType.OR_INTERSECT:
-                return getMultiWordQueryPerClusterWithIntersectCheck(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
+                return getMultiWordQuery(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
                 break
 
 //            case QType.AND_INTERSECT:
@@ -45,12 +45,13 @@ class QueryBuilders {
         }
     }
 
-    private static BooleanQuery.Builder[] getMultiWordQueryPerClusterWithIntersectCheck(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur) {
+     static BooleanQuery.Builder[] getMultiWordQuery(int[] intChromosome, List<TermQuery> termQueryList, final int k,  BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
         Set<Integer> alleles = [] as Set<Integer>
 
-        int gene=0
+      //  int gene = setkJenetics ? 1 : 0
+        int gene = JeneticsMain.SETK ? 1 : 0
         int uniqueWords = 0
 
         //populate set of unique root words
@@ -81,7 +82,7 @@ class QueryBuilders {
         return arrayOfBuilders
     }
 
-    private static  BooleanQuery.Builder[] getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
+     static  BooleanQuery.Builder[] getOneWordQueryPerCluster(int[] intChromosome, List<TermQuery> termQueryList, final int k) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
 

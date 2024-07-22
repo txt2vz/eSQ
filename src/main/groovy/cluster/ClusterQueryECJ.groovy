@@ -41,17 +41,25 @@ public class ClusterQueryECJ extends Problem implements SimpleProblemForm {
         final int[] genome = (ClusterMainECJ.GA_TO_SETK) ? genomeOrig[1.. genomeOrig.size()-1] as int[] : genomeOrig
 
         BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getQueryBuilderArray(genome, k, QUERY_TYPE)
-        QuerySet querySetFeatures = new QuerySet(arrayOfQueryBuilders)
 
-        final int uniqueHits =  querySetFeatures.totalHitsReturnedByOnlyOneQuery    //uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
+        //    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQuery(genome, Indexes.termQueryList, k)
+            QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
+//    getQueryBuilderArray(genome, k, QUERY_TYPE)
 
-        final double f = (ClusterMainECJ.GA_TO_SETK) ? uniqueHits * (1.0 - (Indexes.K_PENALTY * k)) as double : uniqueHits as double
 
-        final double rawfitness= (f > 0) ? f : 0.0d;
+            QuerySet querySetFeatures = new QuerySet(arrayOfQueryBuilders)
 
-        fitness.setClusterFitness(querySetFeatures, arrayOfQueryBuilders, rawfitness )
+            final int uniqueHits = querySetFeatures.totalHitsReturnedByOnlyOneQuery
+            //uniqueHitsTuple.v2 //- (uniqueHitsTuple.v3 - uniqueHitsTuple.v2)
 
-        ((SimpleFitness) intVectorIndividual.fitness).setFitness(state, rawfitness, false)
-        ind.evaluated = true
+            final double f = (ClusterMainECJ.GA_TO_SETK) ? uniqueHits * (1.0 - (Indexes.K_PENALTY * k)) as double : uniqueHits as double
+
+            final double rawfitness = (f > 0) ? f : 0.0d;
+
+            fitness.setClusterFitness(querySetFeatures, arrayOfQueryBuilders, rawfitness)
+
+            ((SimpleFitness) intVectorIndividual.fitness).setFitness(state, rawfitness, false)
+            ind.evaluated = true
+
     }
 }

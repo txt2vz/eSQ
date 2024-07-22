@@ -18,6 +18,9 @@ class QuerySet {
 
     // modified queries which do not return documents returned by any other query
     Query[] nonIntersectingQueries
+   // boolean zeroHitsQueryFound = false
+
+    final static int MIN_DISTINCT_HITS = 10
 
     QuerySet(BooleanQuery.Builder[] arrayOfQueryBuilders){
 
@@ -52,8 +55,13 @@ class QuerySet {
             Indexes.indexSearcher.search(nonIntersectingQueries[i], distinctHitCollector)
             final int qDistinctHits = distinctHitCollector.getTotalHits()
 
-            queryMap.put(q, qDistinctHits)
-            totalHitsReturnedByOnlyOneQuery += qDistinctHits
+           // if (qDistinctHits < 1) zeroHitsQueryFound = false
+
+            if (qDistinctHits > MIN_DISTINCT_HITS) {
+
+                queryMap.put(q, qDistinctHits)
+                totalHitsReturnedByOnlyOneQuery += qDistinctHits
+            }
         }
 
         TotalHitCountCollector collector = new TotalHitCountCollector();
