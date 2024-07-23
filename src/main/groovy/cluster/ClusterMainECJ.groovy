@@ -19,7 +19,7 @@ import org.apache.lucene.search.BooleanQuery
 class ClusterMainECJ extends Evolve {
 
     final static int NUMBER_OF_JOBS = 2
-    final static int MAX_FIT_JOBS = 1
+    final static int MAX_FIT_JOBS = 2
     final static String gaEngine = "ECJ"
     static boolean GA_TO_SETK
     final static boolean useNonIntersectingClustersForTrainingKNN = true
@@ -28,35 +28,35 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-           IndexEnum.CRISIS3,
-           IndexEnum.NG3,
+            IndexEnum.CRISIS3,
+            IndexEnum.NG3,
 
-           IndexEnum.CRISIS4,
-           IndexEnum.R4,
+            IndexEnum.CRISIS4,
+            IndexEnum.R4,
 
-           IndexEnum.NG5,
-           IndexEnum.R5,
+            IndexEnum.NG5,
+            IndexEnum.R5,
 
-           IndexEnum.NG6,
-           IndexEnum.R6
+            IndexEnum.NG6,
+            IndexEnum.R6
     ]
 
     List<Double> kPenalty = // [0.03d]
             [0.02d]
-   //   [0.00d, 0.03d, 0.05d, 0.07d, 0.1d ]
- //   [0.01d, 0.02d, 0.04d, 0.06d, 0.08d ]
-     //     [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d]//, 0.08d, 0.09d, 0.1d]
+    //   [0.00d, 0.03d, 0.05d, 0.07d, 0.1d ]
+    //   [0.01d, 0.02d, 0.04d, 0.06d, 0.08d ]
+    //     [0.0d, 0.01d, 0.02d, 0.03d, 0.04d, 0.05d, 0.06d, 0.07d]//, 0.08d, 0.09d, 0.1d]
 
     List<Double> intersectRatioList = [
-           0.5d
-     //         0.1d
+            0.5d
+            //         0.1d
             //       0.4d,0.5d, 0.6d, 0.7d, 0.8d
-     //            0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
+            //            0.0d, 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d
     ]
 
     List<QType> queryTypesList = [
             QType.OR_INTERSECT,
-      //     QType.OR1
+            //     QType.OR1
     ]
 
     List<LuceneClassifyMethod> classifyMethodList = [
@@ -74,9 +74,9 @@ class ClusterMainECJ extends Evolve {
             timingFile << 'index, queryType, setK, GAtime, KNNtime, overallTime \n'
         }
 
-            [true].each { ga_to_set_k ->
-   //       [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
-  //      [true, false].each { ga_to_set_k ->
+        [true].each { ga_to_set_k ->
+            //       [true].each { ga_to_set_k ->  //false to allow GA to know predefined number of clusters
+            //      [true, false].each { ga_to_set_k ->
 
             GA_TO_SETK = ga_to_set_k
             String parameterFilePath = GA_TO_SETK ? 'src/cfg/clusterGA_K.params' : 'src/cfg/clusterGA.params'
@@ -90,7 +90,7 @@ class ClusterMainECJ extends Evolve {
 
                         println "Index Enum: $indexEnum"
                         Indexes.setIndex(indexEnum, minIntersectRatio)
-                      //  Indexes.setTermQueryLists(minIntersectRatio)
+                        //  Indexes.setTermQueryLists(minIntersectRatio)
 
                         kPenalty.each { kPenalty ->
                             Indexes.K_PENALTY = kPenalty
@@ -115,7 +115,7 @@ class ClusterMainECJ extends Evolve {
                                     state.output.systemMessage("Job: " + job);
                                     state.job = new Object[1]
                                     state.job[0] = Integer.valueOf(job)
-                                         //   new Integer(job)
+                                    //   new Integer(job)
 
                                     state.run(EvolutionState.C_STARTED_FRESH);
                                     int popSize = 0;
@@ -134,7 +134,7 @@ class ClusterMainECJ extends Evolve {
 
                                     final Date GATime = new Date()
                                     TimeDuration durationGA = TimeCategory.minus(new Date(), indexTime)
-                                  //  timingFile <<  " ${indexEnum.name()},  $qType,   ${durationGA.toMilliseconds()}  \n"
+                                    //  timingFile <<  " ${indexEnum.name()},  $qType,   ${durationGA.toMilliseconds()}  \n"
 
                                     BooleanQuery.Builder[] arrayOfQueryBuilders = bestClusterFitness.arrayOfQueryBuilders
 
@@ -146,16 +146,16 @@ class ClusterMainECJ extends Evolve {
                                     classifyMethodList.each { classifyMethod ->
                                         Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn)
 
-                                      //  [true, false].each { queryOnly ->
+                                        //  [true, false].each { queryOnly ->
                                         [false].each { queryOnly ->
-                                     //       [true].each { queryOnly ->
+                                            //       [true].each { queryOnly ->
 
                                             Effectiveness effectiveness = new Effectiveness(classifier, queryOnly)
                                             TimeDuration durationKNN = TimeCategory.minus(new Date(), indexTime)
 
-                                            timingFile <<  " ${indexEnum.name()},  $qType, $GA_TO_SETK(),  ${durationGA.toMilliseconds()} , ${durationKNN.toMilliseconds()} \n"
+                                            timingFile << " ${indexEnum.name()},  $qType, $GA_TO_SETK(),  ${durationGA.toMilliseconds()} , ${durationKNN.toMilliseconds()} \n"
 
-                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN , kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob,gaEngine)
+                                            Result result = new Result(ga_to_set_k, indexEnum, qType, effectiveness, ecjFitness, querySet, classifyMethod, queryOnly, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, state.generation, job, maxFitJob, gaEngine)
 
                                             queryOnly ? queryOnlyResultList << result : resultList << result
                                             result.report(new File('results/results.csv'))
@@ -167,9 +167,9 @@ class ClusterMainECJ extends Evolve {
                                     println "--------END JOB $job  -----------------------------------------------"
                                 }
                                 Result maxFitResult = resultList.max { it.fitness }
-                               // Result maxFitResultQueryOnly = queryOnlyResultList.max { it.fitness }
+                                // Result maxFitResultQueryOnly = queryOnlyResultList.max { it.fitness }
                                 maxFitResult.report(new File('results/maxFitResults.csv'))
-                               // if (maxFitResultQueryOnly)
+                                // if (maxFitResultQueryOnly)
                                 //    maxFitResultQueryOnly.report(new File('results/maxFitResults.csv'))
                             }
                         }

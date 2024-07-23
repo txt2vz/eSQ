@@ -70,7 +70,8 @@ class Result {
             sb << "Query: $index :  ${queryMap.get(q)}  ${q.toString(Indexes.FIELD_CONTENTS)} \n"
         }
 
-        f << "$setkDescription $queryTypeName $indexName intersectRatio: $intersectRatio $queryOnlyString v: $v  h: $h  c: $c  kPenalty $kPenalty: intersectRation: $intersectRatio  clusterCountError $clusterCountError\n"
+
+        f << "$setkDescription $queryTypeName $indexName Fitness: $fitness $intersectRatio $queryOnlyString v: $v  h: $h  c: $c  kPenalty $kPenalty: intersectRation: $intersectRatio  clusterCountError $clusterCountError\n"
         f<< sb.toString()
         f <<'\n'
     }

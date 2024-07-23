@@ -20,7 +20,7 @@ class QuerySet {
     Query[] nonIntersectingQueries
    // boolean zeroHitsQueryFound = false
 
-    final static int MIN_DISTINCT_HITS = 10
+    final static int MIN_DISTINCT_HITS = 5
 
     QuerySet(BooleanQuery.Builder[] arrayOfQueryBuilders){
 
