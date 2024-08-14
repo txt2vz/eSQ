@@ -49,7 +49,6 @@ class ImportantTermQueries {
                         int termFreqInCurrentDoc = postingsEnum.freq();
 
                         double tf = Math.sqrt((double) termFreqInCurrentDoc)
-                        //tfidf = termFreqInCurrentDoc * (2 - idf)
                         tfidf = tf * (2 - idf)
                         tfidfTotal += tfidf
                     }
@@ -78,14 +77,14 @@ class ImportantTermQueries {
 
     private static boolean isUsefulTerm(long df, String word) {
 
-        if (df < 10) return false
+        if (df < 4) return false
         if (!word.charAt(0).isLetter()) return false
         if (word.length() < 2) return false
 
-        for (char c : word.toCharArray()) {
-            if (!c.isLetterOrDigit())
-                return false
-        }
+//        for (char c : word.toCharArray()) {
+//            if (!c.isLetterOrDigit())
+//                return false
+//        }
 
         if (stopSet.contains(word)) return false
 

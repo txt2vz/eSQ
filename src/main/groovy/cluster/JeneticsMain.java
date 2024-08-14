@@ -181,8 +181,8 @@ public class JeneticsMain {
 
         if (!setk) return indexEnum.getNumberOfCategories();
 
-        int allel0 = ((IntegerChromosome) g.get(0)).get(0).allele();
-        int k = allel0 % 8;
+        final int allele0 = ((IntegerChromosome) g.get(0)).get(0).allele();
+        int k = allele0 % 8;
         return k + 2;
 
         // return (setk) ? ((IntegerChromosome) g.get(1)).get(0).allele() : indexEnum.getNumberOfCategories();
