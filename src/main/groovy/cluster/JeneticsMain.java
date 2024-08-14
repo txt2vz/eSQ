@@ -52,7 +52,6 @@ public class JeneticsMain {
 //            default:bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k );
 //        }
 
-
         BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
         QuerySet querySet = new QuerySet(bqbArray);
 
@@ -72,7 +71,7 @@ public class JeneticsMain {
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 2;
+        final int numberMaxFitJobs = 6;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
         final double minIntersectRatio = 0.5d;
@@ -83,7 +82,7 @@ public class JeneticsMain {
             indexEnum = index;
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
-                List<Result> resultList1 = new ArrayList<>();
+                List<Result> resultListForJob = new ArrayList<>();
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
@@ -113,8 +112,8 @@ public class JeneticsMain {
                             //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
                             //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
-                            //    .alterers(new Mutator<>(0.3),  new SinglePointCrossover<>(0.6))
-                            .alterers(new Mutator<>(0.1), new LineCrossover<>(0.3))
+                                .alterers(new Mutator<>(0.1),  new SinglePointCrossover<>(0.7))
+                          //  .alterers(new Mutator<>(0.1), new LineCrossover<>(0.3))
                             //  new MeanAlterer <>(0.6))
                             //    .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
                             .build();
@@ -157,18 +156,18 @@ public class JeneticsMain {
 
                     Effectiveness effectiveness = new Effectiveness(classifier, false);
 
-                    System.out.println(" result  " + result + " gen " + result.generation() + " v " + effectiveness.getvMeasure());
+                    System.out.println("Result:  " + result + " Gen: " + result.generation() + " v: " + effectiveness.getvMeasure());
 
                     Result results = new Result(GA_TO_SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
 
                     results.report(new File("results//resultsJenetics.csv"));
                     results.queryReport(new File("results//jeneticsQueries.txt"));
-                    resultList1.add(results);
+                    resultListForJob.add(results);
                 });
 
-                Optional<Result> maxR = resultList1.stream().max(Comparator.comparing(Result::getFitness));
-                System.out.println("max r fit " + maxR.get().getFitness());
-                maxR.get().report(new File("results//maxFitResultsJenetics.csv"));
+                Optional<Result> maxResultForJob = resultListForJob.stream().max(Comparator.comparing(Result::getFitness));
+                System.out.println("max r fit " + maxResultForJob.get().getFitness());
+                maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
             });
         });
 

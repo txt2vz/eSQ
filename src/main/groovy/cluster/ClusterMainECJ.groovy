@@ -28,16 +28,16 @@ class ClusterMainECJ extends Evolve {
 
     List<IndexEnum> indexList = [
 
-//            IndexEnum.CRISIS3,
-//            IndexEnum.NG3,
-//
-//            IndexEnum.CRISIS4,
-//            IndexEnum.R4,
-//
-//            IndexEnum.NG5,
-//            IndexEnum.R5,
-//
-//            IndexEnum.NG6,
+            IndexEnum.CRISIS3,
+            IndexEnum.NG3,
+
+            IndexEnum.CRISIS4,
+            IndexEnum.R4,
+
+            IndexEnum.NG5,
+            IndexEnum.R5,
+
+            IndexEnum.NG6,
             IndexEnum.R6
     ]
 
