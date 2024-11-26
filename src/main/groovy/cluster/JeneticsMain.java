@@ -32,14 +32,14 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
+//            IndexEnum.CRISIS3,
+//            IndexEnum.CRISIS4,
             IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6
+            IndexEnum.NG5
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+//            IndexEnum.R5,
+//            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -63,8 +63,8 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 200;
-        final int maxGen = 800;
+        final int popSize = 120;
+        final int maxGen = 120;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int genomeLength = 20;
