@@ -34,8 +34,8 @@ public class JeneticsMain {
     static List<IndexEnum> indexList = Arrays.asList(
 //            IndexEnum.CRISIS3,
 //            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5
+            IndexEnum.NG3
+  //          IndexEnum.NG5
 //            IndexEnum.NG6,
 //            IndexEnum.R4,
 //            IndexEnum.R5,
@@ -45,14 +45,15 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
         final int k = getK(gt, indexEnum, GA_TO_SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
-        //  BooleanQuery.Builder[] bqbArray;
 
-//        switch (qType){
-//            case OR_INTERSECT:bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k );
-//            default:bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k );
-//        }
+        BooleanQuery.Builder[] bqbArray;
 
-        BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
+        switch (qType){
+            case OR_INTERSECT: bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k ); break;
+            default:bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k );
+        }
+
+       // BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
         QuerySet querySet = new QuerySet(bqbArray);
 
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
@@ -70,8 +71,8 @@ public class JeneticsMain {
         final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
-        final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 6;
+        final int numberOfJobs = 1;
+        final int numberMaxFitJobs = 1;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
         final double minIntersectRatio = 0.5d;

@@ -28,22 +28,22 @@ enum QType {
 @CompileStatic
 class QueryBuilders {
 
-    static BooleanQuery.Builder[] getQueryBuilderArray(int[] intChromosome, final int k, QType qType) {
-
-        switch (qType) {
-            case QType.OR1:
-                return getOneWordQueryPerCluster(intChromosome, Indexes.termQueryList, k)
-                break
-
-            case QType.OR_INTERSECT:
-                return getMultiWordQuery(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
-                break
-
-//            case QType.AND_INTERSECT:
-//                return getIntersect(intChromosome, termQueryList, k, BooleanClause.Occur.MUST);
+//    static BooleanQuery.Builder[] getQueryBuilderArray(int[] intChromosome, final int k, QType qType) {
+//
+//        switch (qType) {
+//            case QType.OR1:
+//                return getOneWordQueryPerCluster(intChromosome, Indexes.termQueryList, k)
 //                break
-        }
-    }
+//
+//            case QType.OR_INTERSECT:
+//                return getMultiWordQuery(intChromosome, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
+//                break
+//
+////            case QType.AND_INTERSECT:
+////                return getIntersect(intChromosome, termQueryList, k, BooleanClause.Occur.MUST);
+////                break
+//        }
+//    }
 
      static BooleanQuery.Builder[] getMultiWordQuery(int[] intChromosome, List<TermQuery> termQueryList, final int k,  BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
 
@@ -51,7 +51,7 @@ class QueryBuilders {
         Set<Integer> alleles = [] as Set<Integer>
 
       //  int gene = setkJenetics ? 1 : 0
-        int gene = JeneticsMain.GA_TO_SETK ? 1 : 0
+        int gene = JeneticsMain.GA_TO_SETK ? 1 : 0    //if GA setting k then the first element of the chromosome is used to set k
         int uniqueWords = 0
 
         //populate set of unique root words
@@ -60,7 +60,7 @@ class QueryBuilders {
 
             if (alleles.add(allele) ){
                 arrayOfBuilders[uniqueWords] = new BooleanQuery.Builder().add(termQueryList[allele], booleanClauseOccur)
-               uniqueWords++
+                uniqueWords++
             }
             gene++
         }

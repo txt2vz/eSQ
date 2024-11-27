@@ -21,21 +21,23 @@ class QueryTermIntersectTest extends Specification {
         Query q2 = bqbL[2].build()
 
         then:
-        Indexes.termQueryList[0].getTerm().text() == 'space'
-        Indexes.termQueryList[1].getTerm().text() == 'god'
-        Indexes.termQueryList[2].getTerm().text() == 'vs'
-        Indexes.termQueryList[3].getTerm().text() == 'nasa'
+        Indexes.termQueryList[0].getTerm().text() == 'god'
+        Indexes.termQueryList[1].getTerm().text() == 'space'
+        Indexes.termQueryList[2].getTerm().text() == 'jesus'
+        Indexes.termQueryList[3].getTerm().text() == 'hockey'
 
         bqbL.size() ==  Indexes.index.numberOfCategories
-        q0.toString(Indexes.FIELD_CONTENTS) == 'space'
-        q1.toString(Indexes.FIELD_CONTENTS) == 'god'
-        q2.toString(Indexes.FIELD_CONTENTS) == 'vs'
+        q0.toString(Indexes.FIELD_CONTENTS) == 'god'
+        q1.toString(Indexes.FIELD_CONTENTS) == 'space'
+        q2.toString(Indexes.FIELD_CONTENTS) == 'jesus'
 
         when:
-        int[] genome6 = [0, 2, 4, 1, 3, 7] as int[]
-        bqbL = QueryBuilders.getQueryBuilderArray(genome6, k, QType.OR_INTERSECT)
+        int[] genome7 = [3, 0, 1, 4, 7, 3, 2] as int[]
+      // bqbL = QueryBuilders.getQueryBuilderArray(genome6, k, QType.OR_INTERSECT)
+         bqbL = QueryBuilders.getMultiWordQuery(genome7, k, QType.OR_INTERSECT)
 
         Query q3 = bqbL[0].build()
+        print("ffff " + q3.toString(Indexes.FIELD_CONTENTS))
         Query q4 = bqbL[1].build()
         Query q5 = bqbL[2].build()
 
