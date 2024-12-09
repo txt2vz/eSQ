@@ -51,7 +51,7 @@ class QueryBuilders {
         Set<Integer> alleles = [] as Set<Integer>
 
       //  int gene = setkJenetics ? 1 : 0
-        int gene = JeneticsMain.GA_TO_SETK ? 1 : 0    //if GA setting k then the first element of the chromosome is used to set k
+        int gene = 0//JeneticsMain.GA_TO_SETK ? 1 : 0    //if GA setting k then the first element of the chromosome is used to set k
         int uniqueWords = 0
 
         //populate set of unique root words

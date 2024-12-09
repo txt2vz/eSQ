@@ -75,10 +75,10 @@ public class JeneticsMain {
         final int numberMaxFitJobs = 1;
         final int numberOfSubPops = 1;
         final boolean onlyDocsInOneClusterForClassifier = false;
-        final double minIntersectRatio = 0.5d;
+      //  final double minIntersectRatio = 0.5;
 
         indexList.stream().forEach(index -> {
-            Indexes.setIndex(index, minIntersectRatio);
+            Indexes.setIndex(index);
             List<Phenotype<IntegerGene, Double>> resultList = new ArrayList<>();
             indexEnum = index;
 
@@ -88,17 +88,17 @@ public class JeneticsMain {
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
                     final Factory<Genotype<IntegerGene>> gtf =
-                            Genotype.of(
-                                    IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
-//                            (SETK) ?
-//                                    Genotype.of(
-//                                            // IntegerChromosome.of(0, maxWordListValue, genomeLength)
-//                                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
-//                                          //  IntegerChromosome.of(2, 9, 4)) :  //psossible values for k
-//
-//                                    Genotype.of(
-//                                            //     IntegerChromosome.of(0, maxWordListValue, genomeLength));
-                    // IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
+          //                  Genotype.of(
+//                                    IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
+                            (GA_TO_SETK) ?
+                                    Genotype.of(
+                                            // IntegerChromosome.of(0, maxWordListValue, genomeLength)
+                                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
+                                            IntegerChromosome.of(2, 9, 1)) :  //psossible values for k
+
+                                    Genotype.of(
+                                 //                IntegerChromosome.of(0, maxWordListValue, genomeLength));
+                   IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
 
                     final Engine<IntegerGene, Double> engine = Engine.
                             builder(
@@ -159,7 +159,7 @@ public class JeneticsMain {
 
                     System.out.println("Result:  " + result + " Gen: " + result.generation() + " v: " + effectiveness.getvMeasure());
 
-                    Result results = new Result(GA_TO_SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, minIntersectRatio, k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
+                    Result results = new Result(GA_TO_SETK, indexEnum, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, QueryTermIntersect.getMIN_INTERSECT_RATIO(), k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
 
                     results.report(new File("results//resultsJenetics.csv"));
                     results.queryReport(new File("results//jeneticsQueries.txt"));
