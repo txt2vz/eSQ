@@ -3,7 +3,10 @@ Uses a GA to create Apache Lucene ( https://lucene.apache.org/ ) queries
 
 Install JDK for Java (21), Groovy (4) and Python ( https://www.jetbrains.com/help/idea/configuring-python-sdk.html )
 
+The python sklearn package is used for cluster evaluation
 Install sklearn (https://scikit-learn.org/stable/) for cluster evaluation
+
+Change the PYTHON_LOCATION in https://github.com/txt2vz/eSQ/blob/esqJenetics/src/main/groovy/cluster/CallVmeasurePython.groovy
 
 ## GA Engine 
 Uses Jenetics.IO ( https://jenetics.io/ ) via  https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/JeneticsMain.java
