@@ -8,7 +8,6 @@ import index.*;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.IntRange;
 import org.apache.lucene.classification.Classifier;
-import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
@@ -35,7 +34,7 @@ public class JeneticsMain {
 //            IndexEnum.CRISIS3,
 //            IndexEnum.CRISIS4,
             IndexEnum.NG3
-  //          IndexEnum.NG5
+            //          IndexEnum.NG5
 //            IndexEnum.NG6,
 //            IndexEnum.R4,
 //            IndexEnum.R5,
@@ -45,15 +44,7 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
         final int k = getK(gt, indexEnum, GA_TO_SETK);
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
-
-        BooleanQuery.Builder[] bqbArray;
-
-        switch (qType){
-            case OR_INTERSECT: bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k ); break;
-            default:bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k );
-        }
-
-       // BooleanQuery.Builder[] bqbArray = QueryBuilders.getQueryBuilderArray(intArray, k, qType);
+        BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k);
         QuerySet querySet = new QuerySet(bqbArray);
 
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
@@ -65,17 +56,13 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 120;
+        final int maxGen = 100;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
-        final int genomeLength = 20;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 1;
         final int numberMaxFitJobs = 1;
-        final int numberOfSubPops = 1;
-        final boolean onlyDocsInOneClusterForClassifier = false;
-      //  final double minIntersectRatio = 0.5;
 
         indexList.stream().forEach(index -> {
             Indexes.setIndex(index);
@@ -88,17 +75,15 @@ public class JeneticsMain {
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
                     final Factory<Genotype<IntegerGene>> gtf =
-          //                  Genotype.of(
-//                                    IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
+
                             (GA_TO_SETK) ?
                                     Genotype.of(
-                                            // IntegerChromosome.of(0, maxWordListValue, genomeLength)
                                             IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
                                             IntegerChromosome.of(2, 9, 1)) :  //psossible values for k
 
                                     Genotype.of(
-                                 //                IntegerChromosome.of(0, maxWordListValue, genomeLength));
-                   IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)));
+                                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength))
+                                    );
 
                     final Engine<IntegerGene, Double> engine = Engine.
                             builder(
@@ -113,8 +98,8 @@ public class JeneticsMain {
                             //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
                             //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
-                                .alterers(new Mutator<>(0.1),  new SinglePointCrossover<>(0.7))
-                          //  .alterers(new Mutator<>(0.1), new LineCrossover<>(0.3))
+                            .alterers(new Mutator<>(0.1), new SinglePointCrossover<>(0.7))
+                            //  .alterers(new Mutator<>(0.1), new LineCrossover<>(0.3))
                             //  new MeanAlterer <>(0.6))
                             //    .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
                             .build();
@@ -145,8 +130,7 @@ public class JeneticsMain {
                     int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
                     final int k = getK(g, index, GA_TO_SETK);
 
-                    //BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getQueryBuilderArray(intArrayBestOfRun, k, qType);
-                    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQuery(intArrayBestOfRun, Indexes.termQueryList, k, BooleanClause.Occur.SHOULD);
+                    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQuery(intArrayBestOfRun, Indexes.termQueryList, k);
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
 
@@ -181,9 +165,9 @@ public class JeneticsMain {
 
         if (!setk) return indexEnum.getNumberOfCategories();
 
-        final int allele0 = ((IntegerChromosome) g.get(0)).get(0).allele();
-        int k = allele0 % 8;
-        return k + 2;
+        final int k = ((IntegerChromosome) g.get(1)).get(0).allele();
+       // int k = allele0 % 8;
+        return k;
 
         // return (setk) ? ((IntegerChromosome) g.get(1)).get(0).allele() : indexEnum.getNumberOfCategories();
     }
