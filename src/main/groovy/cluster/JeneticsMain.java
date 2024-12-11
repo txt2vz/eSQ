@@ -31,14 +31,14 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
-//            IndexEnum.CRISIS3,
-//            IndexEnum.CRISIS4,
-            IndexEnum.NG3
-            //          IndexEnum.NG5
-//            IndexEnum.NG6,
-//            IndexEnum.R4,
-//            IndexEnum.R5,
-//            IndexEnum.R6
+            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
+            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -61,8 +61,8 @@ public class JeneticsMain {
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
-        final int numberOfJobs = 1;
-        final int numberMaxFitJobs = 1;
+        final int numberOfJobs = 2;
+        final int numberMaxFitJobs = 2;
 
         indexList.stream().forEach(index -> {
             Indexes.setIndex(index);
@@ -123,7 +123,6 @@ public class JeneticsMain {
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
 
-
                     resultList.add(result);
                     Genotype<IntegerGene> g = result.genotype();
 
@@ -166,7 +165,6 @@ public class JeneticsMain {
         if (!setk) return indexEnum.getNumberOfCategories();
 
         final int k = ((IntegerChromosome) g.get(1)).get(0).allele();
-       // int k = allele0 % 8;
         return k;
 
         // return (setk) ? ((IntegerChromosome) g.get(1)).get(0).allele() : indexEnum.getNumberOfCategories();
