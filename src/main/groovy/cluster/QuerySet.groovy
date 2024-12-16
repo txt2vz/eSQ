@@ -54,6 +54,7 @@ class QuerySet {
             nonIntersectingQueries[i] = builderForNonIntersectingQuery.build()
             Indexes.indexSearcher.search(nonIntersectingQueries[i], distinctHitCollector)
             final int qDistinctHits = distinctHitCollector.getTotalHits()
+           // final int qOverlapHits = q
 
            // if (qDistinctHits < 1) zeroHitsQueryFound = false
 

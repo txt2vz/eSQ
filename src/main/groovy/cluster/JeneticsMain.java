@@ -16,6 +16,7 @@ import io.jenetics.util.Factory;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import index.IndexEnum;
@@ -48,7 +49,11 @@ public class JeneticsMain {
         QuerySet querySet = new QuerySet(bqbArray);
 
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
+       // final int overlappingHits = querySet.getTotalHitsAllQueries() - uniqueHits;
         final double f = (GA_TO_SETK) ? uniqueHits * (1.0 - (kPenalty * k)) : uniqueHits;
+     //   final double f = (GA_TO_SETK) ? (uniqueHits - overlappingHits) * (1.0 - (kPenalty * k)) : uniqueHits;
+        //final double f = uniqueHits - overlappingHits;
+
         return (f > 0) ? f : 0.0d;
     }
 
@@ -56,13 +61,14 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 100;
+        final int maxGen = 800;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 2;
+        final int numberMaxFitJobs = 3;
+        List<Double> bestMaxFitv = new ArrayList<>();
 
         indexList.stream().forEach(index -> {
             Indexes.setIndex(index);
@@ -90,15 +96,15 @@ public class JeneticsMain {
                                     JeneticsMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
 
-                            .survivorsSelector(new TournamentSelector<>(5))
+                            .survivorsSelector(new TournamentSelector<>(3))
                             //  .survivorsSelector(new EliteSelector<>(1))
-                            .offspringSelector(new TournamentSelector<>(5))
+                            .offspringSelector(new TournamentSelector<>(3))
 
                             //    .alterers(
                             //         new Mutator<>(0.03) ,
                             //       new LineCrossover<>(0.2))
                             //    .survivorsSelector(new TournamentSelector<>(5)).survivorsSelector(new EliteSelector<>(2))
-                            .alterers(new Mutator<>(0.1), new SinglePointCrossover<>(0.7))
+                            .alterers(new Mutator<>(0.2), new SinglePointCrossover<>(0.3))
                             //  .alterers(new Mutator<>(0.1), new LineCrossover<>(0.3))
                             //  new MeanAlterer <>(0.6))
                             //    .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
@@ -118,7 +124,9 @@ public class JeneticsMain {
 
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit " + ind.bestFitness() + " k " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
+                                      //  searchQueryFitness(g);
+
+                                        System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit " + ind.bestFitness() + " worst "  + ind.worstFitness() + " k " + k0);   //+ //" uniqueHits: " + queryDataGen.getV2() + " querySet F1: " + queryDataGen.getV4());
                                     })
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
@@ -150,10 +158,21 @@ public class JeneticsMain {
                 });
 
                 Optional<Result> maxResultForJob = resultListForJob.stream().max(Comparator.comparing(Result::getFitness));
-                System.out.println("max r fit " + maxResultForJob.get().getFitness());
+           //     System.out.println("max r fit " + maxResultForJob.get().getFitness());
                 maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
+      //          System.out.println("Av v: " +    maxResultForJob.get().getAverageV()  );
+                bestMaxFitv.add(maxResultForJob.get().getV());
+
             });
         });
+
+
+        double average = bestMaxFitv.stream()
+                .collect(Collectors.averagingDouble(Double::doubleValue));
+
+        System.out.println("Average v : " + average + " list of v " + bestMaxFitv);
+
+
 
         final Date endRun = new Date();
         TimeDuration duration = TimeCategory.minus(endRun, startRun);
