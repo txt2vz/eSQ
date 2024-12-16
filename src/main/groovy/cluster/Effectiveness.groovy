@@ -96,8 +96,8 @@ class Effectiveness {
         String resultFromPython = "no result from python"
 
         try {
-            CallVmeasurePython cp0 = new CallVmeasurePython()
-            resultFromPython = cp0.proce()
+            CallVmeasurePython callVmeasurePython = new CallVmeasurePython()
+            resultFromPython = callVmeasurePython.processVmeasurePython()
 
         } catch (Exception e) {
             println "Exeception  in callVmeasurePython $e"
