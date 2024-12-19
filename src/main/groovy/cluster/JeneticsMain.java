@@ -31,12 +31,12 @@ public class JeneticsMain {
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
-//            IndexEnum.CRISIS4,
-//            IndexEnum.NG3,
-//            IndexEnum.NG5,
-//            IndexEnum.NG6,
-//            IndexEnum.R4,
-//            IndexEnum.R5,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
             IndexEnum.R6
     );
 
@@ -56,8 +56,8 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 200;
-        final int maxGen = 800;
+        final int popSize = 400;
+        final int maxGen = 1400;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
@@ -81,33 +81,19 @@ public class JeneticsMain {
                                     IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
                                     IntegerChromosome.of(2, 9, 1));  //psossible values for k
 
-                    final Engine<IntegerGene, Double> engine = Engine.
-                            builder(
+                    final Engine<IntegerGene, Double> engine = Engine
+                            .builder(
                                     JeneticsMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
-
-                            .survivorsSelector(new TournamentSelector<>(3))
-                            .offspringSelector(new TournamentSelector<>(3))
-
-                            //    .alterers( new Mutator<>(0.03) , new LineCrossover<>(0.2))
-                            // .survivorsSelector(new EliteSelector<>(10))
-                            // .alterers(new Mutator<>(0.2), new SinglePointCrossover<>(0.3))
-                            //  new MeanAlterer <>(0.6))
-                            //       .alterers(new Mutator<>(0.3), new MultiPointCrossover<>(0.5))
-
-/* /  partial alterers
+                            .selector(new TournamentSelector<>(3))
                             .alterers(
-//                                  //  PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3, 2),0),
-                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3),0),
-                                 //   PartialAlterer.of(new Mutator<IntegerGene, Double>(0.1), 0),
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 1),
-                                //    PartialAlterer.of(new Mutator<IntegerGene, Double>(0.01), 1)
-
-                                    new SinglePointCrossover<>()
+                                 //   PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
+                                    PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
+                                    new Mutator<>(0.1)
                             )
- */
-
                             .build();
+
 
                     final EvolutionStatistics<Double, ?>
                             statistics = EvolutionStatistics.ofNumber();
@@ -122,7 +108,9 @@ public class JeneticsMain {
                                         final int k0 = (g.get(1)).get(0).allele();
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit " + ind.bestFitness() + " k " + k0);
+                                        if (ind.generation() % 20 == 0) {
+                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit " + ind.bestFitness() + " k " + k0);
+                                        }
                                     })
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
