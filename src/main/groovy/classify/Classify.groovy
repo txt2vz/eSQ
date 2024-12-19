@@ -73,11 +73,10 @@ class Classify {
 
         indexWriter.forceMerge(1)
         indexWriter.commit()
-//        println "Max docs: " + indexWriter.maxDoc() + " numDocs: " + indexWriter.numDocs()
 
         indexWriter.close()
         Indexes.setIndex(Indexes.index)
-        IndexUtils.categoryFrequencies(Indexes.indexSearcher, true)
+        IndexUtils.categoryFrequencies(Indexes.indexSearcher, false)
     }
 
 
@@ -125,7 +124,6 @@ class Classify {
         return classifier
     }
 
-
     private IndexWriter setAllUnassigned() {
         IndexWriter indexWriter = prepareIndex()
 
@@ -145,20 +143,20 @@ class Classify {
             counter++
         }
 
-        println "In setAllUnassigned $counter updated"
+        println "In Classify setAllUnassigned $counter updated"
         indexWriter.forceMerge(1)
         indexWriter.commit()
         return indexWriter
     }
 
     private IndexWriter prepareIndex() {
-        Indexes.setIndex(Indexes.index)
+      //  Indexes.setIndex(Indexes.index)
         String indexPath = Indexes.index.pathString
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
         Analyzer analyzer = new StandardAnalyzer()
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer)
         iwc.setOpenMode(IndexWriterConfig.OpenMode.APPEND)
-        IndexWriter indexWriter = new IndexWriter(directory, iwc)
+        return new IndexWriter(directory, iwc)
     }
 }

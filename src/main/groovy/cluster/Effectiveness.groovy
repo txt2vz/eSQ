@@ -60,8 +60,6 @@ class Effectiveness {
             }
         }
 
-      //  clusterCountError = Math.abs(classes.toSet().size() - clusters.toSet().size())
-
         numberOfClusters = clusters.toSet().size()
         numberOfClasses = classes.toSet().size()
         clusterCountError = numberOfClusters - numberOfClasses
@@ -72,10 +70,7 @@ class Effectiveness {
 
         numberOfDocumentsInClusters = clusters.size()
 
-        println "qonlycount $qOnlyCount"
-        println "In Effectiveness unassigned count $unasscount"
-        println "In Effectiveness classes leng ${classes.size()} clusters len ${clusters.size()}"
-        println "in Effectiveness toSet classess ${classes.toSet().size()} clust ${clusters.toSet().size()}"
+        println "In Effectiveness Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
 
         File classesFile = new File(/results\classes.txt/)
         File clustersFile = new File(/results\clusters.txt/)
