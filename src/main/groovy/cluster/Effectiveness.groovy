@@ -16,7 +16,7 @@ class Effectiveness {
     final double completeness
     final double adjusted_rand
 
-    final int numberOfDocumentsInClusters
+    final int numberOfDocumentsInQueryBuiltClusters
     final int clusterCountError
     final int numberOfClusters
     final int numberOfClasses
@@ -68,7 +68,7 @@ class Effectiveness {
         assert classes.size() > 0
         assert numberOfClasses == Indexes.index.numberOfCategories
 
-        numberOfDocumentsInClusters = clusters.size()
+        numberOfDocumentsInQueryBuiltClusters =  Indexes.indexReader.maxDoc() - unasscount
 
         println "In Effectiveness Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
 

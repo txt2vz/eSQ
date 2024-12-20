@@ -26,24 +26,25 @@ import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 public class JeneticsMain {
     final static boolean useNonIntersectingClustersForTrainingKNN = true;
     final static int k_for_knn = 10;
-    final static QType qType = QType.OR_INTERSECT;
+
     static String gaEngine = "JENETICS.IO";
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
+//            IndexEnum.CRISIS4,
+//            IndexEnum.NG3,
+//            IndexEnum.NG5,
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+//            IndexEnum.R5,
             IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
-        final int k = (gt.get(1)).get(0).allele();
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
+        final int k = (gt.get(1)).get(0).allele();
+
         BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k);
         QuerySet querySet = new QuerySet(bqbArray);
 
@@ -56,14 +57,14 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 400;
-        final int maxGen = 1400;
+        final int popSize = 30;
+        final int maxGen = 14;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
-        final int numberOfJobs = 3;
-        final int numberMaxFitJobs = 5;
+        final int numberOfJobs = 2;
+        final int numberMaxFitJobs = 2;
         List<Double> bestMaxFitv = new ArrayList<>();
 
         indexList.stream().forEach(index -> {
@@ -87,13 +88,12 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                 //   PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
-                                    PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
+                                 //   PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
                                     new Mutator<>(0.1)
                             )
                             .build();
-
 
                     final EvolutionStatistics<Double, ?>
                             statistics = EvolutionStatistics.ofNumber();
@@ -128,7 +128,7 @@ public class JeneticsMain {
                     Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn);
 
                     Effectiveness effectiveness = new Effectiveness(classifier, false);
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, qType, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, QueryTermIntersect.getMIN_INTERSECT_RATIO(), k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, QueryTermIntersect.getMIN_INTERSECT_RATIO(), k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);
