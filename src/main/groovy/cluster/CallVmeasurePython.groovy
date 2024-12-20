@@ -3,8 +3,8 @@ package cluster
 class CallVmeasurePython {
 
   //  https://www.baeldung.com/java-working-with-python
-    static final String PYTHON_LOCATION =    //  /C:\Users\lauri\IdeaProjects\eSQ\venv\Scripts\python.exe/
-             /C:\Users\student\IdeaProjects\eSQ\.venv\Scripts\python.exe/
+    static final String PYTHON_LOCATION =      /C:\Users\lauri\IdeaProjects\eSQ\venv\Scripts\python.exe/
+        //     /C:\Users\student\IdeaProjects\eSQ\.venv\Scripts\python.exe/
 
 
     String processVmeasurePython() throws Exception {

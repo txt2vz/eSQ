@@ -31,12 +31,12 @@ public class JeneticsMain {
     static final double kPenalty = 0.03d;
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
-//            IndexEnum.CRISIS4,
-//            IndexEnum.NG3,
-//            IndexEnum.NG5,
-//            IndexEnum.NG6,
-//            IndexEnum.R4,
-//            IndexEnum.R5,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
             IndexEnum.R6
     );
 
@@ -57,14 +57,14 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 30;
-        final int maxGen = 14;
+        final int popSize = 300;
+        final int maxGen = 1400;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 2;
+        final int numberMaxFitJobs = 3;
         List<Double> bestMaxFitv = new ArrayList<>();
 
         indexList.stream().forEach(index -> {
@@ -76,11 +76,10 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                    final Factory<Genotype<IntegerGene>> gtf =
-
-                            Genotype.of(
-                                    IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
-                                    IntegerChromosome.of(2, 9, 1));  //psossible values for k
+                    final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
+                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
+                            IntegerChromosome.of(2, 9, 1)  //possible values of k
+                    );
 
                     final Engine<IntegerGene, Double> engine = Engine
                             .builder(
@@ -89,7 +88,7 @@ public class JeneticsMain {
                             .selector(new TournamentSelector<>(3))
                             .alterers(
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
-                                 //   PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                    //   PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
                                     new Mutator<>(0.1)
                             )
@@ -109,7 +108,7 @@ public class JeneticsMain {
                                         fitness.set(ind.bestPhenotype().fitness());
 
                                         if (ind.generation() % 20 == 0) {
-                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit " + ind.bestFitness() + " k " + k0);
+                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);
                                         }
                                     })
                                     .peek(statistics)
