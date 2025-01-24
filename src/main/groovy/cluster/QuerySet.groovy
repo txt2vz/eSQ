@@ -10,7 +10,7 @@ import org.apache.lucene.search.TotalHitCountCollector
 @CompileStatic
 class QuerySet {
 
-    //holds the original query(for reporting) and the result of running the non-intersecting query
+    //holds the original query(for reporting) and its distinct hit count  (for fitness)
     Map<Query, Integer> queryMap
     Query[] queryArray
     int totalHitsReturnedByOnlyOneQuery
@@ -18,7 +18,6 @@ class QuerySet {
 
     // modified queries which do not return documents returned by any other query
     Query[] nonIntersectingQueries
-   // boolean zeroHitsQueryFound = false
 
     final static int MIN_DISTINCT_HITS = 5
 
@@ -35,7 +34,7 @@ class QuerySet {
         totalHitsReturnedByOnlyOneQuery =0
 
         for (int i = 0; i < arrayOfQueryBuilders.size(); i++) {
-            if (arrayOfQueryBuilders[i] == null) println "null and i is " + i
+
             Query q = arrayOfQueryBuilders[i].build()
             queryArray[i] = q
 
@@ -54,8 +53,6 @@ class QuerySet {
             nonIntersectingQueries[i] = builderForNonIntersectingQuery.build()
             Indexes.indexSearcher.search(nonIntersectingQueries[i], distinctHitCollector)
             final int qDistinctHits = distinctHitCollector.getTotalHits()
-
-           // if (qDistinctHits < 1) zeroHitsQueryFound = false
 
             if (qDistinctHits > MIN_DISTINCT_HITS) {
 

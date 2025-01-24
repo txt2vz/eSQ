@@ -62,8 +62,8 @@ class ImportantTermQueries {
         def termQueryMapDescend = termQueryMap.sort { a, b -> a.value <=> b.value }
 
         def tql = new ArrayList<TermQuery>(termQueryMapDescend.keySet().take(maxSize))
-        println "termQueryMapDescend first (40): ${termQueryMapDescend.take(40)}"
-        println "termQueryList first (40): ${tql.take(40)}"
+      //  println "termQueryMapDescend first (40): ${termQueryMapDescend.take(40)}"
+     //   println "termQueryList first (40): ${tql.take(40)}"
 
         List<TermQuery> tql40 = tql.take(40)
         print "Important words: "

@@ -7,8 +7,10 @@ import org.apache.lucene.search.*
 @CompileStatic
 class QueryTermIntersect {
 
+    final static double  MIN_INTERSECT_RATIO = 0.5
+
     static boolean isValidIntersect(Query q0, Query q1) {
-        return getIntersectValue(q0,q1) >= Indexes.MIN_INTERSECT_RATIO
+        return getIntersectValue(q0,q1) >= MIN_INTERSECT_RATIO
     }
 
     static double getIntersectValue(Query q0, Query q1) {

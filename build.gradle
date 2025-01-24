@@ -32,7 +32,7 @@ dependencies {
         }
     }
 
-    dependencies {implementation group: 'cs.gmu.edu', name: 'ecj-27', version: '27' }
+   // dependencies {implementation group: 'cs.gmu.edu', name: 'ecj-27', version: '27' }
 }
 
 test {

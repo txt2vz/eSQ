@@ -16,7 +16,7 @@ class Effectiveness {
     final double completeness
     final double adjusted_rand
 
-    final int numberOfDocumentsInClusters
+    final int numberOfDocumentsInQueryBuiltClusters
     final int clusterCountError
     final int numberOfClusters
     final int numberOfClasses
@@ -60,8 +60,6 @@ class Effectiveness {
             }
         }
 
-      //  clusterCountError = Math.abs(classes.toSet().size() - clusters.toSet().size())
-
         numberOfClusters = clusters.toSet().size()
         numberOfClasses = classes.toSet().size()
         clusterCountError = numberOfClusters - numberOfClasses
@@ -70,12 +68,9 @@ class Effectiveness {
         assert classes.size() > 0
         assert numberOfClasses == Indexes.index.numberOfCategories
 
-        numberOfDocumentsInClusters = clusters.size()
+        numberOfDocumentsInQueryBuiltClusters =  Indexes.indexReader.maxDoc() - unasscount
 
-        println "qonlycount $qOnlyCount"
-        println "In Effectiveness unassigned count $unasscount"
-        println "In Effectiveness classes leng ${classes.size()} clusters len ${clusters.size()}"
-        println "in Effectiveness toSet classess ${classes.toSet().size()} clust ${clusters.toSet().size()}"
+        println "In Effectiveness Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
 
         File classesFile = new File(/results\classes.txt/)
         File clustersFile = new File(/results\clusters.txt/)
@@ -96,8 +91,8 @@ class Effectiveness {
         String resultFromPython = "no result from python"
 
         try {
-            CallVmeasurePython cp0 = new CallVmeasurePython()
-            resultFromPython = cp0.proce()
+            CallVmeasurePython callVmeasurePython = new CallVmeasurePython()
+            resultFromPython = callVmeasurePython.processVmeasurePython()
 
         } catch (Exception e) {
             println "Exeception  in callVmeasurePython $e"

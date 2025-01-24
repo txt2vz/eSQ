@@ -1,12 +1,7 @@
-from pathlib import Path
 from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics.cluster import homogeneity_score
 from sklearn.metrics.cluster import completeness_score
 from sklearn.metrics.cluster import adjusted_rand_score
-
-import numpy as np
-
-import json
 
 classesFile = open( "results/classes.txt", "r")
 clustersFile = open( "results/clusters.txt", "r")
@@ -26,9 +21,9 @@ c = completeness_score (classesL, clustersL)
 
 adjusted_rand_score = adjusted_rand_score(classesL, clustersL)
 
-resString = str(v) + ", " + str(h) + ", " + str(c) + ", " + str(adjusted_rand_score)
-print (resString)
+resultString =  f"{str(v)}, {str(h)}, {str(c)}, {str(adjusted_rand_score)}"
+print (resultString)
 
 resultsFile = open ("results/resultsPython.csv" , "w")
-resultsFile.write(resString)
+resultsFile.write(resultString)
 resultsFile.close()

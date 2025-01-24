@@ -72,10 +72,6 @@ class Indexes {
     public static List<TermQuery> termQueryList
     static Map<TermQuery, List<Tuple2<TermQuery, Double>>> termQueryIntersectMap
 
-    //globals
-    public static double K_PENALTY
-    public static double MIN_INTERSECT_RATIO
-
     // Lucene field names
     static final String FIELD_CATEGORY_NAME = 'category',
                         FIELD_CONTENTS = 'contents',
@@ -88,21 +84,11 @@ class Indexes {
     static final Analyzer analyzer = new StandardAnalyzer()
     //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
-    static void setIndex(IndexEnum ie, final double minIntersectRatio) {
+    static void setIndex(IndexEnum indexEnum ) {
 
-        setIndex(ie)
-
-        MIN_INTERSECT_RATIO = minIntersectRatio
-        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
-
-        println "termquery list: $termQueryList"
-
-        println("Index details: ${ie.toString()}")
-    }
-
-    static void setIndex(IndexEnum ie ) {
-        index = ie
+        index = indexEnum
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
+        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
     }
 }
