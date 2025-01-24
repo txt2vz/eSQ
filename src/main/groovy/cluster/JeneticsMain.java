@@ -4,22 +4,21 @@ import classify.Classify;
 import classify.LuceneClassifyMethod;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
-import index.*;
+import index.IndexEnum;
+import index.Indexes;
+import io.jenetics.*;
+import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
+import io.jenetics.util.Factory;
 import io.jenetics.util.IntRange;
 import org.apache.lucene.classification.Classifier;
 import org.apache.lucene.search.BooleanQuery;
-import io.jenetics.*;
-import io.jenetics.engine.Engine;
-import io.jenetics.util.Factory;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import index.IndexEnum;
 
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
@@ -57,7 +56,7 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 300;
+        final int popSize = 200;
         final int maxGen = 1400;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
