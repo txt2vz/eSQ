@@ -18,20 +18,4 @@ class ImportantTermQueriesTest extends Specification {
         tfidfList[1].getTerm().text() == 'space'
         tfidfList[2].getTerm().text() == 'jesus'
     }
-
-//    def "Term Query Intersect Map Sorted "(){
-//
-//        setup:
-//        Indexes.setIndex(IndexEnum.NG3)
-//
-//        when:
-//        def tqList = ImportantTermQueries.getTFIDFTermQueryList(Indexes.indexReader)
-//        def tqMapSorted = ImportantTermQueries.getTermIntersectMapSorted(tqList)
-//        def tqOrbit = new TermQuery(new Term(Indexes.FIELD_CONTENTS,'orbit'))
-//
-//        then:
-//        println "tqMapSorted (20): ${tqMapSorted.take(20)}"
-//        tqMapSorted[tqOrbit].first().v1.getTerm().text() == 'lunar'
-//        tqMapSorted[tqOrbit].first().v2 == 0.75
-//    }
 }

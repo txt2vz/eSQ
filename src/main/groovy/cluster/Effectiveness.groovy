@@ -21,7 +21,7 @@ class Effectiveness {
     final int numberOfClusters
     final int numberOfClasses
 
-    Effectiveness(Classifier classifier, boolean queriesOnly){
+    Effectiveness(Classifier classifier, boolean queriesOnly = false){
 
         List<String> classes = []
         List<String> clusters = []

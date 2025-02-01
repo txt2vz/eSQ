@@ -123,9 +123,9 @@ public class JeneticsMain {
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
                     classify.updateAssignedField(useNonIntersectingClustersForTrainingKNN);
-                    Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn);
+                 //   Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn);
 
-                    Effectiveness effectiveness = new Effectiveness(classifier, false);
+                    Effectiveness effectiveness = new Effectiveness(classify.getClassifier(classifyMethod, k_for_knn));
                     EsqResultDetail esqResultDetail = new EsqResultDetail(index, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, QueryTermIntersect.getMIN_INTERSECT_RATIO(), k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));

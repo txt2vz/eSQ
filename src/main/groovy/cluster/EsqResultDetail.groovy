@@ -67,7 +67,7 @@ class EsqResultDetail {
 
     void report(File fcsv){
 
-        //spreadsheet to be used with pivot table
+        //spreadsheet can be used with pivot table
         if (!fcsv.exists()) {
             fcsv << 'Index,v,homogeneity,completeness,adjusted_rand,fitness,numberOfDocumentsClusteredByQuery,numDocs,percentClusteredByQuery,numberOfClasses,numberOfClusters,clusterCountError,absClusterCountError,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
 
