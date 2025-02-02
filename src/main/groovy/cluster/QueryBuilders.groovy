@@ -1,7 +1,6 @@
 package cluster
 
 import groovy.transform.CompileStatic
-import index.Indexes
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
@@ -10,7 +9,38 @@ import org.apache.lucene.search.TermQuery
 @CompileStatic
 class QueryBuilders {
 
-     static BooleanQuery.Builder[] getMultiWordQuery(int[] intChromosome, List<TermQuery> termQueryList, final int k,  BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
+    //divide chromosome into blocks depending on k.  May help evolution?
+    static BooleanQuery.Builder[] getMultiWordQueryBlocks(int[] intChromosome, List<TermQuery> termQueryList, final int k,  BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
+
+        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
+
+        int cNumber = -1;
+        TermQuery tqRoot
+        BigDecimal blockSize  = intChromosome.length / k
+
+        for (int i = 0; i < intChromosome.size(); i++) {
+            assert cNumber < k
+            final int allele = intChromosome[i]
+
+            if (i % blockSize==0){
+                cNumber++
+                tqRoot = termQueryList[allele]
+                assert tqRoot != null
+                arrayOfBuilders[cNumber] = new BooleanQuery.Builder().add(tqRoot, booleanClauseOccur)
+            }
+            else {
+                TermQuery tqNew =  termQueryList[allele]
+
+                if (QueryTermIntersect.isValidIntersect(tqRoot, tqNew)) {
+                    arrayOfBuilders[cNumber].add(tqNew, booleanClauseOccur)
+                }
+            }
+        }
+        return arrayOfBuilders
+    }
+
+//use modulus to determine which gene is for which query.  Do not repeat words
+     static BooleanQuery.Builder[] getMultiWordQueryModulusDuplicateCheck(int[] intChromosome, List<TermQuery> termQueryList, final int k, BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder [k]
         Set<Integer> alleles = [] as Set<Integer>

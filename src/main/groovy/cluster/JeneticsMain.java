@@ -11,7 +11,6 @@ import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
 import io.jenetics.util.IntRange;
-import org.apache.lucene.classification.Classifier;
 import org.apache.lucene.search.BooleanQuery;
 
 import java.io.File;
@@ -23,11 +22,11 @@ import java.util.stream.IntStream;
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
 public class JeneticsMain {
-    final static boolean useNonIntersectingClustersForTrainingKNN = true;
-    final static int k_for_knn = 10;
-
+    final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN = true;
+    final static int K_FOR_KNN = 10;
     static String gaEngine = "JENETICS.IO";
-    static final double kPenalty = 0.03d;
+    static final double K_PENALTY = 0.03d;
+
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
             IndexEnum.CRISIS4,
@@ -44,11 +43,13 @@ public class JeneticsMain {
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
         final int k = (gt.get(1)).get(0).allele();
 
-        BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQuery(intArray, Indexes.termQueryList, k);
+        BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQueryBlocks(intArray, Indexes.termQueryList, k);
+        // BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQueryModulusDuplicateCheck(intArray, Indexes.termQueryList, k);
+
         QuerySet querySet = new QuerySet(bqbArray);
 
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
-        final double f = uniqueHits * (1.0 - (kPenalty * k));
+        final double f = uniqueHits * (1.0 - (K_PENALTY * k));
         assert f > 0;
         return f;
     }
@@ -56,19 +57,19 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 200;
-        final int maxGen = 1400;
-        final int maxWordListValue = 80;
+        final int popSize = 100;
+        final int maxGen = 2000;
+        final int maxWordListValue = 60;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 3;
-        List<Double> bestMaxFitv = new ArrayList<>();
+        final int numberMaxFitJobs = 8;
+        List<Double> bestMaxFitV = new ArrayList<>();
 
         indexList.stream().forEach(index -> {
             Indexes.setIndex(index);
-            List<Phenotype<IntegerGene, Double>> resultList = new ArrayList<>();
+            List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
                 List<EsqResultDetail> esqResultDetailList = new ArrayList<>();
@@ -97,7 +98,7 @@ public class JeneticsMain {
                             statistics = EvolutionStatistics.ofNumber();
                     AtomicReference<Double> fitness = new AtomicReference<>((double) 0);
 
-                    final Phenotype<IntegerGene, Double> result =
+                    final Phenotype<IntegerGene, Double> jeneticsResult =
 
                             engine.stream()
                                     .limit(maxGen)
@@ -113,39 +114,39 @@ public class JeneticsMain {
                                     .peek(statistics)
                                     .collect(toBestPhenotype());
 
-                    resultList.add(result);
-                    Genotype<IntegerGene> g = result.genotype();
+                    jeneticsResultList.add(jeneticsResult);
+                    Genotype<IntegerGene> g = jeneticsResult.genotype();
 
                     int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
                     final int k = (g.get(1)).get(0).allele();
 
-                    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQuery(intArrayBestOfRun, Indexes.termQueryList, k);
+                    // BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQuery(intArrayBestOfRun, Indexes.termQueryList, k);
+                    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQueryBlocks(intArrayBestOfRun, Indexes.termQueryList, k);
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
-                    classify.updateAssignedField(useNonIntersectingClustersForTrainingKNN);
-                 //   Classifier classifier = classify.getClassifier(classifyMethod, k_for_knn);
+                    classify.updateAssignedField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN);
 
-                    Effectiveness effectiveness = new Effectiveness(classify.getClassifier(classifyMethod, k_for_knn));
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, effectiveness, result.fitness(), querySet, classifyMethod, false, useNonIntersectingClustersForTrainingKNN, kPenalty, QueryTermIntersect.getMIN_INTERSECT_RATIO(), k_for_knn, popSize, (int) result.generation(), jobNumber, maxFitjob, gaEngine);
+                    Effectiveness effectiveness = new Effectiveness(classify.getClassifier(classifyMethod, K_FOR_KNN));
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, effectiveness, jeneticsResult.fitness(), querySet, classifyMethod, false, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersect.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);
 
-                    System.out.println("Gen: " + result.generation() + " Fitness: " + result.fitness() + " v: " + effectiveness.getvMeasure());
+                    System.out.println("Gen: " + jeneticsResult.generation() + " Fitness: " + jeneticsResult.fitness() + " v: " + effectiveness.getvMeasure());
                     System.out.println("*********************************************************** \n");
                 });
 
                 Optional<EsqResultDetail> maxResultForJob = esqResultDetailList.stream().max(Comparator.comparing(EsqResultDetail::getFitness));
                 maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
-                bestMaxFitv.add(maxResultForJob.get().getV());
+                bestMaxFitV.add(maxResultForJob.get().getV());
 
             });
         });
 
-        double average = bestMaxFitv.stream()
+        double average = bestMaxFitV.stream()
                 .collect(Collectors.averagingDouble(Double::doubleValue));
 
-        System.out.println("Average maxFit v : " + average + " List of v " + bestMaxFitv);
+        System.out.println("Average maxFit v : " + average + " List of v " + bestMaxFitV);
 
         final Date endRun = new Date();
         TimeDuration duration = TimeCategory.minus(endRun, startRun);
