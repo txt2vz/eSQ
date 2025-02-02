@@ -15,7 +15,7 @@ Uses Jenetics.IO ( https://jenetics.io/ ) via  https://github.com/txt2vz/eSQ/blo
 Lucene is used for indexing and several pre-built indexes are included in the 'indexes' folder.  
 You can build your own index by adapting https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/index/BuildIndex.groovy
 
-## help
+## Help
 Please let me know if you are interested in helping to improve this project
 
 ## Papers
