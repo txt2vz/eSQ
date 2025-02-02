@@ -16,7 +16,7 @@ class QueryTermIntersectTest extends Specification {
         int k = 3
         int[] genome3 =  new int[] {0, 1, 2}
 
-        List<BooleanQuery.Builder> bqbL =  QueryBuilders.getMultiWordQueryModulusDuplicateCheck(genome3, Indexes.termQueryList, k)
+        List<BooleanQuery.Builder> bqbL =  EsqQueryBuilder.getMultiWordQueryModulusDuplicateCheck(genome3, Indexes.termQueryList, k)
         Query q0 = bqbL[0].build()
         Query q1 = bqbL[1].build()
         Query q2 = bqbL[2].build()
@@ -40,7 +40,7 @@ class QueryTermIntersectTest extends Specification {
         k = 3
         int[] genome6 =  new int[] {0, 1, 2, 0, 1, 2}
 
-        bqbL =  QueryBuilders.getMultiWordQueryModulusDuplicateCheck(genome3, Indexes.termQueryList, k)
+        bqbL =  EsqQueryBuilder.getMultiWordQueryModulusDuplicateCheck(genome3, Indexes.termQueryList, k)
          q0 = bqbL[0].build()
          q1 = bqbL[1].build()
          q2 = bqbL[2].build()
@@ -53,7 +53,7 @@ class QueryTermIntersectTest extends Specification {
         when:
         k = 3
         genome6 =  new int[] {0, 1, 2, 3, 4, 5}
-        List<BooleanQuery.Builder> bqbL6 =  QueryBuilders.getMultiWordQueryModulusDuplicateCheck(genome6, Indexes.termQueryList, k)
+        List<BooleanQuery.Builder> bqbL6 =  EsqQueryBuilder.getMultiWordQueryModulusDuplicateCheck(genome6, Indexes.termQueryList, k)
 
         Query q3 = bqbL6[0].build()
 
@@ -64,7 +64,7 @@ class QueryTermIntersectTest extends Specification {
         k = 3
         genome6 =  new int[] {0, 1, 2, 7, 4, 2}
 
-        bqbL =  QueryBuilders.getMultiWordQueryModulusDuplicateCheck(genome6, Indexes.termQueryList, k)
+        bqbL =  EsqQueryBuilder.getMultiWordQueryModulusDuplicateCheck(genome6, Indexes.termQueryList, k)
         q0 = bqbL[0].build()
         q1 = bqbL[1].build()
         q2 = bqbL[2].build()
@@ -79,7 +79,7 @@ class QueryTermIntersectTest extends Specification {
         k = 4
         genome6 =  new int[] {0, 1, 2, 14, 17, 4, 4, 4}
 
-        bqbL =  QueryBuilders.getMultiWordQueryModulusDuplicateCheck(genome6, Indexes.termQueryList, k)
+        bqbL =  EsqQueryBuilder.getMultiWordQueryModulusDuplicateCheck(genome6, Indexes.termQueryList, k)
         q0 = bqbL[0].build()
         q1 = bqbL[1].build()
         q2 = bqbL[2].build()

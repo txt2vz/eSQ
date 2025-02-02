@@ -26,6 +26,7 @@ public class JeneticsMain {
     final static int K_FOR_KNN = 10;
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
+    static EsqQueryBuilder esqQueryBuilder;
 
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
@@ -42,12 +43,8 @@ public class JeneticsMain {
 
         int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
         final int k = (gt.get(1)).get(0).allele();
-
-        BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQueryBlocks(intArray, Indexes.termQueryList, k);
-        // BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQueryModulusDuplicateCheck(intArray, Indexes.termQueryList, k);
-
+        BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(intArray, k);
         QuerySet querySet = new QuerySet(bqbArray);
-
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         final double f = uniqueHits * (1.0 - (K_PENALTY * k));
         assert f > 0;
@@ -67,8 +64,9 @@ public class JeneticsMain {
         final int numberMaxFitJobs = 8;
         List<Double> bestMaxFitV = new ArrayList<>();
 
-        indexList.stream().forEach(index -> {
+        for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
+            esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, BuilderMethod.BLOCKS);
             List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
@@ -120,8 +118,8 @@ public class JeneticsMain {
                     int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
                     final int k = (g.get(1)).get(0).allele();
 
-                    // BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQueryModulusDuplicateCheck(intArray, Indexes.termQueryList, k);
-                    BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQueryBlocks(intArrayBestOfRun, Indexes.termQueryList, k);
+                    BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(intArrayBestOfRun, k);
+
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
                     classify.updateAssignedField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN);
@@ -141,7 +139,7 @@ public class JeneticsMain {
                 bestMaxFitV.add(maxResultForJob.get().getV());
 
             });
-        });
+        };
 
         double average = bestMaxFitV.stream()
                 .collect(Collectors.averagingDouble(Double::doubleValue));
