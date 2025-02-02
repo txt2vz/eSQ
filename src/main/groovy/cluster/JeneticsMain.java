@@ -120,7 +120,7 @@ public class JeneticsMain {
                     int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
                     final int k = (g.get(1)).get(0).allele();
 
-                    // BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQuery(intArrayBestOfRun, Indexes.termQueryList, k);
+                    // BooleanQuery.Builder[] bqbArray = QueryBuilders.getMultiWordQueryModulusDuplicateCheck(intArray, Indexes.termQueryList, k);
                     BooleanQuery.Builder[] arrayOfQueryBuilders = QueryBuilders.getMultiWordQueryBlocks(intArrayBestOfRun, Indexes.termQueryList, k);
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
