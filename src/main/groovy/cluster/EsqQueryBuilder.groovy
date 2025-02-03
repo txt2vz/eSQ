@@ -14,17 +14,17 @@ enum BuilderMethod {
 @CompileStatic
 class EsqQueryBuilder {
     List<TermQuery> tql;
-    BooleanClause.Occur bco
-    BuilderMethod bm
+    BooleanClause.Occur booleanClauseOccur
+    BuilderMethod builderMethod
 
-    EsqQueryBuilder(List<TermQuery> termQueryList, BuilderMethod bm, BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
+    EsqQueryBuilder(List<TermQuery> termQueryList, BuilderMethod bm, BooleanClause.Occur bco = BooleanClause.Occur.SHOULD) {
         tql = termQueryList
-        bco = booleanClauseOccur
-        this.bm = bm
+        booleanClauseOccur = bco
+        this.builderMethod = bm
     }
 
     BooleanQuery.Builder[] buildQueries(int[] intChromosome, final int k) {
-        switch (bm) {
+        switch (builderMethod) {
             case BuilderMethod.BLOCKS:
                 return getMultiWordQueryBlocks(intChromosome, k)
                 break
@@ -44,7 +44,7 @@ class EsqQueryBuilder {
         int blockSize = (int) (intChromosome.length / k)
 
         for (int i = 0; i < intChromosome.size(); i++) {
-            assert clusterNumber < k
+
             final int allele = intChromosome[i]
 
             if (i % blockSize == 0) {
@@ -52,15 +52,15 @@ class EsqQueryBuilder {
                 if (clusterNumber >= k){
                     clusterNumber = 0
                 }
-                assert clusterNumber < k
+
                 tqRoot = tql[allele]
                 assert tqRoot != null
-                arrayOfBuilders[clusterNumber] = new BooleanQuery.Builder().add(tqRoot, bco)
+                arrayOfBuilders[clusterNumber] = new BooleanQuery.Builder().add(tqRoot, booleanClauseOccur)
             } else {
                 TermQuery tqNew = tql[allele]
 
                 if (QueryTermIntersect.isValidIntersect(tqRoot, tqNew)) {
-                    arrayOfBuilders[clusterNumber].add(tqNew, bco)
+                    arrayOfBuilders[clusterNumber].add(tqNew, booleanClauseOccur)
                 }
             }
         }
@@ -82,7 +82,7 @@ class EsqQueryBuilder {
             final int allele = intChromosome[gene]
 
             if (alleles.add(allele)) {
-                arrayOfBuilders[uniqueWords] = new BooleanQuery.Builder().add(tql[allele], bco)
+                arrayOfBuilders[uniqueWords] = new BooleanQuery.Builder().add(tql[allele], booleanClauseOccur)
                 uniqueWords++
             }
             gene++
@@ -99,7 +99,7 @@ class EsqQueryBuilder {
             TermQuery tqNew = tql[allele]
 
             if (alleles.add(allele) && (QueryTermIntersect.isValidIntersect(tq0, tqNew))) {
-                arrayOfBuilders[clusterNumber].add(tqNew, bco)
+                arrayOfBuilders[clusterNumber].add(tqNew, booleanClauseOccur)
             }
         }
 
