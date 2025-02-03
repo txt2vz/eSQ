@@ -20,7 +20,7 @@ class EsqQueryBuilder {
     EsqQueryBuilder(List<TermQuery> termQueryList, BuilderMethod bm, BooleanClause.Occur booleanClauseOccur = BooleanClause.Occur.SHOULD) {
         tql = termQueryList
         bco = booleanClauseOccur
-        this.bm = BuilderMethod.BLOCKS
+        this.bm = bm
     }
 
     BooleanQuery.Builder[] buildQueries(int[] intChromosome, final int k) {
@@ -39,28 +39,32 @@ class EsqQueryBuilder {
     BooleanQuery.Builder[] getMultiWordQueryBlocks(int[] intChromosome, final int k) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
-
-        int cNumber = -1;
+        int clusterNumber = -1;
         TermQuery tqRoot
-        BigDecimal blockSize = intChromosome.length / k
+        int blockSize = (int) (intChromosome.length / k)
 
         for (int i = 0; i < intChromosome.size(); i++) {
-            assert cNumber < k
+            assert clusterNumber < k
             final int allele = intChromosome[i]
 
             if (i % blockSize == 0) {
-                cNumber++
+                clusterNumber++
+                if (clusterNumber >= k){
+                    clusterNumber = 0
+                }
+                assert clusterNumber < k
                 tqRoot = tql[allele]
                 assert tqRoot != null
-                arrayOfBuilders[cNumber] = new BooleanQuery.Builder().add(tqRoot, bco)
+                arrayOfBuilders[clusterNumber] = new BooleanQuery.Builder().add(tqRoot, bco)
             } else {
                 TermQuery tqNew = tql[allele]
 
                 if (QueryTermIntersect.isValidIntersect(tqRoot, tqNew)) {
-                    arrayOfBuilders[cNumber].add(tqNew, bco)
+                    arrayOfBuilders[clusterNumber].add(tqNew, bco)
                 }
             }
         }
+        assert arrayOfBuilders.length <=k
         return arrayOfBuilders
     }
 
