@@ -61,8 +61,8 @@ public class JeneticsMain {
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 4;
-        final BuilderMethod builderMethod = BuilderMethod.BLOCKS;
+        final int numberMaxFitJobs = 6;
+        BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
         for (IndexEnum index : indexList) {
