@@ -30,7 +30,7 @@ class QueryTermIntersectTest extends Specification {
         Indexes.termQueryList[5].getTerm().text() == 'game'
         Indexes.termQueryList[6].getTerm().text() == 'team'
 
-        bqbL.size() ==  Indexes.index.numberOfCategories
+        bqbL.size() ==  Indexes.index.numberOfClasses
         q0.toString(Indexes.FIELD_CONTENTS) == 'god'
         q1.toString(Indexes.FIELD_CONTENTS) == 'space'
         q2.toString(Indexes.FIELD_CONTENTS) == 'jesus'

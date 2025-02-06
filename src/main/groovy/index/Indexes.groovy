@@ -33,15 +33,15 @@ enum IndexEnum {
 
     // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
     String pathString
-    int numberOfCategories
+    int numberOfClasses
 
-    IndexEnum(String pathString, int numberOfCategories) {
-        this.numberOfCategories = numberOfCategories
+    IndexEnum(String pathString, int numberOfClasses) {
+        this.numberOfClasses = numberOfClasses
         this.pathString = pathString
     }
 
     String toString() {
-        return "${this.name()} path: $pathString numberOfCategories: $numberOfCategories "
+        return "${this.name()} path: $pathString numberOfClasses: $numberOfClasses  "
     }
 
     IndexReader getIndexReader() {

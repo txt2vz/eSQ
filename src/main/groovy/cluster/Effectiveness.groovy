@@ -66,7 +66,8 @@ class Effectiveness {
 
         assert classes.size() == clusters.size()
         assert classes.size() > 0
-        assert numberOfClasses == Indexes.index.numberOfCategories
+        assert Indexes.index.numberOfClasses == numberOfClasses
+        assert numberOfClasses == Indexes.index.numberOfClasses
 
         numberOfDocumentsInQueryBuiltClusters =  Indexes.indexReader.maxDoc() - unasscount
 

@@ -54,17 +54,16 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 60;
+        final int popSize = 120;
         final int maxGen = 2000;
         final int maxWordListValue = 60;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 8;
+        final int numberMaxFitJobs = 4;
         final BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
-
 
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
