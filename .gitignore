@@ -4,3 +4,5 @@
 *.stat
 *.iml
 /.idea/
+indexes/
+/results/
