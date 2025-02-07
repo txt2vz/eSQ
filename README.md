@@ -9,7 +9,8 @@ Install sklearn (https://scikit-learn.org/stable/) for cluster evaluation
 Change the PYTHON_LOCATION in https://github.com/txt2vz/eSQ/blob/esqJenetics/src/main/groovy/cluster/CallVmeasurePython.groovy
 
 ## GA Engine 
-Uses Jenetics.IO ( https://jenetics.io/ ) via  https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/JeneticsMain.java
+Uses Jenetics.IO ( https://jenetics.io/ ) 
+To run use: https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/JeneticsMain.java
 
 ## Indexes
 Lucene is used for indexing and several pre-built indexes are included in the 'indexes' folder.  
