@@ -61,7 +61,7 @@ public class JeneticsMain {
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 6;
+        final int numberMaxFitJobs = 5;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
@@ -86,8 +86,8 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
-                                    //   PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                   // PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
+                                       PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
                                     new Mutator<>(0.1)
                             )

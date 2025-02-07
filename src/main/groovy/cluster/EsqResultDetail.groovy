@@ -47,8 +47,8 @@ class EsqResultDetail {
         this.job = job
         this.maxFitJob = maxFitJob
         this.onlyDocsInOneCluster = onlyDocsInOneCluster
-        this.uniqueHits =  querySet.totalHitsReturnedByOnlyOneQuery//uniqueHits
-        this.totalHitsAllQueries =  querySet.totalHitsAllQueries   //totalHitsAllQueries
+        this.uniqueHits =  querySet.totalHitsReturnedByOnlyOneQuery
+        this.totalHitsAllQueries =  querySet.totalHitsAllQueries
         this.k_for_knn = k_for_knn
         this.queryMap = querySet.getQueryMap()
         this.gaEngine = gaEngine

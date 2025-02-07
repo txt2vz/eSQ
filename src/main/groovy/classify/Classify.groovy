@@ -79,7 +79,6 @@ class Classify {
         IndexUtils.categoryFrequencies(Indexes.indexSearcher, false)
     }
 
-
     Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
