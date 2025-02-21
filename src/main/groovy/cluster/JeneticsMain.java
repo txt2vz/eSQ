@@ -141,7 +141,6 @@ public class JeneticsMain {
 
             });
         }
-        ;
 
         double average = bestMaxFitV.stream()
                 .collect(Collectors.averagingDouble(Double::doubleValue));
