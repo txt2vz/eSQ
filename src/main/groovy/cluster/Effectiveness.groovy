@@ -41,7 +41,7 @@ class Effectiveness {
             String clusterAssignedByQueryThenByClassifier = clusterAssignedByQuery
 
             if (clusterAssignedByQuery == 'unassigned') {
-                unasscount++;
+                unasscount++
 
                 if (!queriesOnly) {
                     clusterAssignedByQueryThenByClassifier = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).getAssignedClass().utf8ToString()
@@ -78,26 +78,12 @@ class Effectiveness {
         classesFile.write(JsonOutput.toJson(classes))
         clustersFile.write(JsonOutput.toJson(clusters))
 
-        List<String> resultsList = resultFromPython().split(',')
+        //use sklearn in python to obtain v, h, c, ari
+        List<String> resultsList = CallVmeasurePython.processVmeasurePython()
 
         vMeasure = resultsList[0].toDouble()
         homogeneity = resultsList[1].toDouble()
         completeness = resultsList[2].toDouble()
         adjusted_rand = resultsList[3].toDouble()
-    }
-
-    //call sklearn to get v measure
-    private static String resultFromPython(){
-
-        String resultFromPython = "no result from python"
-
-        try {
-            CallVmeasurePython callVmeasurePython = new CallVmeasurePython()
-            resultFromPython = callVmeasurePython.processVmeasurePython()
-
-        } catch (Exception e) {
-            println "Exeception  in callVmeasurePython $e"
-        }
-        return  resultFromPython
     }
 }
