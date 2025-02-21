@@ -10,7 +10,6 @@ class CallVmeasurePython {
         ProcessBuilder processBuilder = new ProcessBuilder(PYTHON_LOCATION, /src\main\python\vMeasure.py/)
         processBuilder.redirectErrorStream(true)
         Process process = processBuilder.start()
-        String results = process.text
-        return results.split(',')
+        return process.text.split(',')
     }
 }
