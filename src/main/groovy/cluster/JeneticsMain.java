@@ -86,8 +86,8 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                   // PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
-                                       PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                    // PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
+                                    PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
                                     new Mutator<>(0.1)
                             )
@@ -140,7 +140,8 @@ public class JeneticsMain {
                 bestMaxFitV.add(maxResultForJob.get().getV());
 
             });
-        };
+        }
+        ;
 
         double average = bestMaxFitV.stream()
                 .collect(Collectors.averagingDouble(Double::doubleValue));
