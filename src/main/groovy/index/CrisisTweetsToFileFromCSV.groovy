@@ -3,19 +3,12 @@ package index
 import java.nio.file.Path
 import java.nio.file.Paths
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8
 
 class CrisisTweetsToFileFromCSV {
 
     Path docsPath = Paths.get('datasets/SourceData/crisis5Data/')
     String filesOutPath = /C:\Data\crisis5/
-
-    //   Path docsPath = Paths.get('datasets/SourceData/crisis4Data/')
-//    String filesOutPath = /C:\Data\crisis4/
-
-    static main(args) {
-        new CrisisTweetsToFileFromCSV().writeTweetsToFiles()
-    }
 
     def writeTweetsToFiles() {
 
@@ -51,7 +44,7 @@ class CrisisTweetsToFileFromCSV {
                     if (textBody != " " && ontopic == "on-topic") {
 
                         byte[] bytes = textBody.getBytes()
-                        String utf8String = new String(bytes, UTF_8);
+                        String utf8String = new String(bytes, UTF_8)
 
                         utf8String = utf8String.replaceAll("[^\\p{ASCII}]", "")
 
@@ -69,5 +62,9 @@ class CrisisTweetsToFileFromCSV {
 
         }
         println 'done...'
+    }
+
+    static main(args) {
+        new CrisisTweetsToFileFromCSV().writeTweetsToFiles()
     }
 }
