@@ -61,8 +61,8 @@ class QuerySet {
             }
         }
 
-        TotalHitCountCollector collector = new TotalHitCountCollector();
-        Indexes.indexSearcher.search(totalHitsBQB.build(), collector);
-        totalHitsAllQueries = collector.getTotalHits();
+        TotalHitCountCollector collector = new TotalHitCountCollector()
+        Indexes.indexSearcher.search(totalHitsBQB.build(), collector)
+        totalHitsAllQueries = collector.getTotalHits()
     }
 }

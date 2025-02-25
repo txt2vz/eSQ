@@ -59,7 +59,7 @@ class Classify {
                 d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
                 //queryOriginal is an easier to read cluster label
-                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, queriesOriginal[i].toString(Indexes.FIELD_CONTENTS), Field.Store.YES);
+                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, queriesOriginal[i].toString(Indexes.FIELD_CONTENTS), Field.Store.YES)
                 d.add(assignedClass)
 
                 Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
@@ -82,12 +82,12 @@ class Classify {
     Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
-        bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD);
+        bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD)
         bqb.add(assignedTQ, BooleanClause.Occur.MUST_NOT)
         Query unassignedQ = bqb.build()
 
         TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(unassignedQ, Indexes.indexReader.numDocs())
-        ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs;
+        ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs
 
         println "In classifyUnassigned unAssignedHits size " + unAssignedHits.size()
 
@@ -107,7 +107,7 @@ class Classify {
                         Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
                         Indexes.FIELD_CONTENTS
                 )
-                break;
+                break
 
             case LuceneClassifyMethod.NB:
                 classifier = new BM25NBClassifier(
@@ -117,7 +117,7 @@ class Classify {
                         Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
                         Indexes.FIELD_CONTENTS
                 )
-                break;
+                break
         }
 
         return classifier
@@ -134,7 +134,7 @@ class Classify {
 
             Document d = Indexes.indexSearcher.doc(sd.doc)
             d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
-            Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES);
+            Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES)
             d.add(assignedClass)
 
             Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))

@@ -21,12 +21,12 @@ class ImportantTermQueries {
         int totalDocs = indexReader.numDocs()
 
         for (LeafReaderContext context : indexReader.leaves()) {
-            LeafReader leafReader = context.reader();
-            Terms terms = leafReader.terms(Indexes.FIELD_CONTENTS);
-            if (terms == null) continue;
+            LeafReader leafReader = context.reader()
+            Terms terms = leafReader.terms(Indexes.FIELD_CONTENTS)
+            if (terms == null) continue
 
-            TermsEnum termsEnum = terms.iterator();
-            BytesRef term;
+            TermsEnum termsEnum = terms.iterator()
+            BytesRef term
 
             while ((term = termsEnum.next()) != null) {
 
@@ -42,11 +42,11 @@ class ImportantTermQueries {
 
                     double tfidfTotal = 0
                     double tfidf
-                    PostingsEnum postingsEnum = termsEnum.postings(null, PostingsEnum.FREQS);
+                    PostingsEnum postingsEnum = termsEnum.postings(null, PostingsEnum.FREQS)
 
                     while (postingsEnum.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
 
-                        int termFreqInCurrentDoc = postingsEnum.freq();
+                        int termFreqInCurrentDoc = postingsEnum.freq()
 
                         double tf = Math.sqrt((double) termFreqInCurrentDoc)
                         tfidf = tf * (2 - idf)

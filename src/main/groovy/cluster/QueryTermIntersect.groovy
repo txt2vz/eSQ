@@ -16,15 +16,15 @@ class QueryTermIntersect {
     static double getIntersectValue(Query q0, Query q1) {
         IndexSearcher indexSearcher = Indexes.indexSearcher
 
-        TotalHitCountCollector collector = new TotalHitCountCollector();
-        BooleanQuery.Builder bqbAnd = new BooleanQuery.Builder();
+        TotalHitCountCollector collector = new TotalHitCountCollector()
+        BooleanQuery.Builder bqbAnd = new BooleanQuery.Builder()
 
         bqbAnd.add(q0, BooleanClause.Occur.MUST)
         bqbAnd.add(q1, BooleanClause.Occur.MUST)
-        indexSearcher.search(bqbAnd.build(), collector);
-        final int andCount = collector.getTotalHits();
+        indexSearcher.search(bqbAnd.build(), collector)
+        final int andCount = collector.getTotalHits()
 
-        collector = new TotalHitCountCollector();
+        collector = new TotalHitCountCollector()
         indexSearcher.search(q1, collector)
         final int q1Count = collector.getTotalHits()
 

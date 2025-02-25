@@ -13,7 +13,7 @@ enum BuilderMethod {
 
 @CompileStatic
 class EsqQueryBuilder {
-    List<TermQuery> tql;
+    List<TermQuery> tql
     BooleanClause.Occur booleanClauseOccur
     BuilderMethod builderMethod
 
@@ -39,7 +39,7 @@ class EsqQueryBuilder {
     BooleanQuery.Builder[] getMultiWordQueryBlocks(int[] intChromosome, final int k) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
-        int clusterNumber = -1;
+        int clusterNumber = -1
         TermQuery tqRoot
         int blockSize = (int) (intChromosome.length / k)
 

@@ -8,17 +8,12 @@ repositories {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/org.apache.groovy/groovy
+
     implementation group: 'org.apache.groovy', name: 'groovy', version: '4.0.22'
     implementation group: 'org.apache.groovy', name: 'groovy-json', version: '4.0.22'
 
-    // https://mvnrepository.com/artifact/io.jenetics/jenetics
- //   implementation group: 'io.jenetics', name: 'jenetics', version: '8.0.0'
-
-    // https://mvnrepository.com/artifact/io.jenetics/jenetics
     implementation group: 'io.jenetics', name: 'jenetics', version: '7.2.0'
 
-    // https://mvnrepository.com/artifact/org.apache.lucene/lucene-core
     implementation group: 'org.apache.lucene', name: 'lucene-core', version: '9.11.1'
     implementation group: 'org.apache.lucene', name: 'lucene-analysis-common', version: '9.11.1'
     implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '9.11.1'

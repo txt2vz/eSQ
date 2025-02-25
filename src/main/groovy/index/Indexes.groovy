@@ -79,7 +79,7 @@ class Indexes {
                         FIELD_TEST_TRAIN = 'test_train',
                         FIELD_CATEGORY_NUMBER = 'categoryNumber',
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
-                        FIELD_DOCUMENT_ID = 'document_id';
+                        FIELD_DOCUMENT_ID = 'document_id'
 
     static final Analyzer analyzer = new StandardAnalyzer()
     //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()

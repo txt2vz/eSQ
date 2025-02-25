@@ -15,8 +15,8 @@ class QueryTermIntersectTest extends Specification {
         when:
         int k = 3
         int[] genome3 =  new int[] {0, 1, 2}
-        EsqQueryBuilder esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, BuilderMethod.MODULUS);
-        BooleanQuery.Builder[] bqbL = esqQueryBuilder.buildQueries(genome3, k);
+        EsqQueryBuilder esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, BuilderMethod.MODULUS)
+        BooleanQuery.Builder[] bqbL = esqQueryBuilder.buildQueries(genome3, k)
         Query q0 = bqbL[0].build()
         Query q1 = bqbL[1].build()
         Query q2 = bqbL[2].build()
@@ -40,7 +40,7 @@ class QueryTermIntersectTest extends Specification {
         k = 3
         int[] genome6 =  new int[] {0, 1, 2, 0, 1, 2}
 
-         bqbL =  esqQueryBuilder.buildQueries(genome6, k);
+         bqbL =  esqQueryBuilder.buildQueries(genome6, k)
          q0 = bqbL[0].build()
          q1 = bqbL[1].build()
          q2 = bqbL[2].build()
@@ -53,7 +53,7 @@ class QueryTermIntersectTest extends Specification {
         when:
         k = 3
         genome6 =  new int[] {0, 1, 2, 3, 4, 5}
-        List<BooleanQuery.Builder> bqbL6 =  esqQueryBuilder.buildQueries(genome6, k);
+        List<BooleanQuery.Builder> bqbL6 =  esqQueryBuilder.buildQueries(genome6, k)
 
         Query q3 = bqbL6[0].build()
 
@@ -64,7 +64,7 @@ class QueryTermIntersectTest extends Specification {
         k = 3
         genome6 =  new int[] {0, 1, 2, 7, 4, 2}
 
-        bqbL = esqQueryBuilder.buildQueries(genome6, k);
+        bqbL = esqQueryBuilder.buildQueries(genome6, k)
         q0 = bqbL[0].build()
         q1 = bqbL[1].build()
         q2 = bqbL[2].build()
@@ -79,7 +79,7 @@ class QueryTermIntersectTest extends Specification {
         k = 4
         genome6 =  new int[] {0, 1, 2, 14, 17, 4, 4, 4}
 
-        bqbL =  esqQueryBuilder.buildQueries(genome6, k);
+        bqbL =  esqQueryBuilder.buildQueries(genome6, k)
         q0 = bqbL[0].build()
         q1 = bqbL[1].build()
         q2 = bqbL[2].build()
