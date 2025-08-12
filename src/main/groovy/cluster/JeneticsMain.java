@@ -55,8 +55,8 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 2000;
-        final int maxWordListValue = 60;
+        final int maxGen = 200;
+        final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
