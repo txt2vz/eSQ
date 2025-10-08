@@ -65,9 +65,8 @@ class ImportantTermQueries {
       //  println "termQueryMapDescend first (40): ${termQueryMapDescend.take(40)}"
      //   println "termQueryList first (40): ${tql.take(40)}"
 
-        List<TermQuery> tql40 = tql.take(40)
         print "Important words: "
-        tql40.each { Query q ->
+        tql.take(40).each { Query q ->
             print " ${q.toString(Indexes.FIELD_CONTENTS)}"
         }
         println ""
