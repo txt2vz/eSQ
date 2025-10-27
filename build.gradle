@@ -5,6 +5,8 @@ plugins {
 
 repositories {
     mavenCentral()
+   // maven { url 'https://oss.jfrog.org/artifactory/oss-release-local' }
+
 }
 
 dependencies {
@@ -12,14 +14,24 @@ dependencies {
     implementation group: 'org.apache.groovy', name: 'groovy', version: '4.0.22'
     implementation group: 'org.apache.groovy', name: 'groovy-json', version: '4.0.22'
 
+ //   implementation group: 'org.apache.groovy', name: 'groovy', version: '5.0.2'
+ //   implementation group: 'org.apache.groovy', name: 'groovy-json', version: '5.0.2'
+
     implementation group: 'io.jenetics', name: 'jenetics', version: '7.2.0'
 
-    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '9.11.1'
-    implementation group: 'org.apache.lucene', name: 'lucene-analysis-common', version: '9.11.1'
-    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '9.11.1'
-    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '9.11.1'
+   // implementation group: 'org.apache.lucene', name: 'lucene-core', version: '9.11.1'
+    //implementation group: 'org.apache.lucene', name: 'lucene-analysis-common', version: '9.11.1'
+    //implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '9.11.1'
+    //implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '9.11.1'
+
+    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '10.3.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-analysis-common', version: '10.3.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '10.3.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '10.3.1'
 
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.3-groovy-4.0'
+  //  testImplementation 'org.spockframework:spock-junit-platform:2.4-groovy-5'
+   // testImplementation 'org.spockframework:spock-core:2.4-groovy-5'
 
     repositories {
         flatDir {

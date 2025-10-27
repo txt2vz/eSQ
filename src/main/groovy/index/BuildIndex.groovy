@@ -26,9 +26,9 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'NG3'
+        String indexName = 'NG3v10'
         String indexPath = 'indexes' + /\$indexName/
-        String docsPath =  'datasets' + /\$indexName/
+        String docsPath =  'datasets' + '\\NG3'    // /\$indexName/
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
@@ -98,7 +98,8 @@ class BuildIndex {
 
         println "catsNameFreq: $catsNameFreq"
 
-        IndexUtils.categoryFrequencies(indexSearcher, true)
+       // IndexUtils.categoryFrequencies(indexSearcher, true)
+        IndexUtils.categoryFrequencies(indexReader, true)
 
         println "numDocs " + indexReader.numDocs()
         println "End ***************************************************************"

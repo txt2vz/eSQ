@@ -1,6 +1,8 @@
 package index
 
 import org.apache.lucene.document.Document
+import org.apache.lucene.index.IndexReader
+import org.apache.lucene.index.StoredFields
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.IndexSearcher
@@ -18,7 +20,14 @@ class IndexUtils {
         categoryFrequencies(Indexes.indexSearcher, true)
     }
 
-    static Map<String, Integer> categoryFrequencies(IndexSearcher indexSearcher, boolean printDetails = false) {
+    static Map<String, Integer> categoryFrequencies(IndexReader indexReader, boolean printDetails = false) {
+
+        // Get the IndexReader from the IndexSearcher
+        //IndexReader reader = Indexes.indexSearcher.getIndexReader();
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader)
+
+// Get the StoredFields instance from the reader
+        StoredFields storedFields = indexReader.storedFields()
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = indexSearcher.search(qAll, Integer.MAX_VALUE)
@@ -28,7 +37,8 @@ class IndexUtils {
         Map<String, Integer> categoryFrequencies = [:]
 
         for (ScoreDoc sd : allHits) {
-            Document d = indexSearcher.doc(sd.doc)
+         //   Document d = indexSearcher.doc(sd.doc)
+            Document d = storedFields.document(sd.doc);
 
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
             String assignedCat = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)

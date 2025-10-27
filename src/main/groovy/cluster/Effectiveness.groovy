@@ -4,6 +4,8 @@ import groovy.json.JsonOutput
 import index.Indexes
 import org.apache.lucene.classification.Classifier
 import org.apache.lucene.document.Document
+import org.apache.lucene.index.IndexReader
+import org.apache.lucene.index.StoredFields
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
@@ -32,9 +34,13 @@ class Effectiveness {
 
         int unasscount = 0
         int qOnlyCount = 0
+        IndexReader reader = Indexes.indexSearcher.getIndexReader();
+        StoredFields storedFields = reader.storedFields();
 
         for (ScoreDoc sd : allHits) {
-            Document d = Indexes.indexSearcher.doc(sd.doc)
+          //  Document d = Indexes.indexSearcher.doc(sd.doc)
+            Document d = storedFields.document(sd.doc);
+
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
 
             String clusterAssignedByQuery = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)

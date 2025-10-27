@@ -20,6 +20,7 @@ enum IndexEnum {
     CRISIS4('indexes/crisis4', 4),
 
     NG3('indexes/NG3', 3),
+    NG3v10('indexes/NG3v10', 3),
     NG4b('indexes/NG4b', 4),
     NG5('indexes/NG5', 5),
     NG6('indexes/NG6', 6),

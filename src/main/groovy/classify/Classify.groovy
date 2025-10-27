@@ -12,8 +12,10 @@ import org.apache.lucene.classification.KNearestNeighborClassifier
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.StringField
+import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexWriterConfig
+import org.apache.lucene.index.StoredFields
 import org.apache.lucene.index.Term
 import org.apache.lucene.search.*
 import org.apache.lucene.search.similarities.BM25Similarity
@@ -33,6 +35,8 @@ class Classify {
 
     private Query[] queriesReturningDistinctDocuments
     private Query[] queriesOriginal
+    IndexReader reader = Indexes.indexSearcher.getIndexReader();
+    StoredFields storedFields = reader.storedFields();
 
     Classify(Query[] queries, Query[] modifiedQueries) {
 
@@ -55,7 +59,8 @@ class Classify {
 
             for (ScoreDoc sd : hits) {
 
-                Document d = Indexes.indexSearcher.doc(sd.doc)
+                //Document d = Indexes.indexSearcher.doc(sd.doc)
+                Document d = storedFields.document(sd.doc);
                 d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
                 //queryOriginal is an easier to read cluster label
@@ -76,7 +81,7 @@ class Classify {
 
         indexWriter.close()
         Indexes.setIndex(Indexes.index)
-        IndexUtils.categoryFrequencies(Indexes.indexSearcher, false)
+        IndexUtils.categoryFrequencies(Indexes.indexReader, false)
     }
 
     Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
@@ -132,7 +137,8 @@ class Classify {
         int counter = 0
         for (ScoreDoc sd : hitsAll) {
 
-            Document d = Indexes.indexSearcher.doc(sd.doc)
+            Document d = storedFields.document(sd.doc);
+            //Document d = Indexes.indexSearcher.doc(sd.doc)
             d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
             Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES)
             d.add(assignedClass)

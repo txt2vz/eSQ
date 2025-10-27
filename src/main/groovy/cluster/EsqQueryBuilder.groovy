@@ -95,7 +95,7 @@ class EsqQueryBuilder {
             final int clusterNumber = j % k
 
             BooleanQuery rootq = arrayOfBuilders[clusterNumber].build()
-            Query tq0 = rootq.clauses().first().getQuery()
+            Query tq0 = rootq.clauses().first().query()
             TermQuery tqNew = tql[allele]
 
             if (alleles.add(allele) && (QueryTermIntersect.isValidIntersect(tq0, tqNew))) {

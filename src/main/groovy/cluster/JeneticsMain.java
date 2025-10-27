@@ -29,14 +29,15 @@ public class JeneticsMain {
     static EsqQueryBuilder esqQueryBuilder;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6
+//            IndexEnum.CRISIS3,
+//            IndexEnum.CRISIS4,
+//            IndexEnum.NG3,
+//            IndexEnum.NG5,
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+ //           IndexEnum.R5,
+  //          IndexEnum.R6
+            IndexEnum.NG3v10
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -55,13 +56,13 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 200;
+        final int maxGen = 20;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 5;
+        final int numberMaxFitJobs = 1;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
