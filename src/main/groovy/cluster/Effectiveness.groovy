@@ -2,7 +2,9 @@ package cluster
 
 import groovy.json.JsonOutput
 import index.Indexes
+import org.apache.lucene.classification.ClassificationResult
 import org.apache.lucene.classification.Classifier
+import org.apache.lucene.classification.KNearestNeighborClassifier
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.StoredFields
@@ -10,6 +12,7 @@ import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.search.TopDocs
+import org.apache.lucene.util.BytesRef
 
 class Effectiveness {
 
@@ -23,8 +26,8 @@ class Effectiveness {
     final int numberOfClusters
     final int numberOfClasses
 
-    Effectiveness(Classifier classifier, boolean queriesOnly = false){
-
+    //Effectiveness(Classifier classifier, boolean queriesOnly = false){
+      Effectiveness(KNearestNeighborClassifier knnclassifier, boolean queriesOnly = false){
         List<String> classes = []
         List<String> clusters = []
 
@@ -50,8 +53,9 @@ class Effectiveness {
                 unasscount++
 
                 if (!queriesOnly) {
-                    clusterAssignedByQueryThenByClassifier = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).getAssignedClass().utf8ToString()
+                    clusterAssignedByQueryThenByClassifier = knnclassifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).assignedClass().utf8ToString()
                 }
+
             }
 
             if (queriesOnly) {

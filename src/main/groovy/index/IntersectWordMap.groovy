@@ -29,11 +29,9 @@ class IntersectWordMap {
         return intersectMap
     }
 
-
     static void main(String[] args) {
 
-        IndexEnum ie = IndexEnum.NG6
-        Indexes.setIndex(IndexEnum.NG6)
+        Indexes.setIndex(IndexEnum.NG3v10)
         def l = Indexes.termQueryList
         //def l = ImportantTermQueries.getTFIDFTermQueryList(ie.indexReader, 100)
         IntersectWordMap iwm = new IntersectWordMap()

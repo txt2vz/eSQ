@@ -84,7 +84,7 @@ class Classify {
         IndexUtils.categoryFrequencies(Indexes.indexReader, false)
     }
 
-    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
+    KNearestNeighborClassifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD)
@@ -96,12 +96,13 @@ class Classify {
 
         println "In classifyUnassigned unAssignedHits size " + unAssignedHits.size()
 
-        Classifier classifier
+       // Classifier classifier
+        KNearestNeighborClassifier kNearestNeighborClassifier;
 
         switch (luceneClassifyMethod) {
 
             case LuceneClassifyMethod.KNN:
-                classifier = new KNearestNeighborClassifier(
+                kNearestNeighborClassifier = new KNearestNeighborClassifier(
                         Indexes.indexReader,
                         new BM25Similarity(),
                         new StandardAnalyzer(),
@@ -114,18 +115,18 @@ class Classify {
                 )
                 break
 
-            case LuceneClassifyMethod.NB:
-                classifier = new BM25NBClassifier(
-                        Indexes.indexReader,
-                        new StandardAnalyzer(),
-                        unassignedQ,
-                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
-                        Indexes.FIELD_CONTENTS
-                )
-                break
+//            case LuceneClassifyMethod.NB:
+//                classifier = new BM25NBClassifier(
+//                        Indexes.indexReader,
+//                        new StandardAnalyzer(),
+//                        unassignedQ,
+//                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
+//                        Indexes.FIELD_CONTENTS
+//                )
+//                break
         }
 
-        return classifier
+        return  kNearestNeighborClassifier   //classifier
     }
 
     private IndexWriter setAllUnassigned() {
