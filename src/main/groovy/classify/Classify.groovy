@@ -8,7 +8,9 @@ import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.classification.BM25NBClassifier
 import org.apache.lucene.classification.Classifier
+import org.apache.lucene.classification.KNearestFuzzyClassifier
 import org.apache.lucene.classification.KNearestNeighborClassifier
+import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.StringField
@@ -21,12 +23,14 @@ import org.apache.lucene.search.*
 import org.apache.lucene.search.similarities.BM25Similarity
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.FSDirectory
+import org.apache.lucene.util.BytesRef
 
 import java.nio.file.Path
 import java.nio.file.Paths
 
 enum LuceneClassifyMethod {
     KNN,
+    FuzzyKNN,
     NB
 }
 
@@ -84,7 +88,8 @@ class Classify {
         IndexUtils.categoryFrequencies(Indexes.indexReader, false)
     }
 
-    KNearestNeighborClassifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
+    //  KNearestNeighborClassifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
+    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 10) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD)
@@ -96,13 +101,23 @@ class Classify {
 
         println "In classifyUnassigned unAssignedHits size " + unAssignedHits.size()
 
-       // Classifier classifier
-        KNearestNeighborClassifier kNearestNeighborClassifier;
+        Classifier classifier
 
         switch (luceneClassifyMethod) {
+            case LuceneClassifyMethod.FuzzyKNN:
+                classifier = new KNearestFuzzyClassifier(
+                        Indexes.indexReader,
+                        new BM25Similarity(),
+                        new StandardAnalyzer(),
+                        unassignedQ,
+                        k_for_knn,
+                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
+                        Indexes.FIELD_CONTENTS
+                )
+                break
 
             case LuceneClassifyMethod.KNN:
-                kNearestNeighborClassifier = new KNearestNeighborClassifier(
+                classifier = new KNearestNeighborClassifier(
                         Indexes.indexReader,
                         new BM25Similarity(),
                         new StandardAnalyzer(),
@@ -114,19 +129,20 @@ class Classify {
                         Indexes.FIELD_CONTENTS
                 )
                 break
-
-//            case LuceneClassifyMethod.NB:
-//                classifier = new BM25NBClassifier(
-//                        Indexes.indexReader,
-//                        new StandardAnalyzer(),
-//                        unassignedQ,
-//                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
-//                        Indexes.FIELD_CONTENTS
-//                )
-//                break
         }
 
-        return  kNearestNeighborClassifier   //classifier
+        ConfusionMatrixGenerator.ConfusionMatrix confusionMatrix =
+                ConfusionMatrixGenerator.getConfusionMatrix(
+                        Indexes.indexReader,
+                        classifier,
+                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  //the ground truth category
+                        Indexes.FIELD_CONTENTS,   //the field to analyse
+                        80000       // Timeout in milliseconds
+                );
+        println("Classifier: $classifier")
+        println(" confusion F1:  ${confusionMatrix.getF1Measure()}")
+        return classifier
+
     }
 
     private IndexWriter setAllUnassigned() {
@@ -156,7 +172,7 @@ class Classify {
     }
 
     private IndexWriter prepareIndex() {
-      //  Indexes.setIndex(Indexes.index)
+        //  Indexes.setIndex(Indexes.index)
         String indexPath = Indexes.index.pathString
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)

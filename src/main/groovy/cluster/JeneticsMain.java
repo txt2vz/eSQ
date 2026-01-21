@@ -37,7 +37,7 @@ public class JeneticsMain {
 //            IndexEnum.R4,
  //           IndexEnum.R5,
   //          IndexEnum.R6
-            IndexEnum.NG3v10
+            IndexEnum.NG3L10
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -55,13 +55,13 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 120;
-        final int maxGen = 20;
+        final int popSize = 40;
+        final int maxGen = 10;
         final int maxWordListValue = 80;
-        final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+        final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
-        final int numberOfJobs = 2;
+        final int numberOfJobs = 1;
         final int numberMaxFitJobs = 1;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();

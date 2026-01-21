@@ -27,7 +27,10 @@ class Effectiveness {
     final int numberOfClasses
 
     //Effectiveness(Classifier classifier, boolean queriesOnly = false){
-      Effectiveness(KNearestNeighborClassifier knnclassifier, boolean queriesOnly = false){
+    Effectiveness(Classifier classifier, boolean queriesOnly = false) {
+        print "classifier in effectiventsss : $classifier"
+
+        if (classifier == null) println "null2"
         List<String> classes = []
         List<String> clusters = []
 
@@ -41,21 +44,26 @@ class Effectiveness {
         StoredFields storedFields = reader.storedFields();
 
         for (ScoreDoc sd : allHits) {
-          //  Document d = Indexes.indexSearcher.doc(sd.doc)
+            //  Document d = Indexes.indexSearcher.doc(sd.doc)
             Document d = storedFields.document(sd.doc);
+
 
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
 
             String clusterAssignedByQuery = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
-            String clusterAssignedByQueryThenByClassifier = clusterAssignedByQuery
+            String clusterAssignedByQueryThenByClassifier = ''// clusterAssignedByQuery
 
             if (clusterAssignedByQuery == 'unassigned') {
                 unasscount++
 
                 if (!queriesOnly) {
-                    clusterAssignedByQueryThenByClassifier = knnclassifier.assignClass(d.get(Indexes.FIELD_CONTENTS)).assignedClass().utf8ToString()
-                }
+                    ClassificationResult<BytesRef> result = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS))
 
+                    if (result != null && result.assignedClass() != null) {
+                        clusterAssignedByQueryThenByClassifier = result.assignedClass().utf8ToString()
+
+                    }
+                }
             }
 
             if (queriesOnly) {
@@ -79,7 +87,7 @@ class Effectiveness {
         assert Indexes.index.numberOfClasses == numberOfClasses
         assert numberOfClasses == Indexes.index.numberOfClasses
 
-        numberOfDocumentsInQueryBuiltClusters =  Indexes.indexReader.maxDoc() - unasscount
+        numberOfDocumentsInQueryBuiltClusters = Indexes.indexReader.maxDoc() - unasscount
 
         println "In Effectiveness Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
 
