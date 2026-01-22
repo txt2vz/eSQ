@@ -23,7 +23,7 @@ import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
 public class JeneticsMain {
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN = true;
-    final static int K_FOR_KNN = 10;
+    final static int K_FOR_KNN = 20;
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
@@ -55,14 +55,14 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 40;
-        final int maxGen = 10;
+        final int popSize = 120;
+        final int maxGen = 600;
         final int maxWordListValue = 80;
-        final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+        final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 1;
-        final int numberMaxFitJobs = 1;
+        final int numberMaxFitJobs = 2;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 

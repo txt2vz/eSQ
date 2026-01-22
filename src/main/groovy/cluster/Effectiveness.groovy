@@ -26,11 +26,8 @@ class Effectiveness {
     final int numberOfClusters
     final int numberOfClasses
 
-    //Effectiveness(Classifier classifier, boolean queriesOnly = false){
     Effectiveness(Classifier classifier, boolean queriesOnly = false) {
-        print "classifier in effectiventsss : $classifier"
 
-        if (classifier == null) println "null2"
         List<String> classes = []
         List<String> clusters = []
 
@@ -43,25 +40,28 @@ class Effectiveness {
         IndexReader reader = Indexes.indexSearcher.getIndexReader();
         StoredFields storedFields = reader.storedFields();
 
+        int countResults = 0
+        int countNullResult = 0
+
         for (ScoreDoc sd : allHits) {
             //  Document d = Indexes.indexSearcher.doc(sd.doc)
             Document d = storedFields.document(sd.doc);
-
-
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
 
             String clusterAssignedByQuery = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
-            String clusterAssignedByQueryThenByClassifier = ''// clusterAssignedByQuery
+            String clusterAssignedByQueryThenByClassifier = clusterAssignedByQuery
 
             if (clusterAssignedByQuery == 'unassigned') {
                 unasscount++
 
                 if (!queriesOnly) {
-                    ClassificationResult<BytesRef> result = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS))
+                    ClassificationResult<BytesRef> classificationResult = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS))
 
-                    if (result != null && result.assignedClass() != null) {
-                        clusterAssignedByQueryThenByClassifier = result.assignedClass().utf8ToString()
-
+                    if (classificationResult != null && classificationResult.assignedClass() != null) {
+                        clusterAssignedByQueryThenByClassifier = classificationResult.assignedClass().utf8ToString()
+                        countResults++
+                    } else {
+                        countNullResult++
                     }
                 }
             }
@@ -89,6 +89,7 @@ class Effectiveness {
 
         numberOfDocumentsInQueryBuiltClusters = Indexes.indexReader.maxDoc() - unasscount
 
+        println("In effectiveness countResults $countResults countNullResults $countNullResult")
         println "In Effectiveness Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
 
         File classesFile = new File(/results\classes.txt/)

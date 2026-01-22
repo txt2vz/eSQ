@@ -140,9 +140,8 @@ class Classify {
                         80000       // Timeout in milliseconds
                 );
         println("Classifier: $classifier")
-        println(" confusion F1:  ${confusionMatrix.getF1Measure()}")
+        println("Confusion matrix F1:  ${confusionMatrix.getF1Measure()}")
         return classifier
-
     }
 
     private IndexWriter setAllUnassigned() {
