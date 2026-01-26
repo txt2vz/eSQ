@@ -69,10 +69,10 @@ class EsqResultDetail {
 
         //spreadsheet can be used with pivot table
         if (!fcsv.exists()) {
-            fcsv << 'Index,v,homogeneity,completeness,adjusted_rand,fitness,numberOfDocumentsClusteredByQuery,numDocs,percentClusteredByQuery,numberOfClasses,numberOfClusters,clusterCountError,absClusterCountError,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
+            fcsv << 'Index,v,homogeneity,completeness,adjusted_rand,fitness,classifyMethod,numberOfDocumentsClusteredByQuery,numDocs,percentClusteredByQuery,numberOfClasses,numberOfClusters,clusterCountError,absClusterCountError,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
 
         }
 
-        fcsv << "$indexName, $v, $h, $c, $adjusted_rand, $fitness, $numberOfDocumentsClusteredByQuery, $numDocs, $percentClusteredByQuery, $numberOfClasses, $numberOfClusters, $clusterCountError, $absClusterCountError, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
+        fcsv << "$indexName, $v, $h, $c, $adjusted_rand, $fitness, $classifyMethod, $numberOfDocumentsClusteredByQuery, $numDocs, $percentClusteredByQuery, $numberOfClasses, $numberOfClusters, $clusterCountError, $absClusterCountError, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
     }
 }

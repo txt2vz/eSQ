@@ -39,6 +39,7 @@ class Classify {
 
     private Query[] queriesReturningDistinctDocuments
     private Query[] queriesOriginal
+    private boolean checkConfusionMatrix = false
     IndexReader reader = Indexes.indexSearcher.getIndexReader();
     StoredFields storedFields = reader.storedFields();
 
@@ -131,16 +132,19 @@ class Classify {
                 break
         }
 
-        ConfusionMatrixGenerator.ConfusionMatrix confusionMatrix =
-                ConfusionMatrixGenerator.getConfusionMatrix(
-                        Indexes.indexReader,
-                        classifier,
-                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  //the ground truth category
-                        Indexes.FIELD_CONTENTS,   //the field to analyse
-                        80000       // Timeout in milliseconds
-                );
-        println("Classifier: $classifier")
-        println("Confusion matrix F1:  ${confusionMatrix.getF1Measure()}")
+        if (checkConfusionMatrix) {
+
+            ConfusionMatrixGenerator.ConfusionMatrix confusionMatrix =
+                    ConfusionMatrixGenerator.getConfusionMatrix(
+                            Indexes.indexReader,
+                            classifier,
+                            Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  //the ground truth category
+                            Indexes.FIELD_CONTENTS,   //the field to analyse
+                            80000       // Timeout in milliseconds
+                    );
+            println("Classifier: $classifier")
+            println("Confusion matrix F1:  ${confusionMatrix.getF1Measure()}")
+        }
         return classifier
     }
 
