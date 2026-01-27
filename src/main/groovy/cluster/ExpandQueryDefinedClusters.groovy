@@ -4,7 +4,6 @@ import groovy.json.JsonOutput
 import index.Indexes
 import org.apache.lucene.classification.ClassificationResult
 import org.apache.lucene.classification.Classifier
-import org.apache.lucene.classification.KNearestNeighborClassifier
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.StoredFields
@@ -14,7 +13,7 @@ import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.search.TopDocs
 import org.apache.lucene.util.BytesRef
 
-class Effectiveness {
+class ExpandQueryDefinedClusters {
 
     final double vMeasure
     final double homogeneity
@@ -26,7 +25,7 @@ class Effectiveness {
     final int numberOfClusters
     final int numberOfClasses
 
-    Effectiveness(Classifier classifier, boolean queriesOnly = false) {
+    ExpandQueryDefinedClusters(Classifier classifier) {
 
         List<String> classes = []
         List<String> clusters = []
@@ -53,29 +52,18 @@ class Effectiveness {
 
             if (clusterAssignedByQuery == 'unassigned') {
                 unasscount++
+                ClassificationResult<BytesRef> classificationResult = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS))
 
-                if (!queriesOnly) {
-                    ClassificationResult<BytesRef> classificationResult = classifier.assignClass(d.get(Indexes.FIELD_CONTENTS))
-
-                    if (classificationResult != null && classificationResult.assignedClass() != null) {
-                        clusterAssignedByQueryThenByClassifier = classificationResult.assignedClass().utf8ToString()
-                        countResults++
-                    } else {
-                        countNullResult++
-                    }
+                if (classificationResult != null && classificationResult.assignedClass() != null) {
+                    clusterAssignedByQueryThenByClassifier = classificationResult.assignedClass().utf8ToString()
+                    countResults++
+                } else {
+                    countNullResult++
                 }
             }
 
-            if (queriesOnly) {
-                if (clusterAssignedByQuery != 'unassigned') {
-                    classes.add(category)
-                    clusters.add(clusterAssignedByQuery)
-                    qOnlyCount++
-                }
-            } else {
-                classes.add(category)
-                clusters.add(clusterAssignedByQueryThenByClassifier)
-            }
+            classes.add(category)
+            clusters.add(clusterAssignedByQueryThenByClassifier)
         }
 
         numberOfClusters = clusters.toSet().size()
@@ -89,8 +77,8 @@ class Effectiveness {
 
         numberOfDocumentsInQueryBuiltClusters = Indexes.indexReader.maxDoc() - unasscount
 
-        println("In effectiveness countResults $countResults countNullResults $countNullResult")
-        println "In Effectiveness Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
+        //println("In ExpandQueryDefinedClusters countResults $countResults countNullResults $countNullResult")
+        println "In ExpandQueryDefinedClusters Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
 
         File classesFile = new File(/results\classes.txt/)
         File clustersFile = new File(/results\clusters.txt/)

@@ -23,7 +23,7 @@ class EsqResultDetail {
     String gaEngine
     Map<Query, Integer> queryMap
 
-    EsqResultDetail(IndexEnum indexEnum, Effectiveness effectiveness, double fitness, QuerySet querySet, LuceneClassifyMethod classifyMethod, boolean queryOnly, boolean onlyDocsInOneCluster, double kPenalty, double intersectRatio, int k_for_knn, int popSize, int generation, int job, int maxFitJob, String gaEngine) {
+    EsqResultDetail(IndexEnum indexEnum, ExpandQueryDefinedClusters effectiveness, double fitness, QuerySet querySet, LuceneClassifyMethod classifyMethod, boolean queryOnly, boolean onlyDocsInOneCluster, double kPenalty, double intersectRatio, int k_for_knn, int popSize, int generation, int job, int maxFitJob, String gaEngine) {
 
         indexName = indexEnum.name()
         v = effectiveness.vMeasure

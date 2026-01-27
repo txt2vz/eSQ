@@ -1,6 +1,6 @@
 package cluster;
 
-import classify.Classify;
+import classify.EsqClassify;
 import classify.LuceneClassifyMethod;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
@@ -56,13 +56,13 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 2000;
+        final int maxGen = 200;
         final int maxWordListValue = 60;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 5;
+        final int numberMaxFitJobs = 2;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
@@ -123,16 +123,17 @@ public class JeneticsMain {
                     BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(intArrayBestOfRun, k);
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
-                    Classify classify = new Classify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
-                    classify.updateAssignedField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN);
+                    EsqClassify esqClassify = new EsqClassify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
+                    esqClassify.updateAssignedClusterField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN);  //update the field in the index with result of classification (KNN)
 
-                    Effectiveness effectiveness = new Effectiveness(classify.getClassifier(classifyMethod, K_FOR_KNN));
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, effectiveness, jeneticsResult.fitness(), querySet, classifyMethod, false, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersect.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
+                    ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
+
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersect.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);
 
-                    System.out.println("Gen: " + jeneticsResult.generation() + " Fitness: " + jeneticsResult.fitness() + " v: " + effectiveness.getvMeasure());
+                    System.out.println("Gen: " + jeneticsResult.generation() + " Fitness: " + jeneticsResult.fitness() + " v: " + expandQueryDefinedClusters.getvMeasure());
                     System.out.println("*********************************************************** \n");
                 });
 

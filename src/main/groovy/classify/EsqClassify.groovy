@@ -1,12 +1,10 @@
 package classify
 
 import groovy.transform.CompileStatic
-import index.IndexEnum
 import index.IndexUtils
 import index.Indexes
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.classification.BM25NBClassifier
 import org.apache.lucene.classification.Classifier
 import org.apache.lucene.classification.KNearestFuzzyClassifier
 import org.apache.lucene.classification.KNearestNeighborClassifier
@@ -23,7 +21,6 @@ import org.apache.lucene.search.*
 import org.apache.lucene.search.similarities.BM25Similarity
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.FSDirectory
-import org.apache.lucene.util.BytesRef
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -35,7 +32,7 @@ enum LuceneClassifyMethod {
 }
 
 @CompileStatic
-class Classify {
+class EsqClassify {
 
     private Query[] queriesReturningDistinctDocuments
     private Query[] queriesOriginal
@@ -43,20 +40,19 @@ class Classify {
     IndexReader reader = Indexes.indexSearcher.getIndexReader();
     StoredFields storedFields = reader.storedFields();
 
-    Classify(Query[] queries, Query[] modifiedQueries) {
+    EsqClassify(Query[] queries, Query[] modifiedQueries) {
 
         queriesOriginal = queries
         queriesReturningDistinctDocuments = modifiedQueries
         assert queriesOriginal.size() == queriesReturningDistinctDocuments.size()
     }
 
-    void updateAssignedField(boolean useQueriesReturningDistinctDocuments) {
+    void updateAssignedClusterField(boolean useQueriesReturningDistinctDocuments) {
 
         IndexWriter indexWriter = setAllUnassigned()
         Query[] queries = useQueriesReturningDistinctDocuments ? queriesReturningDistinctDocuments : queriesOriginal
 
         int counter = 0
-
         for (int i = 0; i < queries.size(); i++) {
 
             TopDocs topDocs = Indexes.indexSearcher.search(queries[i], Integer.MAX_VALUE)
@@ -89,7 +85,6 @@ class Classify {
         IndexUtils.categoryFrequencies(Indexes.indexReader, false)
     }
 
-    //  KNearestNeighborClassifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 20) {
     Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 10) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
@@ -132,20 +127,23 @@ class Classify {
                 break
         }
 
-        if (checkConfusionMatrix) {
-
-            ConfusionMatrixGenerator.ConfusionMatrix confusionMatrix =
-                    ConfusionMatrixGenerator.getConfusionMatrix(
-                            Indexes.indexReader,
-                            classifier,
-                            Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  //the ground truth category
-                            Indexes.FIELD_CONTENTS,   //the field to analyse
-                            80000       // Timeout in milliseconds
-                    );
-            println("Classifier: $classifier")
-            println("Confusion matrix F1:  ${confusionMatrix.getF1Measure()}")
-        }
+        // getConfusionMatrix(classifier)
         return classifier
+    }
+
+    public double getConfusionMatrixF1(Classifier classifier) {
+
+        ConfusionMatrixGenerator.ConfusionMatrix confusionMatrix =
+                ConfusionMatrixGenerator.getConfusionMatrix(
+                        Indexes.indexReader,
+                        classifier,
+                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,  //the ground truth category
+                        Indexes.FIELD_CONTENTS,   //the field to analyse
+                        80000       // Timeout in milliseconds
+                );
+        println("Classifier: $classifier")
+        println("Confusion matrix F1:  ${confusionMatrix.getF1Measure()}")
+        return confusionMatrix.getF1Measure()
     }
 
     private IndexWriter setAllUnassigned() {
@@ -168,7 +166,7 @@ class Classify {
             counter++
         }
 
-        println "In Classify setAllUnassigned $counter updated"
+        println "In EsqClassify setAllUnassigned $counter updated"
         indexWriter.forceMerge(1)
         indexWriter.commit()
         return indexWriter
