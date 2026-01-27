@@ -56,13 +56,13 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 200;
+        final int maxGen = 1200;
         final int maxWordListValue = 60;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 40;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 2;
+        final int numberMaxFitJobs = 3;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
@@ -140,7 +140,6 @@ public class JeneticsMain {
                 Optional<EsqResultDetail> maxResultForJob = esqResultDetailList.stream().max(Comparator.comparing(EsqResultDetail::getFitness));
                 maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
                 bestMaxFitV.add(maxResultForJob.get().getV());
-
             });
         }
 

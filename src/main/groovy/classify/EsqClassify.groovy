@@ -39,6 +39,7 @@ class EsqClassify {
     private boolean checkConfusionMatrix = false
     IndexReader reader = Indexes.indexSearcher.getIndexReader();
     StoredFields storedFields = reader.storedFields();
+    Set<String> qSet = [] as Set
 
     EsqClassify(Query[] queries, Query[] modifiedQueries) {
 
@@ -53,19 +54,23 @@ class EsqClassify {
         Query[] queries = useQueriesReturningDistinctDocuments ? queriesReturningDistinctDocuments : queriesOriginal
 
         int counter = 0
+        String q
         for (int i = 0; i < queries.size(); i++) {
+
+            //queryOriginal is an easier to read cluster label
+            q = queriesOriginal[i].toString(Indexes.FIELD_CONTENTS)
+            qSet << q
 
             TopDocs topDocs = Indexes.indexSearcher.search(queries[i], Integer.MAX_VALUE)
             ScoreDoc[] hits = topDocs.scoreDocs
 
             for (ScoreDoc sd : hits) {
 
-                //Document d = Indexes.indexSearcher.doc(sd.doc)
                 Document d = storedFields.document(sd.doc);
                 d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
-                //queryOriginal is an easier to read cluster label
-                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, queriesOriginal[i].toString(Indexes.FIELD_CONTENTS), Field.Store.YES)
+                Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, q, Field.Store.YES)
+
                 d.add(assignedClass)
 
                 Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
@@ -74,7 +79,7 @@ class EsqClassify {
                 counter++
             }
         }
-
+        println("qSet $qSet")
         println "$counter docs updated in UpdateAssignedFieldIndex"
 
         indexWriter.forceMerge(1)
@@ -85,7 +90,7 @@ class EsqClassify {
         IndexUtils.categoryFrequencies(Indexes.indexReader, false)
     }
 
-    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 10) {
+    Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 7) {
         TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD)
@@ -127,12 +132,11 @@ class EsqClassify {
                 break
         }
 
-        // getConfusionMatrix(classifier)
         return classifier
     }
 
+    //don't think you can use this as labels change each time and would need test train split
     public double getConfusionMatrixF1(Classifier classifier) {
-
         ConfusionMatrixGenerator.ConfusionMatrix confusionMatrix =
                 ConfusionMatrixGenerator.getConfusionMatrix(
                         Indexes.indexReader,
@@ -142,7 +146,8 @@ class EsqClassify {
                         80000       // Timeout in milliseconds
                 );
         println("Classifier: $classifier")
-        println("Confusion matrix F1:  ${confusionMatrix.getF1Measure()}")
+        String s = qSet[0]
+        println("Confusion matrix F1 for $s:  ${confusionMatrix.getF1Measure(s)}  overall confusion f1 ${confusionMatrix.getF1Measure()}")
         return confusionMatrix.getF1Measure()
     }
 

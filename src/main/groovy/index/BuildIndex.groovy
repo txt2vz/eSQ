@@ -75,6 +75,8 @@ class BuildIndex {
 
                     doc.add(new TextField(Indexes.FIELD_CONTENTS, file.text, Field.Store.YES))
 
+
+
                     def n = catsNameFreq.get((catName)) ?: 0
                     catsNameFreq.put((catName), n + 1)
 

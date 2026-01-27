@@ -27,8 +27,8 @@ class ExpandQueryDefinedClusters {
 
     ExpandQueryDefinedClusters(Classifier classifier) {
 
-        List<String> classes = []
-        List<String> clusters = []
+        List<String> classes = []   //the ground truth labels
+        List<String> clusters = []  //clusters - use queries as labels - expand with Lucene Classifier (e.g. KNN)
 
         Query qAll = new MatchAllDocsQuery()
         TopDocs topDocs = Indexes.indexSearcher.search(qAll, Integer.MAX_VALUE)
@@ -43,10 +43,9 @@ class ExpandQueryDefinedClusters {
         int countNullResult = 0
 
         for (ScoreDoc sd : allHits) {
-            //  Document d = Indexes.indexSearcher.doc(sd.doc)
+
             Document d = storedFields.document(sd.doc);
             String category = d.get(Indexes.FIELD_CATEGORY_NAME)
-
             String clusterAssignedByQuery = d.get(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
             String clusterAssignedByQueryThenByClassifier = clusterAssignedByQuery
 
