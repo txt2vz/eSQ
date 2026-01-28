@@ -70,7 +70,6 @@ class EsqClassify {
                 d.removeField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER)
 
                 Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, q, Field.Store.YES)
-
                 d.add(assignedClass)
 
                 Term t = new Term(Indexes.FIELD_DOCUMENT_ID, d.get(Indexes.FIELD_DOCUMENT_ID))
@@ -100,7 +99,7 @@ class EsqClassify {
         TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(unassignedQ, Indexes.indexReader.numDocs())
         ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs
 
-        println "In classifyUnassigned unAssignedHits size " + unAssignedHits.size()
+        println "In EsqClassify unAssignedHits size: " + unAssignedHits.size()
 
         Classifier classifier
 
@@ -146,8 +145,8 @@ class EsqClassify {
                         80000       // Timeout in milliseconds
                 );
         println("Classifier: $classifier")
-        String s = qSet[0]
-        println("Confusion matrix F1 for $s:  ${confusionMatrix.getF1Measure(s)}  overall confusion f1 ${confusionMatrix.getF1Measure()}")
+        String q = qSet[0]
+        println("Confusion matrix F1 for query $q:  ${confusionMatrix.getF1Measure(q)}  overall confusion f1: ${confusionMatrix.getF1Measure()}")
         return confusionMatrix.getF1Measure()
     }
 
