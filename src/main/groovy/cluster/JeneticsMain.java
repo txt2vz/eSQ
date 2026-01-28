@@ -55,13 +55,13 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 200;
+        final int maxGen = 1200;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 50;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 2;
+        final int numberMaxFitJobs = 3;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
