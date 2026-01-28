@@ -29,15 +29,14 @@ public class JeneticsMain {
     static EsqQueryBuilder esqQueryBuilder;
 
     static List<IndexEnum> indexList = Arrays.asList(
-//            IndexEnum.CRISIS3,
-//            IndexEnum.CRISIS4,
-//            IndexEnum.NG3,
-//            IndexEnum.NG5,
-//            IndexEnum.NG6,
-//            IndexEnum.R4,
- //           IndexEnum.R5,
-  //          IndexEnum.R6
-            IndexEnum.NG3L10
+            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
+            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -56,18 +55,19 @@ public class JeneticsMain {
 
         final Date startRun = new Date();
         final int popSize = 120;
-        final int maxGen = 1200;
-        final int maxWordListValue = 60;
+        final int maxGen = 200;
+        final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
         final int minGenomeLength = 16;
-        final int maxGenomeLength = 40;
+        final int maxGenomeLength = 50;
         final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 3;
+        final int numberMaxFitJobs = 2;
         BuilderMethod builderMethod = BuilderMethod.BLOCKS;
         List<Double> bestMaxFitV = new ArrayList<>();
 
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
+            Indexes.setImportantTermQueryList();
             esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, builderMethod);
             List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 

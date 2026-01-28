@@ -26,9 +26,9 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'NG3v10'
+        String indexName = 'R6'
         String indexPath = 'indexes' + /\$indexName/
-        String docsPath =  'datasets' + '\\NG3'    // /\$indexName/
+        String docsPath =  'datasets' + '\\R6'    // /\$indexName/
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
@@ -74,8 +74,6 @@ class BuildIndex {
                     doc.add(assignedClass)
 
                     doc.add(new TextField(Indexes.FIELD_CONTENTS, file.text, Field.Store.YES))
-
-
 
                     def n = catsNameFreq.get((catName)) ?: 0
                     catsNameFreq.put((catName), n + 1)

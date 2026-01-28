@@ -85,11 +85,13 @@ class Indexes {
     static final Analyzer analyzer = new StandardAnalyzer()
     //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
-    static void setIndex(IndexEnum indexEnum ) {
-
+    static void setIndex(IndexEnum indexEnum) {
         index = indexEnum
         indexSearcher = index.getIndexSearcher()
         indexReader = indexSearcher.getIndexReader()
-        termQueryList =  ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
+    }
+
+    static void setImportantTermQueryList() {
+        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
     }
 }
