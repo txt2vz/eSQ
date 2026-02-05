@@ -29,20 +29,21 @@ public class JeneticsMain {
     static EsqQueryBuilder esqQueryBuilder;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6
+//            IndexEnum.CRISIS3,
+//            IndexEnum.CRISIS4,
+  //          IndexEnum.NG3
+//            IndexEnum.NG5,
+            IndexEnum.NG6
+//            IndexEnum.R4,
+//            IndexEnum.R5,
+//            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
-        int[] intArray = ((IntegerChromosome) gt.get(0)).toArray();
-        final int k = (gt.get(1)).get(0).allele();
+        final int k = (gt.get(0)).get(0).allele();
+        int[] intArray = ((IntegerChromosome) gt.get(1)).toArray();
+
         BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(intArray, k);
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
@@ -54,15 +55,17 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 120;
-        final int maxGen = 1200;
+        final int popSize = 220;
+        final int maxGen = 720;
         final int maxWordListValue = 80;
         final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+        final int maxK = 9;
+        final int minK = 2;
         final int minGenomeLength = 16;
         final int maxGenomeLength = 50;
         final int numberOfJobs = 2;
         final int numberMaxFitJobs = 3;
-        BuilderMethod builderMethod = BuilderMethod.BLOCKS;
+        BuilderMethod builderMethod = BuilderMethod.SINGLE;
         List<Double> bestMaxFitV = new ArrayList<>();
 
         for (IndexEnum index : indexList) {
@@ -77,8 +80,9 @@ public class JeneticsMain {
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
-                            IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength)),
-                            IntegerChromosome.of(2, 9, 1)  //possible values of k
+                            IntegerChromosome.of(minK, maxK,1),  //possible values of k
+
+                            IntegerChromosome.of(0, maxWordListValue, maxK)  // IntRange.of(minGenomeLength, maxGenomeLength)),
                     );
 
                     final Engine<IntegerGene, Double> engine = Engine
@@ -87,10 +91,13 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
+
                                   //  PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.2), 1),
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
+
+                                    //should be good for single gene chromosome
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.2), 0),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     new Mutator<>(0.1)
                             )
                             .build();
@@ -105,7 +112,7 @@ public class JeneticsMain {
                                     .limit(maxGen)
                                     .peek(ind -> {
                                         Genotype<IntegerGene> g = ind.bestPhenotype().genotype();
-                                        final int k0 = (g.get(1)).get(0).allele();
+                                        final int k0 = (g.get(0)).get(0).allele();
                                         fitness.set(ind.bestPhenotype().fitness());
 
                                         if (ind.generation() % 20 == 0) {
@@ -118,8 +125,8 @@ public class JeneticsMain {
                     jeneticsResultList.add(jeneticsResult);
                     Genotype<IntegerGene> g = jeneticsResult.genotype();
 
-                    int[] intArrayBestOfRun = ((IntegerChromosome) g.get(0)).toArray();
-                    final int k = (g.get(1)).get(0).allele();
+                    int[] intArrayBestOfRun = ((IntegerChromosome) g.get(1)).toArray();
+                    final int k = (g.get(0)).get(0).allele();
 
                     BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(intArrayBestOfRun, k);
 

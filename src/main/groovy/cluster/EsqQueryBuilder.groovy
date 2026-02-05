@@ -8,6 +8,7 @@ import org.apache.lucene.search.TermQuery
 
 enum BuilderMethod {
     BLOCKS,
+    SINGLE,
     MODULUS
 }
 
@@ -25,6 +26,9 @@ class EsqQueryBuilder {
 
     BooleanQuery.Builder[] buildQueries(int[] intChromosome, final int k) {
         switch (builderMethod) {
+            case BuilderMethod.SINGLE:
+                return getSingleWordQueries(intChromosome, k)
+                break
             case BuilderMethod.BLOCKS:
                 return getMultiWordQueryBlocks(intChromosome, k)
                 break
@@ -34,6 +38,17 @@ class EsqQueryBuilder {
                 break
         }
     }
+
+    BooleanQuery.Builder[] getSingleWordQueries(int[] intChromosome, final int k) {
+        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
+         for (int i = 0; i < k; i++) {
+
+            final int allele = intChromosome[i]
+            arrayOfBuilders[i] = new BooleanQuery.Builder().add(tql[allele], booleanClauseOccur)
+        }
+        return arrayOfBuilders
+    }
+
 
     //divide chromosome into blocks depending on k.  May help evolution?
     BooleanQuery.Builder[] getMultiWordQueryBlocks(int[] intChromosome, final int k) {
@@ -49,7 +64,7 @@ class EsqQueryBuilder {
 
             if (i % blockSize == 0) {
                 clusterNumber++
-                if (clusterNumber >= k){
+                if (clusterNumber >= k) {
                     clusterNumber = 0
                 }
 
@@ -64,12 +79,12 @@ class EsqQueryBuilder {
                 }
             }
         }
-        assert arrayOfBuilders.length <=k
+        assert arrayOfBuilders.length <= k
         return arrayOfBuilders
     }
 
 //use modulus to determine which gene is for which query.  Do not repeat words
-     BooleanQuery.Builder[] getMultiWordQueryModulusDuplicateCheck(int[] intChromosome, final int k) {
+    BooleanQuery.Builder[] getMultiWordQueryModulusDuplicateCheck(int[] intChromosome, final int k) {
 
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
         Set<Integer> alleles = [] as Set<Integer>
