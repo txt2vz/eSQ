@@ -4,7 +4,7 @@ import cluster.QueryTermIntersect
 import groovy.transform.CompileStatic
 import org.apache.lucene.search.TermQuery
 
-@CompileStatic
+//@CompileStatic
 class IntersectWordMap {
 
     final static int MAX_TERMQUERYLIST_SIZE = 120
@@ -29,15 +29,37 @@ class IntersectWordMap {
         return intersectMap
     }
 
+
+    def mergeSets(List<Set<String>> source) {
+        def merged = []
+
+        source.each { currentSet ->
+            // Find all sets in our 'merged' list that share elements with the current set
+            def (overlapping, distinct) = merged.split { existingSet ->
+                !existingSet.disjoint(currentSet)
+            }
+
+            // Combine the current set with all overlapping sets found so far
+            def newMergedSet = overlapping.inject(currentSet) { acc, set -> acc + set }
+
+            // Update our list: keep the distinct ones and add the newly expanded set
+            merged = distinct + [newMergedSet]
+        }
+
+        return merged
+    }
+
+
     static void main(String[] args) {
 
-        Indexes.setIndex(IndexEnum.NG3L10)
+        Indexes.setIndex(IndexEnum.NG5)
+        Indexes.setImportantTermQueryList()
         def l = Indexes.termQueryList
         //def l = ImportantTermQueries.getTFIDFTermQueryList(ie.indexReader, 100)
         IntersectWordMap iwm = new IntersectWordMap()
 
         def im = iwm.getIntersectMap(l)
-        print ("im $im")
+        print("im $im")
         im.each { rootW, valueList ->
             print "<$rootW>"
             valueList.each { value ->
@@ -45,5 +67,22 @@ class IntersectWordMap {
             }
             println()
         }
+
+        List<Set<String>>  input = [
+                ['apple', 'banana'] as Set,
+                ['cherry', 'date'] as Set,
+                ['banana', 'cherry'] as Set, // Overlaps with the first two
+                ['fig', 'grape'] as Set,
+                ['grape', 'honeydew'] as Set
+        ]
+
+
+        def result =  iwm.mergeSets(input)
+
+// Display results
+        result.eachWithIndex { set, i ->
+            println "Group ${i + 1}: ${set}"
+        }
     }
 }
+

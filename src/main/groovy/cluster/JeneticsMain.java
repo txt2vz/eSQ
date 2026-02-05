@@ -87,9 +87,10 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                    // PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
-                                    PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 0),
+                                  //  PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 1),
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.2), 1),
                                     new Mutator<>(0.1)
                             )
                             .build();
