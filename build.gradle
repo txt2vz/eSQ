@@ -9,6 +9,12 @@ repositories {
 
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 dependencies {
 
     implementation group: 'org.apache.groovy', name: 'groovy', version: '4.0.22'
