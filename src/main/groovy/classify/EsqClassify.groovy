@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.classification.Classifier
 import org.apache.lucene.classification.KNearestFuzzyClassifier
 import org.apache.lucene.classification.KNearestNeighborClassifier
+import org.apache.lucene.classification.BM25NBClassifier
 import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
@@ -129,6 +130,7 @@ class EsqClassify {
                         Indexes.FIELD_CONTENTS
                 )
                 break
+
         }
 
         return classifier

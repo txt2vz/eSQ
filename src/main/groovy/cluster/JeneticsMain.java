@@ -10,7 +10,6 @@ import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
-import io.jenetics.util.IntRange;
 import org.apache.lucene.search.BooleanQuery;
 
 import java.io.File;
@@ -27,16 +26,29 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+
+    final static int popSize = 120;
+    final static int maxGen = 1200;
+    final static int maxWordListValue = 80;
+
+    final static int maxK = 9;
+    final static int minK = 2;
+    final static int minGenomeLength = 16;
+    final static int maxGenomeLength = 50;
+    final static int numberOfJobs = 3;
+    final static int numberMaxFitJobs = 3;
+    static BuilderMethod builderMethod = BuilderMethod.SINGLE;
 
     static List<IndexEnum> indexList = Arrays.asList(
-//            IndexEnum.CRISIS3,
-//            IndexEnum.CRISIS4,
-  //          IndexEnum.NG3
-//            IndexEnum.NG5,
-            IndexEnum.NG6
-//            IndexEnum.R4,
-//            IndexEnum.R5,
-//            IndexEnum.R6
+        //    IndexEnum.CRISIS3,
+         //   IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
+            IndexEnum.R6
     );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -55,17 +67,6 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        final int popSize = 220;
-        final int maxGen = 720;
-        final int maxWordListValue = 80;
-        final LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
-        final int maxK = 9;
-        final int minK = 2;
-        final int minGenomeLength = 16;
-        final int maxGenomeLength = 50;
-        final int numberOfJobs = 2;
-        final int numberMaxFitJobs = 3;
-        BuilderMethod builderMethod = BuilderMethod.SINGLE;
         List<Double> bestMaxFitV = new ArrayList<>();
 
         for (IndexEnum index : indexList) {
@@ -81,7 +82,6 @@ public class JeneticsMain {
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK,1),  //possible values of k
-
                             IntegerChromosome.of(0, maxWordListValue, maxK)  // IntRange.of(minGenomeLength, maxGenomeLength)),
                     );
 
@@ -91,12 +91,10 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-
-                                  //  PartialAlterer.of(new MultiPointCrossover<IntegerGene, Double>(0.3), 0),
+                                    //should be good for single gene chromosome
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
 
-                                    //should be good for single gene chromosome
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.2), 0),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     new Mutator<>(0.1)
                             )
@@ -136,7 +134,7 @@ public class JeneticsMain {
 
                     ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
 
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersect.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);

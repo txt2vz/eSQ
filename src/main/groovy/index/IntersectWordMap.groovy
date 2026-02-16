@@ -1,20 +1,20 @@
 package index
 
-import cluster.QueryTermIntersect
-import groovy.transform.CompileStatic
+import cluster.QueryTermIntersectRatio
+import groovy.transform.Immutable
 import org.apache.lucene.search.TermQuery
 
 //@CompileStatic
 class IntersectWordMap {
 
     final static int MAX_TERMQUERYLIST_SIZE = 120
-    final double MIN_INTERSECT_RATIO = 0.5d
+    final static double MIN_INTERSECT_RATIO = QueryTermIntersectRatio.MIN_INTERSECT_RATIO
 
     Map<String, List<String>> getIntersectMap(List<TermQuery> l) {
         Map<String, List<String>> intersectMap = [:]
         for (tqRoot in l)
             for (tqNew in l) {
-                def qti = QueryTermIntersect.getIntersectValue(tqRoot, tqNew)
+                def qti = QueryTermIntersectRatio.getIntersectValue(tqRoot, tqNew)
                 String tqRootString = tqRoot.term.text()
                 String tqNewString = tqNew.term.text()
                 if (qti > MIN_INTERSECT_RATIO && tqRootString != tqNewString) {
@@ -29,6 +29,58 @@ class IntersectWordMap {
         return intersectMap
     }
 
+    List<Set<String>> getListOfWordSets(List<TermQuery> l) {
+
+        List<Set<String>> listOfWordSets = []
+        for (tqRoot in l) {
+
+            Set setOfWords = [] as Set
+            String tqRootString = tqRoot.term.text()
+            setOfWords << tqRootString
+            for (tqNew in l) {
+
+                def qti = QueryTermIntersectRatio.getIntersectValue(tqRoot, tqNew)
+                String tqNewString = tqNew.term.text()
+
+                if (qti > MIN_INTERSECT_RATIO && tqRootString != tqNewString) {
+                    setOfWords << tqNewString
+                }
+            }
+
+            if (setOfWords.size() > 2)
+                listOfWordSets << setOfWords
+        }
+        return listOfWordSets
+    }
+
+    static Map<String, List<String>> getOrderedIntersectMap(List<TermQuery> l, double M) {
+
+        Map<String, List<String>> orderedWordMap = [:]
+
+        for (tqRoot in l) {
+
+            String tqRootString = tqRoot.term.text()
+
+            Map wordWithRatio = [:]
+            for (tqNew in l) {
+
+                double qti = QueryTermIntersectRatio.getIntersectValue(tqRoot, tqNew)
+                String tqNewString = tqNew.term.text()
+
+                if (qti > MIN_INTERSECT_RATIO && tqRootString != tqNewString) {
+                    wordWithRatio[tqNewString] = qti
+                }
+            }
+
+            def topWords = wordWithRatio.sort { a, b -> b.value <=> a.value }.take(8)
+            List <String> orderedWordList = topWords.keySet() as List
+            if (orderedWordList.size()>0) {
+                orderedWordMap[tqRootString] = orderedWordList
+            }
+        }
+       // println "sorted orderedWordMap: $orderedWordMap"
+        return orderedWordMap
+    }
 
     def mergeSets(List<Set<String>> source) {
         def merged = []
@@ -52,36 +104,49 @@ class IntersectWordMap {
 
     static void main(String[] args) {
 
-        Indexes.setIndex(IndexEnum.NG5)
+        Indexes.setIndex(IndexEnum.NG3)
         Indexes.setImportantTermQueryList()
-        def l = Indexes.termQueryList
-        //def l = ImportantTermQueries.getTFIDFTermQueryList(ie.indexReader, 100)
-        IntersectWordMap iwm = new IntersectWordMap()
+        def termQueryList = Indexes.termQueryList
 
-        def im = iwm.getIntersectMap(l)
-        print("im $im")
-        im.each { rootW, valueList ->
-            print "<$rootW>"
-            valueList.each { value ->
-                print " $value "
-            }
-            println()
+        IntersectWordMap iwm = new IntersectWordMap()
+//
+//        def im = iwm.getIntersectMap(termQueryList)
+//        print("im: $im")
+//        im.each { rootW, valueList ->
+//            print "<$rootW>"
+//            valueList.each { value ->
+//                print " $value "
+//            }
+//            println()
+//        }
+
+       // def ilWithOrder = iwm.getListOfWordSetsUsingRatioOrder(termQueryList)
+        Map<String, List<String>> orderedIntersectMap = iwm.getOrderedIntersectMap(termQueryList) //as Immutable
+
+        orderedIntersectMap.each {rootW, l ->
+            println "<$rootW> $l"
         }
 
-        List<Set<String>>  input = [
-                ['apple', 'banana'] as Set,
-                ['cherry', 'date'] as Set,
-                ['banana', 'cherry'] as Set, // Overlaps with the first two
-                ['fig', 'grape'] as Set,
-                ['grape', 'honeydew'] as Set
-        ]
+//        for (entry in orderedIntersectMap) {
+//            println "Key: ${entry.key}, Value: ${entry.value}"
+//        }
+
+//        orderedIntersectMap.each { key, value ->
+//            println "Key: $key | Value: $value"
+//        }
 
 
-        def result =  iwm.mergeSets(input)
+
+        println "Map with ordered list:  $orderedIntersectMap"
+
+        def il = iwm.getListOfWordSets(termQueryList)
+       // println "il $il"
+
+        def result = iwm.mergeSets(il)  //input)
 
 // Display results
         result.eachWithIndex { set, i ->
-            println "Group ${i + 1}: ${set}"
+            println "Merged Group ${i + 1}: ${set}"
         }
     }
 }

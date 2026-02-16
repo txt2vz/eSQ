@@ -74,7 +74,7 @@ class EsqQueryBuilder {
             } else {
                 TermQuery tqNew = tql[allele]
 
-                if (QueryTermIntersect.isValidIntersect(tqRoot, tqNew)) {
+                if (QueryTermIntersectRatio.isValidIntersect(tqRoot, tqNew)) {
                     arrayOfBuilders[clusterNumber].add(tqNew, booleanClauseOccur)
                 }
             }
@@ -113,7 +113,7 @@ class EsqQueryBuilder {
             Query tq0 = rootq.clauses().first().query()
             TermQuery tqNew = tql[allele]
 
-            if (alleles.add(allele) && (QueryTermIntersect.isValidIntersect(tq0, tqNew))) {
+            if (alleles.add(allele) && (QueryTermIntersectRatio.isValidIntersect(tq0, tqNew))) {
                 arrayOfBuilders[clusterNumber].add(tqNew, booleanClauseOccur)
             }
         }

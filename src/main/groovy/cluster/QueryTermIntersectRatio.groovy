@@ -5,7 +5,7 @@ import index.Indexes
 import org.apache.lucene.search.*
 
 @CompileStatic
-class QueryTermIntersect {
+class QueryTermIntersectRatio {
 
     final static double MIN_INTERSECT_RATIO = 0.5
 
@@ -23,6 +23,8 @@ class QueryTermIntersect {
         bqbAnd.add(q1, BooleanClause.Occur.MUST)
         indexSearcher.search(bqbAnd.build(), collector)
         final int andCount = collector.getTotalHits()
+
+       // if (andCount < 15) return 0
 
         collector = new TotalHitCountCollector()
         indexSearcher.search(q1, collector)
