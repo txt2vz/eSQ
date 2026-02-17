@@ -26,23 +26,24 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
 
     final static int popSize = 120;
-    final static int maxGen = 1200;
+    final static int maxGen = 100;
     final static int maxWordListValue = 80;
 
-    final static int maxK = 9;
+    final static int maxK = 8;
     final static int minK = 2;
+    final static int maxIntersectListSize = 4;
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
-    final static int numberOfJobs = 3;
-    final static int numberMaxFitJobs = 3;
-    static BuilderMethod builderMethod = BuilderMethod.SINGLE;
+    final static int numberOfJobs = 1;
+    final static int numberMaxFitJobs = 1;
+    static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     static List<IndexEnum> indexList = Arrays.asList(
-        //    IndexEnum.CRISIS3,
-         //   IndexEnum.CRISIS4,
+            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS4,
             IndexEnum.NG3,
             IndexEnum.NG5,
             IndexEnum.NG6,
@@ -54,9 +55,10 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
         final int k = (gt.get(0)).get(0).allele();
-        int[] intArray = ((IntegerChromosome) gt.get(1)).toArray();
+        int[] rootArray = ((IntegerChromosome) gt.get(1)).toArray();
+        int[] intersectArray = ((IntegerChromosome) gt.get(2)).toArray();
 
-        BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(intArray, k);
+        BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(rootArray, intersectArray, k);
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         final double f = uniqueHits * (1.0 - (K_PENALTY * k));
@@ -72,7 +74,7 @@ public class JeneticsMain {
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
             Indexes.setImportantTermQueryList();
-            esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, builderMethod);
+            esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
             List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
@@ -82,7 +84,8 @@ public class JeneticsMain {
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK,1),  //possible values of k
-                            IntegerChromosome.of(0, maxWordListValue, maxK)  // IntRange.of(minGenomeLength, maxGenomeLength)),
+                            IntegerChromosome.of(0, maxWordListValue, maxK), //rootword
+                            IntegerChromosome.of(0, maxIntersectListSize, maxIntersectListSize * maxK) //intersect words
                     );
 
                     final Engine<IntegerGene, Double> engine = Engine
@@ -96,6 +99,7 @@ public class JeneticsMain {
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
 
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
                                     new Mutator<>(0.1)
                             )
                             .build();
@@ -123,10 +127,11 @@ public class JeneticsMain {
                     jeneticsResultList.add(jeneticsResult);
                     Genotype<IntegerGene> g = jeneticsResult.genotype();
 
-                    int[] intArrayBestOfRun = ((IntegerChromosome) g.get(1)).toArray();
                     final int k = (g.get(0)).get(0).allele();
+                    int[] intArrayBestOfRun = ((IntegerChromosome) g.get(1)).toArray();
+                    int[] interserctArrayBestOfRun = ((IntegerChromosome) g.get(2)).toArray();
 
-                    BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(intArrayBestOfRun, k);
+                    BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(intArrayBestOfRun, interserctArrayBestOfRun, k);
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     EsqClassify esqClassify = new EsqClassify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());

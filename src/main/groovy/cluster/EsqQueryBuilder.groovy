@@ -7,6 +7,7 @@ import org.apache.lucene.search.Query
 import org.apache.lucene.search.TermQuery
 
 enum BuilderMethod {
+    INTERSECT,
     BLOCKS,
     SINGLE,
     MODULUS
@@ -15,19 +16,24 @@ enum BuilderMethod {
 @CompileStatic
 class EsqQueryBuilder {
     List<TermQuery> tql
+    Map<String, List<TermQuery>> orderedIntersectMap
     BooleanClause.Occur booleanClauseOccur
     BuilderMethod builderMethod
 
-    EsqQueryBuilder(List<TermQuery> termQueryList, BuilderMethod bm, BooleanClause.Occur bco = BooleanClause.Occur.SHOULD) {
+    EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap, BuilderMethod bm, BooleanClause.Occur bco = BooleanClause.Occur.SHOULD) {
         tql = termQueryList
         booleanClauseOccur = bco
+        this.orderedIntersectMap = orderedIntersectMap
         this.builderMethod = bm
     }
 
-    BooleanQuery.Builder[] buildQueries(int[] intChromosome, final int k) {
+    BooleanQuery.Builder[] buildQueries(int[] intChromosome, int[] intersectChromosome, final int k) {
         switch (builderMethod) {
             case BuilderMethod.SINGLE:
                 return getSingleWordQueries(intChromosome, k)
+                break
+            case BuilderMethod.INTERSECT:
+                return getIntersectQueries(intChromosome, intersectChromosome, k)
                 break
             case BuilderMethod.BLOCKS:
                 return getMultiWordQueryBlocks(intChromosome, k)
@@ -41,11 +47,33 @@ class EsqQueryBuilder {
 
     BooleanQuery.Builder[] getSingleWordQueries(int[] intChromosome, final int k) {
         BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
-         for (int i = 0; i < k; i++) {
+        for (int i = 0; i < k; i++) {
 
             final int allele = intChromosome[i]
             arrayOfBuilders[i] = new BooleanQuery.Builder().add(tql[allele], booleanClauseOccur)
         }
+        return arrayOfBuilders
+    }
+
+    BooleanQuery.Builder[] getIntersectQueries(int[] rootChromosome, int[] intersectChromosome, final int k) {
+
+        BooleanQuery.Builder[] arrayOfBuilders = new BooleanQuery.Builder[k]
+
+        for (int i = 0; i < k; i++) {
+            final int rootAllele = rootChromosome[i]
+            arrayOfBuilders[i] = new BooleanQuery.Builder().add(tql[rootAllele], booleanClauseOccur)
+            String rootWord = tql[rootAllele].term.text()
+            List<TermQuery> intersectTermQueryList = orderedIntersectMap[rootWord]
+
+            Set<Integer> intersectAlleles = [] as Set<Integer>
+            for (int j = i * JeneticsMain.maxIntersectListSize; j < intersectChromosome.size(); j++) {
+                final int intersectAllele = intersectChromosome[j]
+                if (intersectTermQueryList && intersectAlleles.add(intersectAllele) && intersectAllele < intersectTermQueryList.size()) {
+                    arrayOfBuilders[i] = arrayOfBuilders[i].add(intersectTermQueryList[intersectAllele], booleanClauseOccur)
+                }
+            }
+        }
+
         return arrayOfBuilders
     }
 

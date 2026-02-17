@@ -73,8 +73,9 @@ class Indexes {
     static IndexSearcher indexSearcher
     static IndexReader indexReader
     public static List<TermQuery> termQueryList
+
     //static Map<TermQuery, List<Tuple2<TermQuery, Double>>> termQueryIntersectMap
-    static Map<TermQuery, List<TermQuery>> termQueryIntersectMap
+    public static Map<String, List<TermQuery>> orderedIntersectMap
 
     // Lucene field names
     static final String FIELD_CATEGORY_NAME = 'category',
@@ -96,6 +97,8 @@ class Indexes {
 
     static void setImportantTermQueryList() {
         termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
+        MapWordToIntersectingTermQueryList mapWordToIntersectingTermQueryList = new MapWordToIntersectingTermQueryList()
+        orderedIntersectMap = mapWordToIntersectingTermQueryList.getIntersectingTerms(termQueryList)
     }
 
     static void setTermQueryIntersectMap(){

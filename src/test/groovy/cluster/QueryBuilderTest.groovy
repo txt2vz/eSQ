@@ -19,7 +19,6 @@ class QueryBuilderTest extends Specification {
         new TermQuery(new Term(Indexes.FIELD_CONTENTS, "team") )
          ]
 
-
         then:
         tql[0].getTerm().text() == 'god'
 

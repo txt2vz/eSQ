@@ -8,11 +8,9 @@ import org.apache.lucene.search.TermQuery
 //@CompileStatic
 class MapWordToIntersectingTermQueryList {
 
-    final static int MAX_TERMQUERYLIST_SIZE = 120
-    final static double MIN_INTERSECT_RATIO = QueryTermIntersectRatio.MIN_INTERSECT_RATIO
     final static int INTERSECT_MAP_MAX_LENGTH = 8
 
-    static Map<String, List<TermQuery>> getIntersectingTerms(List<TermQuery> l) {
+    static Map<String, List<TermQuery>> getIntersectingTerms(List<TermQuery> l, MIN_INTERSECT_RATIO=QueryTermIntersectRatio.MIN_INTERSECT_RATIO) {
 
         Map<String, List<TermQuery>> orderedWordToTermQueryMap = [:]
 
@@ -35,7 +33,7 @@ class MapWordToIntersectingTermQueryList {
             if (wordWithRatio.size() > 0) {
 
                 Map<String, Double> topWords = wordWithRatio.sort { a, b -> b.value <=> a.value }.take(INTERSECT_MAP_MAX_LENGTH)
-                println "rootword tqRootString: $tqRootString topWords: $topWords"
+               // println "rootword tqRootString: $tqRootString topWords: $topWords"
 
                 List<String> orderedWordList = topWords.keySet().asList()
                 List<TermQuery> orderedTermQueryList = []
@@ -49,7 +47,7 @@ class MapWordToIntersectingTermQueryList {
                 }
             }
         }
-        println "sorted orderedWordToTermQueryMap: $orderedWordToTermQueryMap"
+       // println "sorted orderedWordToTermQueryMap: $orderedWordToTermQueryMap"
         return orderedWordToTermQueryMap
     }
 
@@ -58,9 +56,9 @@ class MapWordToIntersectingTermQueryList {
         Indexes.setIndex(IndexEnum.NG3)
         Indexes.setImportantTermQueryList()
 
-        MapWordToIntersectingTermQueryList wtitm = new MapWordToIntersectingTermQueryList()
+        MapWordToIntersectingTermQueryList mapWordToIntersectingTermQueryList = new MapWordToIntersectingTermQueryList()
 
-        Map<String, List<TermQuery>> orderedIntersectMap = wtitm.getIntersectingTerms(Indexes.termQueryList)
+        Map<String, List<TermQuery>> orderedIntersectMap = mapWordToIntersectingTermQueryList.getIntersectingTerms(Indexes.termQueryList, 0.5)
 
         orderedIntersectMap.each { String rootW, List<TermQuery> tql ->
             print "<$rootW> "
