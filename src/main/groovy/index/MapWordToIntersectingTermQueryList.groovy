@@ -35,7 +35,7 @@ class MapWordToIntersectingTermQueryList {
             if (wordWithRatio.size() > 0) {
 
                 Map<String, Double> topWords = wordWithRatio.sort { a, b -> b.value <=> a.value }.take(INTERSECT_MAP_MAX_LENGTH)
-                // println "rootword tqRootString: $tqRootString topWords: $topWords"
+                println "rootword tqRootString: $tqRootString topWords: $topWords"
 
                 List<String> orderedWordList = topWords.keySet().asList()
                 List<TermQuery> orderedTermQueryList = []
