@@ -3,6 +3,7 @@ package index
 import cluster.QueryTermIntersectRatio
 import groovy.transform.Immutable
 import org.apache.lucene.search.TermQuery
+import groovy.transform.CompileStatic
 
 //@CompileStatic
 class IntersectWordMap {

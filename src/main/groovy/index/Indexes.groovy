@@ -31,12 +31,9 @@ enum IndexEnum {
 
     space('indexes/space', 1)
 
-
-
     // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
     String pathString
     int numberOfClasses
-
 
     IndexEnum(String pathString, int numberOfClasses) {
         this.numberOfClasses = numberOfClasses
@@ -99,10 +96,5 @@ class Indexes {
         termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
         MapWordToIntersectingTermQueryList mapWordToIntersectingTermQueryList = new MapWordToIntersectingTermQueryList()
         orderedIntersectMap = mapWordToIntersectingTermQueryList.getIntersectingTerms(termQueryList)
-    }
-
-    static void setTermQueryIntersectMap(){
-       // termQueryIntersectMap = IntersectWordMap.getOrderedIntersectMap(termQueryList)
-
     }
 }
