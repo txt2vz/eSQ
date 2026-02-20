@@ -22,8 +22,9 @@ class EsqResultDetail {
     String indexName
     String gaEngine
     Map<Query, Integer> queryMap
+    BuilderMethod builderMethod = BuilderMethod.SINGLE;
 
-    EsqResultDetail(IndexEnum indexEnum, ExpandQueryDefinedClusters effectiveness, double fitness, QuerySet querySet, LuceneClassifyMethod classifyMethod, boolean queryOnly, boolean onlyDocsInOneCluster, double kPenalty, double intersectRatio, int k_for_knn, int popSize, int generation, int job, int maxFitJob, String gaEngine) {
+    EsqResultDetail(IndexEnum indexEnum, ExpandQueryDefinedClusters effectiveness, double fitness, QuerySet querySet, LuceneClassifyMethod classifyMethod, BuilderMethod builderMethod,  boolean queryOnly, boolean onlyDocsInOneCluster, double kPenalty, double intersectRatio, int k_for_knn, int popSize, int generation, int job, int maxFitJob, String gaEngine) {
 
         indexName = indexEnum.name()
         v = effectiveness.vMeasure
@@ -37,6 +38,7 @@ class EsqResultDetail {
         percentClusteredByQuery = (numberOfDocumentsClusteredByQuery / numDocs)  * 100 as Double
 //        queryOnlyString = queryOnly ? 'docsMatchingQueryOnly' : 'allDocuments'
         absClusterCountError = Math.abs(clusterCountError)
+        this.builderMethod = builderMethod
 
         this.classifyMethod = classifyMethod
         this.fitness = fitness
@@ -69,10 +71,10 @@ class EsqResultDetail {
 
         //spreadsheet can be used with pivot table
         if (!fcsv.exists()) {
-            fcsv << 'Index,v,homogeneity,completeness,adjusted_rand,fitness,classifyMethod,numberOfDocumentsClusteredByQuery,numDocs,percentClusteredByQuery,numberOfClasses,numberOfClusters,clusterCountError,absClusterCountError,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
+            fcsv << 'Index,v,homogeneity,completeness,adjusted_rand,fitness,classifyMethod, builderMethod, numberOfDocumentsClusteredByQuery,numDocs,percentClusteredByQuery,numberOfClasses,numberOfClusters,clusterCountError,absClusterCountError,useNonIntersectingClustersForTrainingKNN,uniqueHits,totalHitsAllQueries,kPenalty,intersectRatio,k_for_knn,popSize,generation,job,maxFitJob,GA_Engine,Date \n'
 
         }
 
-        fcsv << "$indexName, $v, $h, $c, $adjusted_rand, $fitness, $classifyMethod, $numberOfDocumentsClusteredByQuery, $numDocs, $percentClusteredByQuery, $numberOfClasses, $numberOfClusters, $clusterCountError, $absClusterCountError, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
+        fcsv << "$indexName, $v, $h, $c, $adjusted_rand, $fitness, $classifyMethod, $builderMethod, $numberOfDocumentsClusteredByQuery, $numDocs, $percentClusteredByQuery, $numberOfClasses, $numberOfClusters, $clusterCountError, $absClusterCountError, $onlyDocsInOneCluster, $uniqueHits, $totalHitsAllQueries, $kPenalty, $intersectRatio, $k_for_knn, $popSize, $generation, $job, $maxFitJob,$gaEngine, ${new Date()} \n"
     }
 }

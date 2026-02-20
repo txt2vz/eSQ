@@ -38,7 +38,6 @@ class EsqQueryBuilder {
             case BuilderMethod.BLOCKS:
                 return getMultiWordQueryBlocks(intChromosome, k)
                 break
-
             case BuilderMethod.MODULUS:
                 return getMultiWordQueryModulusDuplicateCheck(intChromosome, k)
                 break
@@ -68,7 +67,7 @@ class EsqQueryBuilder {
             Set<Integer> intersectAlleles = [] as Set<Integer>
             for (int j = i * JeneticsMain.maxIntersectListSize; j < intersectChromosome.size(); j++) {
                 final int intersectAllele = intersectChromosome[j]
-                if (intersectTermQueryList && intersectAlleles.add(intersectAllele) && intersectAllele < intersectTermQueryList.size()) {
+                if (intersectAllele >=0 && intersectTermQueryList && intersectAlleles.add(intersectAllele) && intersectAllele < intersectTermQueryList.size()) {
                     arrayOfBuilders[i] = arrayOfBuilders[i].add(intersectTermQueryList[intersectAllele], booleanClauseOccur)
                 }
             }
@@ -76,7 +75,6 @@ class EsqQueryBuilder {
 
         return arrayOfBuilders
     }
-
 
     //divide chromosome into blocks depending on k.  May help evolution?
     BooleanQuery.Builder[] getMultiWordQueryBlocks(int[] intChromosome, final int k) {

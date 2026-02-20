@@ -22,23 +22,23 @@ import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
 public class JeneticsMain {
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN = true;
-    final static int K_FOR_KNN = 10;
+    final static int K_FOR_KNN = 11;
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
     static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
 
-    final static int popSize = 120;
-    final static int maxGen = 100;
+    final static int popSize = 200;
+    final static int maxGen = 400;
     final static int maxWordListValue = 80;
 
     final static int maxK = 8;
     final static int minK = 2;
-    final static int maxIntersectListSize = 4;
+    final static int maxIntersectListSize = 5;
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
-    final static int numberOfJobs = 1;
-    final static int numberMaxFitJobs = 1;
+    final static int numberOfJobs = 2;
+    final static int numberMaxFitJobs = 4;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     static List<IndexEnum> indexList = Arrays.asList(
@@ -62,7 +62,7 @@ public class JeneticsMain {
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         final double f = uniqueHits * (1.0 - (K_PENALTY * k));
-        assert f > 0;
+
         return f;
     }
 
@@ -74,7 +74,7 @@ public class JeneticsMain {
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
             Indexes.setImportantTermQueryList();
-            esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
+
             List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
@@ -82,10 +82,13 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
+                    builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
+                    esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
+
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
-                            IntegerChromosome.of(minK, maxK,1),  //possible values of k
+                            IntegerChromosome.of(minK, maxK, 1),  //possible values of k
                             IntegerChromosome.of(0, maxWordListValue, maxK), //rootword
-                            IntegerChromosome.of(0, maxIntersectListSize, maxIntersectListSize * maxK) //intersect words
+                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK) //intersect words -1 indicates no word added to query
                     );
 
                     final Engine<IntegerGene, Double> engine = Engine
@@ -139,7 +142,7 @@ public class JeneticsMain {
 
                     ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
 
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);
