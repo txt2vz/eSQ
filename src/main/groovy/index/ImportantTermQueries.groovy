@@ -77,7 +77,7 @@ class ImportantTermQueries {
     private static boolean isUsefulTerm(long df, String word) {
 
         if (df < 4) return false //document frequency
-        //if (!word.charAt(0).isLetter()) return false
+        if (!word.charAt(0).isLetter()) return false
         if (word.length() < 2) return false
 
         for (char c : word.toCharArray()) {

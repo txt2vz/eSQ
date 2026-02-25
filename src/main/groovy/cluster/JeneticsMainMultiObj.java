@@ -6,21 +6,27 @@ import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 import index.IndexEnum;
 import index.Indexes;
+
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
+import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
+import io.jenetics.ext.moea.Vec;
+import io.jenetics.ext.moea.NSGA2Selector;
+
 import org.apache.lucene.search.BooleanQuery;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
-public class JeneticsMain {
+public class JeneticsMainMultiObj {
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN = true;
     final static int K_FOR_KNN = 11;
     static String gaEngine = "JENETICS.IO";
@@ -29,7 +35,7 @@ public class JeneticsMain {
     static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
 
     final static int popSize = 200;
-    final static int maxGen = 400;
+    final static int maxGen = 80;
     final static int maxWordListValue = 80;
 
     final static int maxK = 8;
@@ -42,17 +48,17 @@ public class JeneticsMain {
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6
+//            IndexEnum.CRISIS3,
+//            IndexEnum.CRISIS4,
+            IndexEnum.NG3
+//            IndexEnum.NG5,
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+//            IndexEnum.R5,
+//            IndexEnum.R6
     );
 
-    static double searchQueryFitness(final Genotype<IntegerGene> gt) {
+    static Vec<double[]> searchQueryFitness(final Genotype<IntegerGene> gt) {
 
         final int k = (gt.get(0)).get(0).allele();
         int[] rootArray = ((IntegerChromosome) gt.get(1)).toArray();
@@ -60,10 +66,13 @@ public class JeneticsMain {
 
         BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(rootArray, intersectArray, k);
         QuerySet querySet = new QuerySet(bqbArray);
-        final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
-        final double f = uniqueHits * (1.0 - (K_PENALTY * k));
+        final double totalReturned = querySet.getTotalHitsAllQueries();
+        final double overlapCount = querySet.getTotalHitsAllQueries() -querySet.getTotalHitsReturnedByOnlyOneQuery();
+        //final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
+       // final double f = uniqueHits * (1.0 - (K_PENALTY * k));
 
-        return f;
+       // return f;
+        return Vec.of(totalReturned, -overlapCount);
     }
 
     public static void main(String[] args) throws Exception {
@@ -75,7 +84,7 @@ public class JeneticsMain {
             Indexes.setIndex(index);
             Indexes.setImportantTermQueryList();
 
-            List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
+            List<Phenotype<IntegerGene, Vec<double[]>>> jeneticsResultList = new ArrayList<>();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
                 List<EsqResultDetail> esqResultDetailList = new ArrayList<>();
@@ -91,26 +100,28 @@ public class JeneticsMain {
                             IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK) //intersect words -1 indicates no word added to query
                     );
 
-                    final Engine<IntegerGene, Double> engine = Engine
+                    final Engine<IntegerGene, Vec<double[]>> engine = Engine
                             .builder(
-                                    JeneticsMain::searchQueryFitness, gtf)
+                                    JeneticsMainMultiObj::searchQueryFitness, gtf)
                             .populationSize(popSize)
-                            .selector(new TournamentSelector<>(3))
+                            .selector(NSGA2Selector.ofVec())
+                           // .selector(new TournamentSelector<>(3))
                             .alterers(
                                     //should be good for single gene chromosome
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.3), 0),
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Vec<double[]>>(0.3), 0),
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Vec<double[]>>(0.4), 0),
 
-                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
-                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Vec<double[]>>(0.3), 1),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Vec<double[]>>(0.3), 2),
                                     new Mutator<>(0.1)
                             )
                             .build();
 
-                    final EvolutionStatistics<Double, ?> statistics = EvolutionStatistics.ofNumber();
-                    AtomicReference<Double> fitness = new AtomicReference<>((double) 0);
+                    final EvolutionStatistics<Double, ?>
+                            statistics = EvolutionStatistics.ofNumber();
+                    AtomicReference<Vec<double[]>> fitness = new AtomicReference<Vec<double[]>>();
 
-                    final Phenotype<IntegerGene, Double> jeneticsResult =
+                    final Phenotype<IntegerGene, Vec<double[]>> jeneticsResult =
 
                             engine.stream()
                                     .limit(maxGen)
@@ -120,10 +131,11 @@ public class JeneticsMain {
                                         fitness.set(ind.bestPhenotype().fitness());
 
                                         if (ind.generation() % 20 == 0) {
-                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0 );//+ " phenotype: " + ind.bestPhenotype());
+                                            
+                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);
                                         }
                                     })
-                                    .peek(statistics)
+                                    //.peek((statistics)
                                     .collect(toBestPhenotype());
 
                     jeneticsResultList.add(jeneticsResult);
@@ -141,7 +153,7 @@ public class JeneticsMain {
 
                     ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
 
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, 0.0d, querySet, classifyMethod, builderMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);
@@ -156,7 +168,7 @@ public class JeneticsMain {
             });
         }
 
-        final double average = bestMaxFitV.stream()
+        double average = bestMaxFitV.stream()
                 .collect(Collectors.averagingDouble(Double::doubleValue));
 
         System.out.println("Average maxFit v : " + average + " List of v " + bestMaxFitV);
