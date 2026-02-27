@@ -109,7 +109,7 @@ class EsqClassify {
                 classifier = new KNearestFuzzyClassifier(
                         Indexes.indexReader,
                         new BM25Similarity(),
-                        new StandardAnalyzer(),
+                        Indexes.analyzer,
                         unassignedQ,
                         k_for_knn,
                         Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
@@ -121,7 +121,7 @@ class EsqClassify {
                 classifier = new KNearestNeighborClassifier(
                         Indexes.indexReader,
                         new BM25Similarity(),
-                        new StandardAnalyzer(),
+                        Indexes.analyzer,
                         unassignedQ,
                         k_for_knn,
                         3,
@@ -130,7 +130,6 @@ class EsqClassify {
                         Indexes.FIELD_CONTENTS
                 )
                 break
-
         }
 
         return classifier
@@ -183,7 +182,7 @@ class EsqClassify {
         String indexPath = Indexes.index.pathString
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
-        Analyzer analyzer = new StandardAnalyzer()
+        Analyzer analyzer = Indexes.analyzer//new StandardAnalyzer()
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer)
         iwc.setOpenMode(IndexWriterConfig.OpenMode.APPEND)
         return new IndexWriter(directory, iwc)

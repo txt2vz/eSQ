@@ -12,7 +12,8 @@ import org.apache.lucene.util.BytesRef
 @CompileStatic
 class ImportantTermQueries {
 
-    static Set<String> stopSet = StopSet.getStopSetFromFile()
+    static Set<String> stopSet =
+            StopSet.getStopSetFromFile()
     final static int MAX_TERMQUERYLIST_SIZE = 120
 
     static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {

@@ -26,9 +26,9 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'R6'
+        String indexName = 'R5'
         String indexPath = 'indexes' + /\$indexName/
-        String docsPath =  'datasets' + '\\R6'    // /\$indexName/
+        String docsPath =  'datasets' +  /\$indexName/
 
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)

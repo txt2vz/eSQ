@@ -30,7 +30,7 @@ public class JeneticsMain {
 
     final static int popSize = 200;
     final static int maxGen = 400;
-    final static int maxWordListValue = 80;
+    final static int maxWordListValue = 70;
 
     final static int maxK = 8;
     final static int minK = 2;
@@ -82,7 +82,7 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                    builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
+                  //  builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(

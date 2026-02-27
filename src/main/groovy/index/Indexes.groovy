@@ -2,6 +2,7 @@ package index
 
 import groovy.transform.CompileStatic
 import org.apache.lucene.analysis.Analyzer
+import org.apache.lucene.analysis.en.EnglishAnalyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.index.IndexReader
@@ -83,8 +84,9 @@ class Indexes {
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id'
 
-    static final Analyzer analyzer = new StandardAnalyzer()
-    //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
+    //static final Analyzer analyzer = new StandardAnalyzer()
+    static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)
+            //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
     static void setIndex(IndexEnum indexEnum) {
         index = indexEnum
