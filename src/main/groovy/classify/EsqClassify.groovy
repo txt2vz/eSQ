@@ -9,6 +9,7 @@ import org.apache.lucene.classification.Classifier
 import org.apache.lucene.classification.KNearestFuzzyClassifier
 import org.apache.lucene.classification.KNearestNeighborClassifier
 import org.apache.lucene.classification.BM25NBClassifier
+
 import org.apache.lucene.classification.utils.ConfusionMatrixGenerator
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
@@ -29,7 +30,8 @@ import java.nio.file.Paths
 enum LuceneClassifyMethod {
     KNN,
     FuzzyKNN,
-    NB
+    NB,
+    BM25NBClassifier
 }
 
 @CompileStatic
@@ -95,9 +97,9 @@ class EsqClassify {
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD)
         bqb.add(assignedTQ, BooleanClause.Occur.MUST_NOT)
-        Query unassignedQ = bqb.build()
+        Query queryToAssignDocumentToCluster = bqb.build()
 
-        TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(unassignedQ, Indexes.indexReader.numDocs())
+        TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(queryToAssignDocumentToCluster, Indexes.indexReader.numDocs())
         ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs
 
         println "In EsqClassify unAssignedHits size: " + unAssignedHits.size()
@@ -110,7 +112,7 @@ class EsqClassify {
                         Indexes.indexReader,
                         new BM25Similarity(),
                         Indexes.analyzer,
-                        unassignedQ,
+                        queryToAssignDocumentToCluster,
                         k_for_knn,
                         Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
                         Indexes.FIELD_CONTENTS
@@ -122,7 +124,7 @@ class EsqClassify {
                         Indexes.indexReader,
                         new BM25Similarity(),
                         Indexes.analyzer,
-                        unassignedQ,
+                        queryToAssignDocumentToCluster,
                         k_for_knn,
                         3,
                         1,
@@ -130,6 +132,14 @@ class EsqClassify {
                         Indexes.FIELD_CONTENTS
                 )
                 break
+            case LuceneClassifyMethod.BM25NBClassifier:
+                classifier = new BM25NBClassifier(
+                        Indexes.indexReader,
+                        Indexes.analyzer,
+                        queryToAssignDocumentToCluster,
+                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
+                        Indexes.FIELD_CONTENTS
+                )
         }
 
         return classifier

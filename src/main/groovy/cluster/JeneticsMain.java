@@ -21,20 +21,20 @@ import java.util.stream.IntStream;
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
 public class JeneticsMain {
-    final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN = true;
+    final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
     final static int K_FOR_KNN = 11;
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.BM25NBClassifier;
 
     final static int popSize = 200;
     final static int maxGen = 400;
-    final static int maxWordListValue = 70;
+    final static int maxWordListValue = 80;
 
     final static int maxK = 8;
     final static int minK = 2;
-    final static int maxIntersectListSize = 5;
+    final static int maxIntersectListSize = 2;
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
@@ -62,7 +62,6 @@ public class JeneticsMain {
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         final double f = uniqueHits * (1.0 - (K_PENALTY * k));
-
         return f;
     }
 
@@ -137,11 +136,11 @@ public class JeneticsMain {
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     EsqClassify esqClassify = new EsqClassify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
-                    esqClassify.updateAssignedClusterField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN);  //update the field in the index with result of classification (KNN)
+                    esqClassify.updateAssignedClusterField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER);  //update the field in the index with result of classification (KNN)
 
                     ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
 
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_KNN, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);

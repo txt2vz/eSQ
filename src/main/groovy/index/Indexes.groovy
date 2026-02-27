@@ -84,7 +84,7 @@ class Indexes {
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id'
 
-    //static final Analyzer analyzer = new StandardAnalyzer()
+   // static final Analyzer analyzer = new StandardAnalyzer()
     static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)
             //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
