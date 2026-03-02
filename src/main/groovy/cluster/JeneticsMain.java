@@ -10,6 +10,7 @@ import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
+import io.jenetics.util.IntRange;
 import org.apache.lucene.search.BooleanQuery;
 
 import java.io.File;
@@ -55,10 +56,7 @@ public class JeneticsMain {
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
         final int k = (gt.get(0)).get(0).allele();
-        int[] rootArray = ((IntegerChromosome) gt.get(1)).toArray();
-        int[] intersectArray = ((IntegerChromosome) gt.get(2)).toArray();
-
-        BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(rootArray, intersectArray, k);
+        BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(gt, k);
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         final double f = uniqueHits * (1.0 - (K_PENALTY * k));
@@ -81,14 +79,16 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                  //  builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
+                   // builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK, 1),  //possible values of k
                             IntegerChromosome.of(0, maxWordListValue, maxK), //rootword
-                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK) //intersect words -1 indicates no word added to query
+                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)//intersect words -1 indicates no word added to query
+              //              ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength))  //for BLOCKS or MODULUS builderMethod
                     );
+
 
                     final Engine<IntegerGene, Double> engine = Engine
                             .builder(
@@ -97,11 +97,9 @@ public class JeneticsMain {
                             .selector(new TournamentSelector<>(3))
                             .alterers(
                                     //should be good for single gene chromosome
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.3), 0),
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
-
-                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
-                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
+//                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.3), 0),
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 0),
+                                    new SinglePointCrossover<IntegerGene, Double>(0.3),
                                     new Mutator<>(0.1)
                             )
                             .build();
@@ -126,13 +124,10 @@ public class JeneticsMain {
                                     .collect(toBestPhenotype());
 
                     jeneticsResultList.add(jeneticsResult);
-                    Genotype<IntegerGene> g = jeneticsResult.genotype();
+                    Genotype<IntegerGene> genotype = jeneticsResult.genotype();
 
-                    final int k = (g.get(0)).get(0).allele();
-                    int[] intArrayBestOfRun = ((IntegerChromosome) g.get(1)).toArray();
-                    int[] interserctArrayBestOfRun = ((IntegerChromosome) g.get(2)).toArray();
-
-                    BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(intArrayBestOfRun, interserctArrayBestOfRun, k);
+                    final int k = (genotype.get(0)).get(0).allele();
+                    BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(genotype, k);
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     EsqClassify esqClassify = new EsqClassify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
@@ -140,7 +135,7 @@ public class JeneticsMain {
 
                     ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
 
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
+                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, maxIntersectListSize, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
                     esqResultDetail.report(new File("results//resultsJenetics.csv"));
                     esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
                     esqResultDetailList.add(esqResultDetail);

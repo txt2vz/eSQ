@@ -104,43 +104,42 @@ class EsqClassify {
 
         println "In EsqClassify unAssignedHits size: " + unAssignedHits.size()
 
-        Classifier classifier
+        Classifier classifier =
 
-        switch (luceneClassifyMethod) {
-            case LuceneClassifyMethod.FuzzyKNN:
-                classifier = new KNearestFuzzyClassifier(
-                        Indexes.indexReader,
-                        new BM25Similarity(),
-                        Indexes.analyzer,
-                        queryToAssignDocumentToCluster,
-                        k_for_knn,
-                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
-                        Indexes.FIELD_CONTENTS
-                )
-                break
+                switch (luceneClassifyMethod) {
+                    case LuceneClassifyMethod.FuzzyKNN ->
+                        new KNearestFuzzyClassifier(
+                                Indexes.indexReader,
+                                new BM25Similarity(),
+                                Indexes.analyzer,
+                                queryToAssignDocumentToCluster,
+                                k_for_knn,
+                                Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
+                                Indexes.FIELD_CONTENTS
+                        )
 
-            case LuceneClassifyMethod.KNN:
-                classifier = new KNearestNeighborClassifier(
-                        Indexes.indexReader,
-                        new BM25Similarity(),
-                        Indexes.analyzer,
-                        queryToAssignDocumentToCluster,
-                        k_for_knn,
-                        3,
-                        1,
-                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
-                        Indexes.FIELD_CONTENTS
-                )
-                break
-            case LuceneClassifyMethod.BM25NBClassifier:
-                classifier = new BM25NBClassifier(
-                        Indexes.indexReader,
-                        Indexes.analyzer,
-                        queryToAssignDocumentToCluster,
-                        Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
-                        Indexes.FIELD_CONTENTS
-                )
-        }
+                    case LuceneClassifyMethod.KNN ->
+                        new KNearestNeighborClassifier(
+                                Indexes.indexReader,
+                                new BM25Similarity(),
+                                Indexes.analyzer,
+                                queryToAssignDocumentToCluster,
+                                k_for_knn,
+                                3,
+                                1,
+                                Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
+                                Indexes.FIELD_CONTENTS
+                        )
+
+                    case LuceneClassifyMethod.BM25NBClassifier ->
+                        new BM25NBClassifier(
+                                Indexes.indexReader,
+                                Indexes.analyzer,
+                                queryToAssignDocumentToCluster,
+                                Indexes.FIELD_QUERY_ASSIGNED_CLUSTER,
+                                Indexes.FIELD_CONTENTS
+                        )
+                }
 
         return classifier
     }

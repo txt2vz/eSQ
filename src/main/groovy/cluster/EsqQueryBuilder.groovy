@@ -1,6 +1,9 @@
 package cluster
 
 import groovy.transform.CompileStatic
+import io.jenetics.Genotype
+import io.jenetics.IntegerChromosome
+import io.jenetics.IntegerGene
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
@@ -27,20 +30,12 @@ class EsqQueryBuilder {
         this.builderMethod = bm
     }
 
-    BooleanQuery.Builder[] buildQueries(int[] intChromosome, int[] intersectChromosome, final int k) {
+    BooleanQuery.Builder[] buildQueries(final Genotype<IntegerGene> gt, final int k) {
         switch (builderMethod) {
-            case BuilderMethod.SINGLE:
-                return getSingleWordQueries(intChromosome, k)
-                break
-            case BuilderMethod.INTERSECT:
-                return getIntersectQueries(intChromosome, intersectChromosome, k)
-                break
-            case BuilderMethod.BLOCKS:
-                return getMultiWordQueryBlocks(intChromosome, k)
-                break
-            case BuilderMethod.MODULUS:
-                return getMultiWordQueryModulusDuplicateCheck(intChromosome, k)
-                break
+            case BuilderMethod.SINGLE -> getSingleWordQueries(((IntegerChromosome) gt.get(1)).toArray(), k)
+            case BuilderMethod.INTERSECT -> getIntersectQueries(((IntegerChromosome) gt.get(1)).toArray(), ((IntegerChromosome) gt.get(2)).toArray(), k)
+            case BuilderMethod.BLOCKS -> getMultiWordQueryBlocks(((IntegerChromosome) gt.get(3)).toArray(), k)
+            case BuilderMethod.MODULUS -> getMultiWordQueryModulusDuplicateCheck(((IntegerChromosome) gt.get(3)).toArray(), k)
         }
     }
 
@@ -67,7 +62,7 @@ class EsqQueryBuilder {
             Set<Integer> intersectAlleles = [] as Set<Integer>
             for (int j = i * JeneticsMain.maxIntersectListSize; j < intersectChromosome.size(); j++) {
                 final int intersectAllele = intersectChromosome[j]
-                if (intersectAllele >=0 && intersectTermQueryList && intersectAlleles.add(intersectAllele) && intersectAllele < intersectTermQueryList.size()) {
+                if (intersectAllele >= 0 && intersectTermQueryList && intersectAlleles.add(intersectAllele) && intersectAllele < intersectTermQueryList.size()) {
                     arrayOfBuilders[i] = arrayOfBuilders[i].add(intersectTermQueryList[intersectAllele], booleanClauseOccur)
                 }
             }

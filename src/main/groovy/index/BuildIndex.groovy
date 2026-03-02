@@ -26,7 +26,7 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'R6'
+        String indexName = 'NG6'
         String indexPath = 'indexes' + /\$indexName/
         String docsPath =  'datasets' +  /\$indexName/
 
@@ -34,6 +34,7 @@ class BuildIndex {
         Directory directory = FSDirectory.open(path)
         Analyzer analyzer = Indexes.analyzer
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer)
+        iwc.setSimilarity {(Indexes.similarity)}
 
 //store doc counts for each category
         def catsNameFreq = [:]
@@ -89,7 +90,6 @@ class BuildIndex {
         writer.commit()
         writer.close()
         IndexReader indexReader = DirectoryReader.open(directory)
-        IndexSearcher indexSearcher = new IndexSearcher(indexReader)
         println "Total docs: ${indexReader.numDocs()}"
 
         final Date end = new Date()
@@ -98,7 +98,6 @@ class BuildIndex {
 
         println "catsNameFreq: $catsNameFreq"
 
-       // IndexUtils.categoryFrequencies(indexSearcher, true)
         IndexUtils.categoryFrequencies(indexReader, true)
 
         println "numDocs " + indexReader.numDocs()
