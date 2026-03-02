@@ -26,7 +26,7 @@ class BuildIndex {
 
     BuildIndex() {
 
-        String indexName = 'NG6'
+        String indexName = 'Crisis3'
         String indexPath = 'indexes' + /\$indexName/
         String docsPath =  'datasets' +  /\$indexName/
 

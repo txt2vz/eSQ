@@ -4,6 +4,6 @@ build/
 *.stat
 *.iml
 .idea/
-indexes/
+# indexes/
 .venv
 results/
