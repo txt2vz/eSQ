@@ -30,7 +30,6 @@ import java.nio.file.Paths
 enum LuceneClassifyMethod {
     KNN,
     FuzzyKNN,
-    NB,
     BM25NBClassifier
 }
 
