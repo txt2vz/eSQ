@@ -27,7 +27,7 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.BM25NBClassifier;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
 
     final static int popSize = 200;
     final static int maxGen = 400;

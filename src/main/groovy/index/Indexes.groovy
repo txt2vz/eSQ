@@ -70,8 +70,6 @@ enum IndexEnum {
 @CompileStatic
 class Indexes {
 
-   // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()
-
     //current index
     static IndexEnum index
     static IndexSearcher indexSearcher
@@ -93,6 +91,7 @@ class Indexes {
     static List<String> stopSet = new File('src/cfg/stop_words_moderate.txt') as List<String>
     static CharArraySet stopCharSet = new CharArraySet(stopSet, true);
     static final Analyzer analyzer = new StandardAnalyzer(stopCharSet)
+    // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()
     //static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)  //new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
     static void setIndex(IndexEnum indexEnum) {
