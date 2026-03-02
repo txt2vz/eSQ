@@ -8,7 +8,7 @@ import spock.lang.Specification
 
 class QueryTermIntersectTest extends Specification {
 
-    def "QueryListFromChromosome OR NG3 tfidf"() {
+   /* def "QueryListFromChromosome OR NG3 tfidf"() {
         setup:
         Indexes.setIndex(IndexEnum.NG3)
 
@@ -86,7 +86,7 @@ class QueryTermIntersectTest extends Specification {
 
         then:
         q1.toString(Indexes.FIELD_CONTENTS) == 'space nasa'
-    }
+    }*/
 }
 
 

@@ -2,11 +2,16 @@ package index
 
 import groovy.transform.CompileStatic
 import org.apache.lucene.analysis.Analyzer
+import org.apache.lucene.analysis.CharArraySet
+import org.apache.lucene.analysis.en.EnglishAnalyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.TermQuery
+import org.apache.lucene.search.similarities.BM25Similarity
+import org.apache.lucene.search.similarities.ClassicSimilarity
+import org.apache.lucene.search.similarities.Similarity
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.FSDirectory
 
@@ -32,7 +37,6 @@ enum IndexEnum {
     space('indexes/space', 1)
 
 
-    // private final Similarity similarity = new BM25Similarity()  // new ClassicSimilarity()
     String pathString
     int numberOfClasses
 
@@ -58,7 +62,7 @@ enum IndexEnum {
         IndexReader ir = DirectoryReader.open(directory)
         IndexSearcher is = new IndexSearcher(ir)
 
-        //    is.setSimilarity(similarity)
+       // is.setSimilarity(Indexes.similarity)
         return is
     }
 }
@@ -66,12 +70,16 @@ enum IndexEnum {
 @CompileStatic
 class Indexes {
 
+   // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()
+
     //current index
     static IndexEnum index
     static IndexSearcher indexSearcher
     static IndexReader indexReader
     public static List<TermQuery> termQueryList
-    static Map<TermQuery, List<Tuple2<TermQuery, Double>>> termQueryIntersectMap
+
+    //static Map<TermQuery, List<Tuple2<TermQuery, Double>>> termQueryIntersectMap
+    public static Map<String, List<TermQuery>> orderedIntersectMap
 
     // Lucene field names
     static final String FIELD_CATEGORY_NAME = 'category',
@@ -82,8 +90,10 @@ class Indexes {
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id'
 
-    static final Analyzer analyzer = new StandardAnalyzer()
-    //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
+    static List<String> stopSet = new File('src/cfg/stop_words_moderate.txt') as List<String>
+    static CharArraySet stopCharSet = new CharArraySet(stopSet, true);
+    static final Analyzer analyzer = new StandardAnalyzer(stopCharSet)
+    //static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)  //new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
     static void setIndex(IndexEnum indexEnum) {
         index = indexEnum
@@ -93,5 +103,7 @@ class Indexes {
 
     static void setImportantTermQueryList() {
         termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
+        MapWordToIntersectingTermQueryList mapWordToIntersectingTermQueryList = new MapWordToIntersectingTermQueryList()
+        orderedIntersectMap = mapWordToIntersectingTermQueryList.getIntersectingTerms(termQueryList)
     }
 }
