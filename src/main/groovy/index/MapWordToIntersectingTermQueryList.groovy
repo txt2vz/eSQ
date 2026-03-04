@@ -23,7 +23,7 @@ class MapWordToIntersectingTermQueryList {
             Map<String, Double> wordWithRatio = [:]
             for (tqNew in l) {
 
-                double qti = QueryTermIntersectRatio.getIntersectValue(tqRoot, tqNew)
+                final double qti = QueryTermIntersectRatio.getIntersectValue(tqRoot, tqNew)
                 String tqNewString = tqNew.term.text()
 
                 if (qti > MIN_INTERSECT_RATIO && tqRootString != tqNewString) {
