@@ -10,7 +10,9 @@ import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
+import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 import io.jenetics.util.IntRange;
+
 import org.apache.lucene.search.BooleanQuery;
 
 import java.io.File;
@@ -19,28 +21,27 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
 public class JeneticsMain {
-    final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
-    final static int K_FOR_KNN = 11;
+
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+    static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
+    final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
+    final static int K_FOR_KNN = 11;
     final static int popSize = 200;
     final static int maxGen = 400;
     final static int maxWordListValue = 80;
-
     final static int maxK = 8;
     final static int minK = 2;
     final static int maxIntersectListSize = 2;
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 4;
-    static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
+    final static int numberMaxFitJobs = 5;
 
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
@@ -59,8 +60,7 @@ public class JeneticsMain {
         BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(gt, k);
         QuerySet querySet = new QuerySet(bqbArray);
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
-        final double f = uniqueHits * (1.0 - (K_PENALTY * k));
-        return f;
+        return uniqueHits * (1.0 - (K_PENALTY * k));
     }
 
     public static void main(String[] args) throws Exception {
@@ -79,14 +79,14 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                   // builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
+                    //  builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK, 1),  //possible values of k
                             IntegerChromosome.of(0, maxWordListValue, maxK), //rootword
                             IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)//intersect words -1 indicates no word added to query
-              //              ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength))  //for BLOCKS or MODULUS builderMethod
+                            //              ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength))  //for BLOCKS or MODULUS builderMethod
                     );
 
 
@@ -96,10 +96,10 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                    //should be good for single gene chromosome
-//                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.3), 0),
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 0),
-                                    new SinglePointCrossover<IntegerGene, Double>(0.3),
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0), //should be good for single gene chromosome
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.1), 0),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
+                                    PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
                                     new Mutator<>(0.1)
                             )
                             .build();
@@ -153,7 +153,7 @@ public class JeneticsMain {
         final double average = bestMaxFitV.stream()
                 .collect(Collectors.averagingDouble(Double::doubleValue));
 
-        System.out.println("Average maxFit v : " + average + " List of v " + bestMaxFitV);
+        System.out.println("Average maxFit v: " + average + " List of v: " + bestMaxFitV);
 
         final Date endRun = new Date();
         TimeDuration duration = TimeCategory.minus(endRun, startRun);

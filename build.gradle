@@ -39,10 +39,7 @@ dependencies {
     implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '10.4.0'
     implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '10.4.0'
 
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.4-groovy-5.0'
 }
 
