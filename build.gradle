@@ -35,19 +35,19 @@ task runBuildIndex(type: JavaExec) {
 
 dependencies {
 
-    implementation group: 'org.apache.groovy', name: 'groovy', version: '5.0.4'
-    implementation group: 'org.apache.groovy', name: 'groovy-json', version: '5.0.4'
+    implementation "org.apache.groovy:groovy:5.0.4"
+    implementation "org.apache.groovy:groovy-json:5.0.4"
 
-    implementation group: 'io.jenetics', name: 'jenetics', version: '7.2.0'
-    implementation 'io.jenetics:jenetics.ext:7.2.0'
+    implementation "io.jenetics:jenetics:7.2.0"
+    implementation "io.jenetics:jenetics.ext:7.2.0"
 
-    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '10.4.0'
-    implementation group: 'org.apache.lucene', name: 'lucene-analysis-common', version: '10.4.0'
-    implementation group: 'org.apache.lucene', name: 'lucene-classification', version: '10.4.0'
-    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '10.4.0'
+    implementation "org.apache.lucene:lucene-core:10.4.0"
+    implementation "org.apache.lucene:lucene-analysis-common:10.4.0"
+    implementation "org.apache.lucene:lucene-classification:10.4.0"
+    implementation "org.apache.lucene:lucene-queryparser:10.4.0"
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.4-groovy-5.0'
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation "org.spockframework:spock-core:2.4-groovy-5.0"
 }
 
 test {
