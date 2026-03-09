@@ -10,7 +10,9 @@ import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
+
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
+
 import io.jenetics.util.IntRange;
 
 import org.apache.lucene.search.BooleanQuery;
@@ -27,30 +29,30 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
     final static int K_FOR_KNN = 11;
     final static int popSize = 200;
     final static int maxGen = 400;
-    final static int maxWordListValue = 80;
+    final static int maxWordListValue = 70;
     final static int maxK = 8;
     final static int minK = 2;
     final static int maxIntersectListSize = 2;
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 5;
+    final static int numberMaxFitJobs = 3;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
+//            IndexEnum.CRISIS3,
+//            IndexEnum.CRISIS4,
+//            IndexEnum.NG3,
+//            IndexEnum.NG5,
+//            IndexEnum.NG6,
+//            IndexEnum.R4,
+//            IndexEnum.R5,
             IndexEnum.R6
     );
 
@@ -59,8 +61,14 @@ public class JeneticsMain {
         final int k = (gt.get(0)).get(0).allele();
         BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(gt, k);
         QuerySet querySet = new QuerySet(bqbArray);
-        final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
-        return uniqueHits * (1.0 - (K_PENALTY * k));
+
+        int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
+        //double uniqueHitsMinus = querySet.getTotalHitsReturnedByOnlyOneQuery() - ((querySet.getTotalHitsAllQueries() - querySet.getTotalHitsReturnedByOnlyOneQuery()) * 0.5);
+        //double uniqueHitsMinus = querySet.getTotalHitsReturnedByOnlyOneQuery() - (querySet.getTotalHitsAllQueries() - querySet.getTotalHitsReturnedByOnlyOneQuery()  );
+        // return  uniqueHitsMinus;
+        //return uniqueHitsMinus * (1.0 - (K_PENALTY * k));
+        return uniqueHits;
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -89,7 +97,6 @@ public class JeneticsMain {
                             //              ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength))  //for BLOCKS or MODULUS builderMethod
                     );
 
-
                     final Engine<IntegerGene, Double> engine = Engine
                             .builder(
                                     JeneticsMain::searchQueryFitness, gtf)
@@ -97,7 +104,7 @@ public class JeneticsMain {
                             .selector(new TournamentSelector<>(3))
                             .alterers(
                                     PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0), //should be good for single gene chromosome
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.1), 0),
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
                                     new Mutator<>(0.1)
@@ -117,7 +124,7 @@ public class JeneticsMain {
                                         fitness.set(ind.bestPhenotype().fitness());
 
                                         if (ind.generation() % 20 == 0) {
-                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0 );//+ " phenotype: " + ind.bestPhenotype());
+                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);//+ " phenotype: " + ind.bestPhenotype());
                                         }
                                     })
                                     .peek(statistics)

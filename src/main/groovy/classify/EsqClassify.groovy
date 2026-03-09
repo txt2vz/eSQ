@@ -47,7 +47,7 @@ class EsqClassify {
 
         queriesOriginal = queries
         queriesReturningDistinctDocuments = modifiedQueries
-        assert queriesOriginal.size() == queriesReturningDistinctDocuments.size()
+        assert queriesOriginal.length == queriesReturningDistinctDocuments.length
     }
 
     void updateAssignedClusterField(boolean useQueriesReturningDistinctDocuments) {
@@ -57,7 +57,7 @@ class EsqClassify {
 
         int counter = 0
         String q
-        for (int i = 0; i < queries.size(); i++) {
+        for (int i = 0; i < queries.length; i++) {
 
             //queryOriginal is an easier to read cluster label
             q = queriesOriginal[i].toString(Indexes.FIELD_CONTENTS)
@@ -92,16 +92,16 @@ class EsqClassify {
     }
 
     Classifier getClassifier(LuceneClassifyMethod luceneClassifyMethod, final int k_for_knn = 7) {
-        TermQuery assignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
+        TermQuery unAssignedTQ = new TermQuery(new Term(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned'))
         BooleanQuery.Builder bqb = new BooleanQuery.Builder()
         bqb.add(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD)
-        bqb.add(assignedTQ, BooleanClause.Occur.MUST_NOT)
+        bqb.add(unAssignedTQ, BooleanClause.Occur.MUST_NOT)
         Query queryToAssignDocumentToCluster = bqb.build()
 
-        TopDocs unAssignedTopDocs = Indexes.indexSearcher.search(queryToAssignDocumentToCluster, Indexes.indexReader.numDocs())
-        ScoreDoc[] unAssignedHits = unAssignedTopDocs.scoreDocs
+        TopDocs assignedTopDocs = Indexes.indexSearcher.search(queryToAssignDocumentToCluster, Indexes.indexReader.numDocs())
+        ScoreDoc[] assignedHits = assignedTopDocs.scoreDocs
 
-        println "In EsqClassify unAssignedHits size: " + unAssignedHits.size()
+        println "In EsqClassify assignedHits size: " + assignedHits.length
 
         Classifier classifier =
 

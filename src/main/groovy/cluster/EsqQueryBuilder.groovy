@@ -60,7 +60,7 @@ class EsqQueryBuilder {
             List<TermQuery> intersectTermQueryList = orderedIntersectMap[rootWord]
 
             Set<Integer> intersectAlleles = [] as Set<Integer>
-            for (int j = i * JeneticsMain.maxIntersectListSize; j < intersectChromosome.size(); j++) {
+            for (int j = i * JeneticsMain.maxIntersectListSize; j < intersectChromosome.length; j++) {
                 final int intersectAllele = intersectChromosome[j]
                 if (intersectAllele >= 0 && intersectTermQueryList && intersectAlleles.add(intersectAllele) && intersectAllele < intersectTermQueryList.size()) {
                     arrayOfBuilders[i] = arrayOfBuilders[i].add(intersectTermQueryList[intersectAllele], booleanClauseOccur)
@@ -79,7 +79,7 @@ class EsqQueryBuilder {
         TermQuery tqRoot
         int blockSize = (int) (intChromosome.length / k)
 
-        for (int i = 0; i < intChromosome.size(); i++) {
+        for (int i = 0; i < intChromosome.length; i++) {
 
             final int allele = intChromosome[i]
 
@@ -114,7 +114,7 @@ class EsqQueryBuilder {
         int uniqueWords = 0
 
         //populate set of unique root words
-        while (uniqueWords < k && gene < intChromosome.size()) {
+        while (uniqueWords < k && gene < intChromosome.length) {
             final int allele = intChromosome[gene]
 
             if (alleles.add(allele)) {
@@ -125,7 +125,7 @@ class EsqQueryBuilder {
         }
 
         //add additional words to the queries if intersect requirement is met
-        for (int j = gene; j < intChromosome.size(); j++) {
+        for (int j = gene; j < intChromosome.length; j++) {
 
             final int allele = intChromosome[j]
             final int clusterNumber = j % k

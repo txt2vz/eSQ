@@ -34,8 +34,8 @@ enum IndexEnum {
     R5('indexes/R5', 5),
     R6('indexes/R6', 6),
 
-    space('indexes/space', 1)
-
+    space('indexes/space', 1),
+    bbc('indexes/bbc', 5)
 
     String pathString
     int numberOfClasses
@@ -88,7 +88,8 @@ class Indexes {
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id'
 
-    static List<String> stopSet = new File('src/cfg/stop_words_moderate.txt') as List<String>
+  //  static List<String> stopSet = new File("src//cfg//stop_words_moderate.txt") as List<String>
+    static List<String> stopSet = new File("src//cfg//stop_words_moderate.txt") as List<String>
     static CharArraySet stopCharSet = new CharArraySet(stopSet, true);
     static final Analyzer analyzer = new StandardAnalyzer(stopCharSet)
     // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()

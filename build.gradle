@@ -26,6 +26,13 @@ task runESQ(type: JavaExec) {
     jvmArgs += ['--add-modules', 'jdk.incubator.vector']
 }
 
+task runBuildIndex(type: JavaExec) {
+    group = "Execution"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'index.BuildIndex'
+    jvmArgs += ['--add-modules', 'jdk.incubator.vector']
+}
+
 dependencies {
 
     implementation group: 'org.apache.groovy', name: 'groovy', version: '5.0.4'
