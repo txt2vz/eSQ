@@ -29,14 +29,14 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
     final static int K_FOR_KNN = 11;
     final static int popSize = 200;
     final static int maxGen = 400;
-    final static int maxWordListValue = 70;
+    final static int maxWordListValue = 80;
     final static int maxK = 8;
     final static int minK = 2;
     final static int maxIntersectListSize = 2;
@@ -46,13 +46,13 @@ public class JeneticsMain {
     final static int numberMaxFitJobs = 3;
 
     static List<IndexEnum> indexList = Arrays.asList(
-//            IndexEnum.CRISIS3,
-//            IndexEnum.CRISIS4,
-//            IndexEnum.NG3,
-//            IndexEnum.NG5,
-//            IndexEnum.NG6,
-//            IndexEnum.R4,
-//            IndexEnum.R5,
+            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
             IndexEnum.R6
     );
 
@@ -67,8 +67,7 @@ public class JeneticsMain {
         //double uniqueHitsMinus = querySet.getTotalHitsReturnedByOnlyOneQuery() - (querySet.getTotalHitsAllQueries() - querySet.getTotalHitsReturnedByOnlyOneQuery()  );
         // return  uniqueHitsMinus;
         //return uniqueHitsMinus * (1.0 - (K_PENALTY * k));
-        return uniqueHits;
-
+        return uniqueHits * (1.0 - (K_PENALTY * k));
     }
 
     public static void main(String[] args) throws Exception {
@@ -104,7 +103,7 @@ public class JeneticsMain {
                             .selector(new TournamentSelector<>(3))
                             .alterers(
                                     PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0), //should be good for single gene chromosome
-                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.4), 0),
+                                    PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
                                     new Mutator<>(0.1)
