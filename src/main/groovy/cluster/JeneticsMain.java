@@ -29,7 +29,7 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
@@ -43,7 +43,7 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 3;
+    final static int numberMaxFitJobs = 5;
 
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
@@ -62,11 +62,7 @@ public class JeneticsMain {
         BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(gt, k);
         QuerySet querySet = new QuerySet(bqbArray);
 
-        int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
-        //double uniqueHitsMinus = querySet.getTotalHitsReturnedByOnlyOneQuery() - ((querySet.getTotalHitsAllQueries() - querySet.getTotalHitsReturnedByOnlyOneQuery()) * 0.5);
-        //double uniqueHitsMinus = querySet.getTotalHitsReturnedByOnlyOneQuery() - (querySet.getTotalHitsAllQueries() - querySet.getTotalHitsReturnedByOnlyOneQuery()  );
-        // return  uniqueHitsMinus;
-        //return uniqueHitsMinus * (1.0 - (K_PENALTY * k));
+        final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         return uniqueHits * (1.0 - (K_PENALTY * k));
     }
 
@@ -86,7 +82,7 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                    //  builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
+                   // builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
