@@ -101,8 +101,8 @@ class Indexes {
         indexReader = indexSearcher.getIndexReader()
     }
 
-    static void setImportantTermQueryList() {
-        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader, 120) asImmutable()
+    static void setImportantTermQueryList(int maxSize = ImportantTermQueries.MAX_TERMQUERYLIST_SIZE) {
+        termQueryList = ImportantTermQueries.getTFIDFTermQueryList(indexReader, maxSize) asImmutable()
         MapWordToIntersectingTermQueryList mapWordToIntersectingTermQueryList = new MapWordToIntersectingTermQueryList()
         orderedIntersectMap = mapWordToIntersectingTermQueryList.getIntersectingTerms(termQueryList)
     }

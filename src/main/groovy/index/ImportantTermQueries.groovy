@@ -70,6 +70,7 @@ class ImportantTermQueries {
             print " ${q.toString(Indexes.FIELD_CONTENTS)}"
         }
         println ""
+        println "TermQueryList size: ${tql.size()}"
 
         return tql.asImmutable()
     }

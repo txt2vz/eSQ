@@ -29,7 +29,7 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.KNN;
+    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
@@ -73,7 +73,7 @@ public class JeneticsMain {
 
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
-            Indexes.setImportantTermQueryList();
+            Indexes.setImportantTermQueryList(maxWordListValue);
 
             List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 

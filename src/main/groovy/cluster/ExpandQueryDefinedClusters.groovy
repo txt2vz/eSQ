@@ -77,7 +77,7 @@ class ExpandQueryDefinedClusters {
         numberOfDocumentsInQueryBuiltClusters = Indexes.indexReader.maxDoc() - unasscount
 
         //println("In ExpandQueryDefinedClusters countResults $countResults countNullResults $countNullResult")
-        println "In ExpandQueryDefinedClusters Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()}"
+        println "In ExpandQueryDefinedClusters Unassigned: $unasscount Classes: ${classes.toSet().size()} Clusters: ${clusters.toSet().size()} cluserSet ${clusters.toSet()}"
 
         File classesFile = new File(/results\classes.txt/)
         File clustersFile = new File(/results\clusters.txt/)
