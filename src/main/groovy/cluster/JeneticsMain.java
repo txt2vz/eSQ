@@ -12,7 +12,6 @@ import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
 
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
-
 import io.jenetics.util.IntRange;
 
 import org.apache.lucene.search.BooleanQuery;
