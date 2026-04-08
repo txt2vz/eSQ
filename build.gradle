@@ -33,6 +33,13 @@ task runBuildIndex(type: JavaExec) {
     jvmArgs += ['--add-modules', 'jdk.incubator.vector']
 }
 
+task runImportantTermQueries(type: JavaExec) {
+    group = "Execution"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'index.ImportantTermQueries'
+    jvmArgs += ['--add-modules', 'jdk.incubator.vector']
+}
+
 dependencies {
 
     implementation "org.apache.groovy:groovy:5.0.4"

@@ -30,7 +30,7 @@ enum IndexEnum {
 
     R4('indexes/R4', 4),
     R5('indexes/R5', 5),
-    R6('indexes/R6', 6),
+    R6('indexes/R6', 6)
 
     String pathString
     int numberOfClasses
