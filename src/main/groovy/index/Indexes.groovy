@@ -25,17 +25,12 @@ enum IndexEnum {
     CRISIS4('indexes/crisis4', 4),
 
     NG3('indexes/NG3', 3),
-    NG3L10('indexes/NG3L10', 3),
-    NG4b('indexes/NG4b', 4),
     NG5('indexes/NG5', 5),
     NG6('indexes/NG6', 6),
 
     R4('indexes/R4', 4),
     R5('indexes/R5', 5),
     R6('indexes/R6', 6),
-
-    space('indexes/space', 1),
-    bbc('indexes/bbc', 5)
 
     String pathString
     int numberOfClasses
