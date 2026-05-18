@@ -1,4 +1,5 @@
 ﻿import argparse
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -257,6 +258,11 @@ def parse_args() -> argparse.Namespace:
         help="Choose the keyword profile for the selected dataset.",
     )
     parser.add_argument(
+        "--keyword-file",
+        default=None,
+        help="Load keyword sets from a JSON file instead of using built-in keyword profiles.",
+    )
+    parser.add_argument(
         "--list",
         action="store_true",
         help="List available datasets and keyword profiles.",
@@ -264,19 +270,80 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def run_experiment(dataset_name: str, keyword_profile: str) -> None:
+def resolve_keyword_file_path(file_path: str) -> str:
+    if os.path.isabs(file_path) and os.path.exists(file_path):
+        return file_path
+
+    candidates = [
+        os.path.abspath(file_path),
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), file_path)),
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", file_path)),
+    ]
+
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+
+    raise FileNotFoundError(
+        f"Keyword file not found: '{file_path}'. Checked paths: {', '.join(candidates)}"
+    )
+
+
+def load_keyword_sets_from_file(file_path: str) -> List[List[str]]:
+    resolved_path = resolve_keyword_file_path(file_path)
+    with open(resolved_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    if not isinstance(data, list) or not all(isinstance(group, list) for group in data):
+        raise ValueError("Keyword file must contain a JSON array of keyword lists.")
+
+    for group in data:
+        if not all(isinstance(keyword, str) for keyword in group):
+            raise ValueError("Each keyword must be a string inside keyword groups.")
+
+    return data
+
+
+def resolve_dataset_folder(folder_path: str) -> str:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+    candidates = [
+        os.path.abspath(folder_path),
+        os.path.abspath(os.path.join(script_dir, folder_path)),
+        os.path.abspath(os.path.join(repo_root, folder_path)),
+        os.path.abspath(os.path.join(repo_root, "datasets", folder_path)),
+    ]
+
+    for candidate in candidates:
+        if os.path.isdir(candidate):
+            return candidate
+
+    raise FileNotFoundError(
+        f"Dataset folder not found: '{folder_path}'. Checked paths: {', '.join(candidates)}"
+    )
+
+
+def run_experiment(dataset_name: str, keyword_profile: str, keyword_file: str | None = None) -> None:
     dataset = DATASETS[dataset_name]
-    if keyword_profile not in dataset.keyword_profiles:
-        available = ", ".join(dataset.keyword_profiles.keys())
-        raise ValueError(
-            f"Keyword profile '{keyword_profile}' not found for dataset '{dataset_name}'. Available profiles: {available}"
-        )
+    if keyword_file:
+        print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
+        print(f"Using keyword file '{keyword_file}'")
+        dataset_folder = resolve_dataset_folder(dataset.folder_path)
+        documents, labels = load_documents(dataset_folder)
+        keyword_sets = load_keyword_sets_from_file(keyword_file)
+    else:
+        if keyword_profile not in dataset.keyword_profiles:
+            available = ", ".join(dataset.keyword_profiles.keys())
+            raise ValueError(
+                f"Keyword profile '{keyword_profile}' not found for dataset '{dataset_name}'. Available profiles: {available}"
+            )
 
-    print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
-    print(f"Using keyword profile '{keyword_profile}'")
+        print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
+        print(f"Using keyword profile '{keyword_profile}'")
 
-    documents, labels = load_documents(dataset.folder_path)
-    keyword_sets = dataset.keyword_profiles[keyword_profile]
+        dataset_folder = resolve_dataset_folder(dataset.folder_path)
+        documents, labels = load_documents(dataset_folder)
+        keyword_sets = dataset.keyword_profiles[keyword_profile]
 
     print("Keyword sets used:")
     for idx, keywords in enumerate(keyword_sets):
@@ -342,7 +409,7 @@ def main() -> None:
         list_datasets()
         return
 
-    run_experiment(args.dataset, args.keyword_profile)
+    run_experiment(args.dataset, args.keyword_profile, args.keyword_file)
 
 
 if __name__ == "__main__":

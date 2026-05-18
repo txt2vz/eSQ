@@ -22,17 +22,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
 public class JeneticsMain {
 
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static LuceneClassifyMethod classifyMethod = LuceneClassifyMethod.FuzzyKNN;
+
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
-    final static boolean USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER = true;
-    final static int K_FOR_KNN = 11;
     final static int popSize = 200;
     final static int maxGen = 400;
     final static int maxWordListValue = 80;
@@ -42,18 +39,17 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 5;
+    final static int numberMaxFitJobs = 2;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            IndexEnum.CRISIS3,
-            IndexEnum.CRISIS4,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6
-    );
+            // IndexEnum.CRISIS3,
+            // IndexEnum.CRISIS4,
+            // IndexEnum.NG3,
+            // IndexEnum.NG5,
+            // IndexEnum.NG6,
+            // IndexEnum.R4,
+             IndexEnum.R5);
+          //  IndexEnum.R6);
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
@@ -77,18 +73,28 @@ public class JeneticsMain {
             List<Phenotype<IntegerGene, Double>> jeneticsResultList = new ArrayList<>();
 
             IntStream.range(0, numberOfJobs).forEach(jobNumber -> {
-                List<EsqResultDetail> esqResultDetailList = new ArrayList<>();
+
+                double[] bestJobFitness = { Double.NEGATIVE_INFINITY };
+                QuerySet[] bestJobQuerySet = new QuerySet[1];
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                   // builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT : BuilderMethod.SINGLE;  //vary the builder Method  - maxFitJobs will select best based on fitness
-                    esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap, builderMethod);
+                    // builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT :
+                    // BuilderMethod.SINGLE; //vary the builder Method - maxFitJobs will select best
+                    // based on fitness
+                    esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap,
+                            builderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
-                            IntegerChromosome.of(minK, maxK, 1),  //possible values of k
-                            IntegerChromosome.of(0, maxWordListValue, maxK), //rootword
-                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)//intersect words -1 indicates no word added to query
-                            //              ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength, maxGenomeLength))  //for BLOCKS or MODULUS builderMethod
+                            IntegerChromosome.of(minK, maxK, 1), // possible values of k
+                            IntegerChromosome.of(0, maxWordListValue, maxK), // rootword
+                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)// intersect
+                                                                                                       // words -1
+                                                                                                       // indicates no
+                                                                                                       // word added to
+                                                                                                       // query
+                    // ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength,
+                    // maxGenomeLength)) //for BLOCKS or MODULUS builderMethod
                     );
 
                     final Engine<IntegerGene, Double> engine = Engine
@@ -97,12 +103,13 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0), //should be good for single gene chromosome
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0), // should be good
+                                                                                                     // for single gene
+                                                                                                     // chromosome
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
-                                    new Mutator<>(0.1)
-                            )
+                                    new Mutator<>(0.1))
                             .build();
 
                     final EvolutionStatistics<Double, ?> statistics = EvolutionStatistics.ofNumber();
@@ -117,8 +124,12 @@ public class JeneticsMain {
                                         final int k0 = (g.get(0)).get(0).allele();
                                         fitness.set(ind.bestPhenotype().fitness());
 
-                                        if (ind.generation() % 20 == 0) {
-                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name() + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);//+ " phenotype: " + ind.bestPhenotype());
+                                        if (ind.generation() % 90 == 0) {
+                                            System.out.println("Gen: " + ind.generation() + " Index: " + index.name()
+                                                    + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);// + "
+                                                                                                           // phenotype:
+                                                                                                           // " +
+                                                                                                           // ind.bestPhenotype());
                                         }
                                     })
                                     .peek(statistics)
@@ -131,30 +142,41 @@ public class JeneticsMain {
                     BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(genotype, k);
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
-                    EsqClassify esqClassify = new EsqClassify(querySet.getQueryArray(), querySet.getNonIntersectingQueries());
-                    esqClassify.updateAssignedClusterField(USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER);  //update the field in the index with result of classification (KNN)
+                    querySet.printQueryMap();
 
-                    ExpandQueryDefinedClusters expandQueryDefinedClusters = new ExpandQueryDefinedClusters(esqClassify.getClassifier(classifyMethod, K_FOR_KNN));
+                    if (jeneticsResult.fitness() > bestJobFitness[0]) {
+                        bestJobFitness[0] = jeneticsResult.fitness();
+                        bestJobQuerySet[0] = querySet;
+                    }
 
-                    EsqResultDetail esqResultDetail = new EsqResultDetail(index, expandQueryDefinedClusters, jeneticsResult.fitness(), querySet, classifyMethod, builderMethod, maxIntersectListSize, true, USE_NON_INTERSECTING_CLUSTERS_FOR_TRAINING_CLASSIFIER, K_PENALTY, QueryTermIntersectRatio.getMIN_INTERSECT_RATIO(), K_FOR_KNN, popSize, (int) jeneticsResult.generation(), jobNumber, maxFitjob, gaEngine);
-                    esqResultDetail.report(new File("results//resultsJenetics.csv"));
-                    esqResultDetail.queryReport(new File("results//jeneticsQueries.txt"));
-                    esqResultDetailList.add(esqResultDetail);
-
-                    System.out.println("Gen: " + jeneticsResult.generation() + " Fitness: " + jeneticsResult.fitness() + " v: " + expandQueryDefinedClusters.getvMeasure());
+                    System.out.println("Gen: " + jeneticsResult.generation() + " Fitness: " + jeneticsResult.fitness());
                     System.out.println("*********************************************************** \n");
                 });
 
-                Optional<EsqResultDetail> maxResultForJob = esqResultDetailList.stream().max(Comparator.comparing(EsqResultDetail::getFitness));
-                maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
-                bestMaxFitV.add(maxResultForJob.get().getV());
+                System.out.println("Best fitness for jobNumber " + jobNumber + ": " + bestJobFitness[0]);
+                if (bestJobQuerySet[0] != null) {
+                    bestJobQuerySet[0].printQueryMap();
+                    bestJobQuerySet[0].printQueryTermLists();
+
+                    File bestQueryFile = new File("results/best_query_" + index.name() + "_job_" + jobNumber + ".json");
+                    bestJobQuerySet[0].writeQueryTermsJson(bestQueryFile);
+                    System.out.println("Best query keyword sets written to " + bestQueryFile.getAbsolutePath());
+                } else {
+                    System.out.println("No best query map was selected for jobNumber " + jobNumber);
+                }
+
+                // Optional<EsqResultDetail> maxResultForJob =
+                // esqResultDetailList.stream().max(Comparator.comparing(EsqResultDetail::getFitness));
+                // maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
+                // bestMaxFitV.add(maxResultForJob.get().getV());
             });
         }
 
-        final double average = bestMaxFitV.stream()
-                .collect(Collectors.averagingDouble(Double::doubleValue));
+        // final double average = bestMaxFitV.stream()
+        // .collect(Collectors.averagingDouble(Double::doubleValue));
 
-        System.out.println("Average maxFit v: " + average + " List of v: " + bestMaxFitV);
+        // System.out.println("Average maxFit v: " + average + " List of v: " +
+        // bestMaxFitV);
 
         final Date endRun = new Date();
         TimeDuration duration = TimeCategory.minus(endRun, startRun);
