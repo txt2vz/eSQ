@@ -18,114 +18,18 @@ from sklearn.neural_network import MLPClassifier
 @dataclass
 class DatasetConfig:
     folder_path: str
-    keyword_profiles: Dict[str, List[List[str]]]
     description: str = ""
 
 
 DATASETS: Dict[str, DatasetConfig] = {
-    "NG5": DatasetConfig(
-        folder_path="NG5",
-        description="20 Newsgroups subset with 5 classes",
-        keyword_profiles={
-            "default": [
-                ["space", "moon", "nasa"],
-                ["sale"],
-                ["windows", "file", "dos"],
-                ["team", "season", "nhl"],
-                ["god", "truth", "faith"],
-            ],
-        },
-    ),
-    "NG6": DatasetConfig(
-        folder_path="NG6",
-        description="20 Newsgroups subset with 6 classes",
-        keyword_profiles={
-            "default": [
-                ["chip", "escrow", "clipper"],
-                ["game", "hockey"],
-                ["god", "jesus", "christians"],
-                ["space", "nasa"],
-                ["gun", "guns"],
-                ["graphics"]
-            ],
-        },
-    ),
-    "NG3": DatasetConfig(
-        folder_path="NG3",
-        description="20 Newsgroups subset with 3 classes",
-        keyword_profiles={
-            "default": [
-                ["team", "teams", "season"],
-                ["god", "truth", "faith"],
-                ["space", "lunar", "nasa"],
-            ],
-        },
-    ),
-    "crisis3": DatasetConfig(
-        folder_path="crisis3",
-        description="Crisis dataset ",
-        keyword_profiles={
-            "default": [
-                ["bigwet", "qpsmedia", "coast"],
-                ["prayforboston", "world"],
-                ["highparkfire"],
-                ["colorado", "wildfires", "springs"],
-                ["boston", "marathon", "explosion"],
-            ],
-        },
-    ),
-    "crisis4": DatasetConfig(
-        folder_path="crisis4",
-        description="Crisis4 dataset",
-        keyword_profiles={
-            "default": [
-                ["bigwet", "qpsmedia", "brisbane"],
-                ["prayforboston"],
-                ["lax", "shots", "shooter"],
-                ["colorado", "wildfires", "springs"],
-                ["boston", "marathon", "explosion"],
-                ["highparkfire"],
-            ],
-        },
-    ),    
-    "R4": DatasetConfig(
-        folder_path="R4",
-        description="Keywords for Reuters 4 documents",
-        keyword_profiles={
-            "default": [
-                ["wheat", "agriculture"],
-                ["cts", "revs", 'shr'],
-                ["oil", "bpd", "ecuador"],
-                ["money", "bank"],             
-            ],
-        },
-    ),
-    "R5": DatasetConfig(
-        folder_path="R5",
-        description="Keywords for Reuters 5 documents",
-        keyword_profiles={
-            "default": [
-                ["sugar", "ec"],
-                ["coffee", "ico"],
-                ["surplus", "deficit"],
-                ["bank", "money", "banks"],
-                ["oil", "opec"],             
-            ]
-        },
-    ),
-    "R6": DatasetConfig(
-        folder_path="R6",
-        description="Keywords for Reuters 6 documents",
-        keyword_profiles={
-            "default": [
-                ["shares"],
-                ["oil", "bpd", "barrels"],
-                ["tonnes", "wheat"],
-                ["bank", "money"],
-                ["cts", "vs", "shr"],             
-            ]
-        },
-    ),
+    "NG5": DatasetConfig(folder_path="NG5", description="20 Newsgroups subset with 5 classes"),
+    "NG6": DatasetConfig(folder_path="NG6", description="20 Newsgroups subset with 6 classes"),
+    "NG3": DatasetConfig(folder_path="NG3", description="20 Newsgroups subset with 3 classes"),
+    "crisis3": DatasetConfig(folder_path="crisis3", description="Crisis dataset"),
+    "crisis4": DatasetConfig(folder_path="crisis4", description="Crisis4 dataset"),
+    "R4": DatasetConfig(folder_path="R4", description="Reuters 4 dataset"),
+    "R5": DatasetConfig(folder_path="R5", description="Reuters 5 dataset"),
+    "R6": DatasetConfig(folder_path="R6", description="Reuters 6 dataset"),
 }
 
 
@@ -241,7 +145,6 @@ def list_datasets() -> None:
     print("Available datasets:")
     for name, config in DATASETS.items():
         print(f"  {name}: {config.description}")
-        print(f"    profiles: {', '.join(config.keyword_profiles.keys())}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -250,22 +153,17 @@ def parse_args() -> argparse.Namespace:
         "--dataset",
         default="NG3",
         choices=list(DATASETS.keys()),
-        help="Choose the dataset configuration to load.",
-    )
-    parser.add_argument(
-        "--keyword-profile",
-        default="default",
-        help="Choose the keyword profile for the selected dataset.",
+        help="Choose the dataset folder to load.",
     )
     parser.add_argument(
         "--keyword-file",
-        default=None,
-        help="Load keyword sets from a JSON file instead of using built-in keyword profiles.",
+        required=True,
+        help="Load keyword sets from a JSON file.",
     )
     parser.add_argument(
         "--list",
         action="store_true",
-        help="List available datasets and keyword profiles.",
+        help="List available datasets.",
     )
     return parser.parse_args()
 
@@ -323,27 +221,14 @@ def resolve_dataset_folder(folder_path: str) -> str:
     )
 
 
-def run_experiment(dataset_name: str, keyword_profile: str, keyword_file: str | None = None) -> None:
+def run_experiment(dataset_name: str, keyword_file: str) -> None:
     dataset = DATASETS[dataset_name]
-    if keyword_file:
-        print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
-        print(f"Using keyword file '{keyword_file}'")
-        dataset_folder = resolve_dataset_folder(dataset.folder_path)
-        documents, labels = load_documents(dataset_folder)
-        keyword_sets = load_keyword_sets_from_file(keyword_file)
-    else:
-        if keyword_profile not in dataset.keyword_profiles:
-            available = ", ".join(dataset.keyword_profiles.keys())
-            raise ValueError(
-                f"Keyword profile '{keyword_profile}' not found for dataset '{dataset_name}'. Available profiles: {available}"
-            )
+    print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
+    print(f"Using keyword file '{keyword_file}'")
 
-        print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
-        print(f"Using keyword profile '{keyword_profile}'")
-
-        dataset_folder = resolve_dataset_folder(dataset.folder_path)
-        documents, labels = load_documents(dataset_folder)
-        keyword_sets = dataset.keyword_profiles[keyword_profile]
+    dataset_folder = resolve_dataset_folder(dataset.folder_path)
+    documents, labels = load_documents(dataset_folder)
+    keyword_sets = load_keyword_sets_from_file(keyword_file)
 
     print("Keyword sets used:")
     for idx, keywords in enumerate(keyword_sets):
@@ -409,7 +294,7 @@ def main() -> None:
         list_datasets()
         return
 
-    run_experiment(args.dataset, args.keyword_profile, args.keyword_file)
+    run_experiment(args.dataset, args.keyword_file)
 
 
 if __name__ == "__main__":

@@ -39,17 +39,18 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 2;
+    final static int numberMaxFitJobs = 5;
 
     static List<IndexEnum> indexList = Arrays.asList(
             // IndexEnum.CRISIS3,
             // IndexEnum.CRISIS4,
             // IndexEnum.NG3,
-            // IndexEnum.NG5,
+         //    IndexEnum.NG5
             // IndexEnum.NG6,
             // IndexEnum.R4,
-             IndexEnum.R5);
-          //  IndexEnum.R6);
+             IndexEnum.R5
+          //  IndexEnum.R6
+          );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
@@ -164,11 +165,6 @@ public class JeneticsMain {
                 } else {
                     System.out.println("No best query map was selected for jobNumber " + jobNumber);
                 }
-
-                // Optional<EsqResultDetail> maxResultForJob =
-                // esqResultDetailList.stream().max(Comparator.comparing(EsqResultDetail::getFitness));
-                // maxResultForJob.get().report(new File("results//maxFitResultsJenetics.csv"));
-                // bestMaxFitV.add(maxResultForJob.get().getV());
             });
         }
 
