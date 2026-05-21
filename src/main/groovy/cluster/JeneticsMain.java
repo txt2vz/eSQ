@@ -42,14 +42,14 @@ public class JeneticsMain {
     final static int numberMaxFitJobs = 5;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            // IndexEnum.CRISIS3,
-            // IndexEnum.CRISIS4,
-            // IndexEnum.NG3,
-         //    IndexEnum.NG5
-            // IndexEnum.NG6,
-            // IndexEnum.R4,
-             IndexEnum.R5
-          //  IndexEnum.R6
+             IndexEnum.CRISIS3,
+             IndexEnum.CRISIS4,
+             IndexEnum.NG3,
+             IndexEnum.NG5,
+             IndexEnum.NG6,
+             IndexEnum.R4,
+             IndexEnum.R5,
+            IndexEnum.R6
           );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -159,9 +159,13 @@ public class JeneticsMain {
                     bestJobQuerySet[0].printQueryMap();
                     bestJobQuerySet[0].printQueryTermLists();
 
-                    File bestQueryFile = new File("results/best_query_" + index.name() + "_job_" + jobNumber + ".json");
-                    bestJobQuerySet[0].writeQueryTermsJson(bestQueryFile);
-                    System.out.println("Best query keyword sets written to " + bestQueryFile.getAbsolutePath());
+                    File keywordDir = new File("Keywords_JSON");
+                    if (!keywordDir.exists()) {
+                        keywordDir.mkdirs();
+                    }
+                    File keywordFile = new File(keywordDir, index.name() + "_keywordSet_" + jobNumber + ".json");
+                    bestJobQuerySet[0].writeQueryTermsJson(keywordFile);
+                    System.out.println("Best query keyword sets written to " + keywordFile.getAbsolutePath());
                 } else {
                     System.out.println("No best query map was selected for jobNumber " + jobNumber);
                 }

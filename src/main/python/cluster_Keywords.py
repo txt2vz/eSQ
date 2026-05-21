@@ -1,6 +1,7 @@
 ﻿import argparse
 import json
 import os
+import csv
 import re
 from dataclasses import dataclass
 from typing import Dict, List
@@ -151,14 +152,17 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Cluster documents using dataset-specific keyword sets.")
     parser.add_argument(
         "--dataset",
-        default="NG3",
         choices=list(DATASETS.keys()),
-        help="Choose the dataset folder to load.",
+        help="Optionally restrict processing to a single dataset when running a folder of JSON files.",
     )
     parser.add_argument(
         "--keyword-file",
-        required=True,
-        help="Load keyword sets from a JSON file.",
+        help="Load keyword sets from a single JSON file.",
+    )
+    parser.add_argument(
+        "--keyword-dir",
+        default="Keywords_JSON",
+        help="Folder containing JSON keyword files to process when --keyword-file is not provided.",
     )
     parser.add_argument(
         "--list",
@@ -184,6 +188,25 @@ def resolve_keyword_file_path(file_path: str) -> str:
 
     raise FileNotFoundError(
         f"Keyword file not found: '{file_path}'. Checked paths: {', '.join(candidates)}"
+    )
+
+
+def resolve_keyword_dir_path(dir_path: str) -> str:
+    if os.path.isabs(dir_path) and os.path.isdir(dir_path):
+        return dir_path
+
+    candidates = [
+        os.path.abspath(dir_path),
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), dir_path)),
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", dir_path)),
+    ]
+
+    for candidate in candidates:
+        if os.path.isdir(candidate):
+            return candidate
+
+    raise FileNotFoundError(
+        f"Keyword directory not found: '{dir_path}'. Checked paths: {', '.join(candidates)}"
     )
 
 
@@ -221,6 +244,30 @@ def resolve_dataset_folder(folder_path: str) -> str:
     )
 
 
+def infer_dataset_name_from_keyword_file(file_name: str) -> str | None:
+    patterns = [
+        r"^(.+?)_keywordSet_\d+\.json$",
+        r"^best_query_(.+?)_job_\d+\.json$",
+    ]
+    for pattern in patterns:
+        match = re.match(pattern, file_name, re.IGNORECASE)
+        if match:
+            candidate = match.group(1)
+            for dataset_name in DATASETS:
+                if dataset_name.lower() == candidate.lower():
+                    return dataset_name
+
+    for dataset_name in DATASETS:
+        if file_name.lower().startswith(dataset_name.lower() + "_"):
+            return dataset_name
+
+    for dataset_name in DATASETS:
+        if dataset_name.lower() in file_name.lower():
+            return dataset_name
+
+    return None
+
+
 def run_experiment(dataset_name: str, keyword_file: str) -> None:
     dataset = DATASETS[dataset_name]
     print(f"Using dataset '{dataset_name}' from folder '{dataset.folder_path}'")
@@ -228,7 +275,8 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
 
     dataset_folder = resolve_dataset_folder(dataset.folder_path)
     documents, labels = load_documents(dataset_folder)
-    keyword_sets = load_keyword_sets_from_file(keyword_file)
+    resolved_keyword_path = resolve_keyword_file_path(keyword_file)
+    keyword_sets = load_keyword_sets_from_file(resolved_keyword_path)
 
     print("Keyword sets used:")
     for idx, keywords in enumerate(keyword_sets):
@@ -266,6 +314,7 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
         ("MultinomialNB", MultinomialNB()),
     ]
 
+    classifier_ari: Dict[str, float] = {}
     best_score = None
     best_result = None
 
@@ -276,6 +325,7 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
         clf.fit(X_train_fit, y_train)
         pred_labels_all = clf.predict(X_predict)
         v_measure_expanded, ari_expanded = evaluate_clustering(labels, pred_labels_all)
+        classifier_ari[name] = ari_expanded
         print(f"{name} expanded clusters - V-measure: {v_measure_expanded:.4f}, ARI: {ari_expanded:.4f}")
 
         score = (v_measure_expanded + ari_expanded) / 2
@@ -286,6 +336,73 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
     if best_result is not None:
         name, v_best, ari_best = best_result
         print(f"Best expanded classifier: {name} -> V-measure: {v_best:.4f}, ARI: {ari_best:.4f}")
+    else:
+        name = "base"
+        v_best, ari_best = v_measure_base, ari_base
+
+    # Prepare CSV results
+    num_classes = len(set(labels))
+    num_clusters = len(keyword_sets)
+    keyword_file_name = os.path.basename(resolved_keyword_path)
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+    results_dir = os.path.join(repo_root, "results")
+    os.makedirs(results_dir, exist_ok=True)
+    results_csv = os.path.join(results_dir, "results_compare.csv")
+
+    classifier_names = [name for name, _ in classifiers]
+    header = [
+        "dataset",
+        "keyword_file",
+        "num_classes",
+        "num_clusters",
+        "base_ARI",
+        "base_V",
+    ] + [f"{name}_ARI" for name in classifier_names]
+
+    row = [
+        dataset_name,
+        keyword_file_name,
+        str(num_classes),
+        str(num_clusters),
+        f"{ari_base:.6f}",
+        f"{v_measure_base:.6f}",
+    ] + [f"{classifier_ari[name]:.6f}" for name in classifier_names]
+
+    if not os.path.exists(results_csv) or os.path.getsize(results_csv) == 0:
+        with open(results_csv, "w", newline="", encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(header)
+            writer.writerow(row)
+    else:
+        with open(results_csv, "a", newline="", encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(row)
+
+    print(f"Results appended to {results_csv}")
+
+
+def process_keyword_directory(keyword_dir: str, dataset_filter: str | None = None) -> None:
+    resolved_dir = resolve_keyword_dir_path(keyword_dir)
+    json_files = sorted(
+        f for f in os.listdir(resolved_dir)
+        if os.path.isfile(os.path.join(resolved_dir, f)) and f.lower().endswith('.json')
+    )
+
+    if not json_files:
+        raise FileNotFoundError(f"No JSON keyword files found in directory '{resolved_dir}'")
+
+    for json_file in json_files:
+        dataset_name = infer_dataset_name_from_keyword_file(json_file)
+        if dataset_name is None:
+            print(f"Skipping file with unknown dataset prefix: {json_file}")
+            continue
+        if dataset_filter and dataset_name != dataset_filter:
+            continue
+
+        keyword_file_path = os.path.join(resolved_dir, json_file)
+        run_experiment(dataset_name, keyword_file_path)
 
 
 def main() -> None:
@@ -294,7 +411,19 @@ def main() -> None:
         list_datasets()
         return
 
-    run_experiment(args.dataset, args.keyword_file)
+    if args.keyword_file:
+        if args.dataset:
+            run_experiment(args.dataset, args.keyword_file)
+        else:
+            file_name = os.path.basename(args.keyword_file)
+            dataset_name = infer_dataset_name_from_keyword_file(file_name)
+            if dataset_name is None:
+                raise ValueError(
+                    f"Cannot infer dataset from keyword file name '{file_name}'. Provide --dataset explicitly."
+                )
+            run_experiment(dataset_name, args.keyword_file)
+    else:
+        process_keyword_directory(args.keyword_dir, args.dataset)
 
 
 if __name__ == "__main__":
