@@ -1,7 +1,5 @@
 package cluster;
 
-import classify.EsqClassify;
-import classify.LuceneClassifyMethod;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 import index.IndexEnum;
@@ -27,7 +25,6 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
     final static int popSize = 200;
@@ -172,14 +169,9 @@ public class JeneticsMain {
             });
         }
 
-        // final double average = bestMaxFitV.stream()
-        // .collect(Collectors.averagingDouble(Double::doubleValue));
-
-        // System.out.println("Average maxFit v: " + average + " List of v: " +
-        // bestMaxFitV);
-
         final Date endRun = new Date();
         TimeDuration duration = TimeCategory.minus(endRun, startRun);
-        System.out.println("Duration: " + duration);
+        System.out.println("Duration for Keyword Generation: " + duration);
+        CallPythonToExpandKeywordClusters.processPythonExpandClusters();
     }
 }

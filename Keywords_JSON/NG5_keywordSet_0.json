@@ -1,13 +1,11 @@
 [
     [
-        "space",
-        "nasa",
-        "moon"
-    ],
-    [
         "god",
         "christians",
         "bible"
+    ],
+    [
+        "sale"
     ],
     [
         "team",
@@ -15,10 +13,12 @@
         "players"
     ],
     [
-        "windows",
-        "files"
+        "space",
+        "nasa",
+        "moon"
     ],
     [
-        "sale"
+        "windows",
+        "files"
     ]
 ]

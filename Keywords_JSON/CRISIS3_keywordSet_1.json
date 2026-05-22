@@ -1,9 +1,5 @@
 [
     [
-        "prayforboston",
-        "world"
-    ],
-    [
         "highparkfire"
     ],
     [
@@ -12,16 +8,17 @@
         "tornado"
     ],
     [
-        "qldfloods"
+        "boston",
+        "explosion",
+        "marathon"
     ],
     [
         "colorado",
-        "wildfires",
-        "springs"
+        "springs",
+        "wildfires"
     ],
     [
-        "boston",
-        "marathon",
-        "explosion"
+        "prayforboston",
+        "world"
     ]
 ]

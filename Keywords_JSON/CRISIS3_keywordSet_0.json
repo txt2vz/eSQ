@@ -1,12 +1,16 @@
 [
     [
-        "colorado",
-        "wildfires",
-        "springs"
+        "bigwet",
+        "qpsmedia",
+        "tornado"
     ],
     [
-        "prayforboston",
-        "world"
+        "colorado",
+        "springs",
+        "wildfires"
+    ],
+    [
+        "highparkfire"
     ],
     [
         "boston",
@@ -14,11 +18,7 @@
         "explosion"
     ],
     [
-        "bigwet",
-        "tornado",
-        "qpsmedia"
-    ],
-    [
-        "highparkfire"
+        "prayforboston",
+        "world"
     ]
 ]

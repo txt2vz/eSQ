@@ -4,9 +4,7 @@
         "wheat"
     ],
     [
-        "oil",
-        "barrels",
-        "bpd"
+        "shares"
     ],
     [
         "cts",
@@ -14,10 +12,12 @@
         "shr"
     ],
     [
-        "bank",
-        "money"
+        "oil",
+        "barrels",
+        "bpd"
     ],
     [
-        "shares"
+        "bank",
+        "money"
     ]
 ]

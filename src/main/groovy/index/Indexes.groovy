@@ -88,7 +88,7 @@ class Indexes {
     static CharArraySet stopCharSet = new CharArraySet(stopSet, true);
     static final Analyzer analyzer = new StandardAnalyzer(stopCharSet)
     // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()
-    //static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)  //new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
+   // static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)  //new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
 
     static void setIndex(IndexEnum indexEnum) {
         index = indexEnum

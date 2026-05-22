@@ -8,6 +8,7 @@ import org.apache.lucene.search.DocIdSetIterator
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.TermQuery
 import org.apache.lucene.util.BytesRef
+import Indexes.*
 
 @CompileStatic
 class ImportantTermQueries {
@@ -33,7 +34,7 @@ class ImportantTermQueries {
                 Term t = new Term(Indexes.FIELD_CONTENTS, term)
                 long docFreq = indexReader.docFreq(t)
 
-                if (isUsefulTerm(docFreq, t.text())) {
+                if (isUsefulTerm(docFreq, t.text(), indexReader)) {
 
                     assert docFreq > 0
                     assert totalDocs > 0
@@ -75,9 +76,15 @@ class ImportantTermQueries {
         return tql.asImmutable()
     }
 
-    private static boolean isUsefulTerm(long df, String word) {
+    private static boolean isUsefulTerm(long df, String word, IndexReader indexReader) {
 
         if (df < 4) return false //document frequency
+       
+        if (df > 0.5 * indexReader.numDocs()) 
+         { 
+             println "Term ${word} has df ${df} which is more than 50% of total docs ${indexReader.numDocs()}. Ignoring it."
+             return false
+         }
         if (!word.charAt(0).isLetter()) return false
         if (word.length() < 2) return false
 
@@ -94,6 +101,7 @@ class ImportantTermQueries {
     static void main(String[] args) {
 
         final Date start = new Date()
+        Indexes.setIndex(IndexEnum.NG3)
 
         def l = getTFIDFTermQueryList(IndexEnum.NG3.indexReader)
 

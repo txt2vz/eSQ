@@ -1,17 +1,17 @@
 [
     [
         "team",
-        "season",
-        "teams"
+        "teams",
+        "season"
     ],
     [
         "space",
-        "lunar",
-        "nasa"
+        "nasa",
+        "lunar"
     ],
     [
         "god",
-        "faith",
-        "truth"
+        "truth",
+        "faith"
     ]
 ]

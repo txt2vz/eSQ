@@ -22,7 +22,7 @@ import org.apache.lucene.store.FSDirectory
 
 class BuildIndex {
 
-    final static  int MAX_DOCS_PER_DIRECTORY = 5000
+    final static  int MAX_DOCS_PER_DIRECTORY = 10000
 
     BuildIndex() {
 
@@ -56,13 +56,13 @@ class BuildIndex {
                 if (!file.hidden && file.exists() && file.canRead() && !file.isDirectory() && dirCount < MAX_DOCS_PER_DIRECTORY) {
                     Document doc = new Document()
 
-                    Field catNumberField = new StringField(Indexes.FIELD_CATEGORY_NUMBER, String.valueOf(categoryNumber), Field.Store.YES)
-                    doc.add(catNumberField)
+                   // Field catNumberField = new StringField(Indexes.FIELD_CATEGORY_NUMBER, String.valueOf(categoryNumber), Field.Store.YES)
+                  //  doc.add(catNumberField)
 
                     //non-alpha characters cause a problem when identifying a document for delete.
-                    String fileName = file.getName().replaceAll(/\W/, '').toLowerCase() + 'id' + totalDocCount
-                    Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
-                    doc.add(documentIDfield)
+                   // String fileName = file.getName().replaceAll(/\W/, '').toLowerCase() + 'id' + totalDocCount
+                   // Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
+                  //  doc.add(documentIDfield)
 
                     String parent = file.getParent()
                    // String grandParent = file.getParentFile().getParent()
@@ -71,8 +71,8 @@ class BuildIndex {
                     Field catNameField = new StringField(Indexes.FIELD_CATEGORY_NAME, catName.replaceAll(/\W/, '').toLowerCase(), Field.Store.YES)
                     doc.add(catNameField)
 
-                    Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES)
-                    doc.add(assignedClass)
+                   // Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES)
+                  //  doc.add(assignedClass)
 
                     doc.add(new TextField(Indexes.FIELD_CONTENTS, file.text, Field.Store.YES))
 

@@ -1,5 +1,9 @@
 [
     [
+        "surplus",
+        "deficit"
+    ],
+    [
         "sugar",
         "ec"
     ],
@@ -8,15 +12,11 @@
         "opec"
     ],
     [
-        "bank",
-        "money"
-    ],
-    [
-        "surplus",
-        "deficit"
-    ],
-    [
         "coffee",
         "ico"
+    ],
+    [
+        "rate",
+        "rates"
     ]
 ]
