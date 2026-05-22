@@ -83,8 +83,9 @@ class Indexes {
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id'
 
-  //  static List<String> stopSet = new File("src//cfg//stop_words_moderate.txt") as List<String>
+ 
     static List<String> stopSet = new File("src//cfg//stop_words_moderate.txt") as List<String>
+    //static List<String> stopSet = new File("src//cfg//stop_words_most.txt") as List<String>
     static CharArraySet stopCharSet = new CharArraySet(stopSet, true);
     static final Analyzer analyzer = new StandardAnalyzer(stopCharSet)
     // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()

@@ -1,5 +1,9 @@
 [
     [
+        "company",
+        "shares"
+    ],
+    [
         "bank",
         "money"
     ],
@@ -8,15 +12,11 @@
         "bpd"
     ],
     [
-        "company",
-        "shares"
-    ],
-    [
-        "cts",
-        "shr"
-    ],
-    [
         "tonnes",
         "wheat"
+    ],
+    [
+        "vs",
+        "shr"
     ]
 ]

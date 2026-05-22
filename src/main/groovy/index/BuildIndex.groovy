@@ -24,9 +24,9 @@ class BuildIndex {
 
     final static  int MAX_DOCS_PER_DIRECTORY = 10000
 
-    BuildIndex() {
+    BuildIndex(String indexName) {
 
-        String indexName = 'R6'
+       // String indexName = 'R6'
         String indexPath = 'indexes' + /\$indexName/
         String docsPath =  'datasets' +  /\$indexName/
 
@@ -105,6 +105,11 @@ class BuildIndex {
     }
 
     static main(args) {
-        new BuildIndex()
+        new BuildIndex("NG6")
+        for (index in IndexEnum.values()) {
+            new BuildIndex(index.name())
+            println "Index: ${index.name()} numDocs: ${index.getIndexReader().numDocs()}"
+            
+        }
     }
 }

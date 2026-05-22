@@ -1,8 +1,13 @@
 [
     [
         "team",
-        "players",
-        "nhl"
+        "nhl",
+        "players"
+    ],
+    [
+        "space",
+        "nasa",
+        "moon"
     ],
     [
         "god",
@@ -10,16 +15,10 @@
         "bible"
     ],
     [
-        "windows",
-        "files",
-        "dos"
-    ],
-    [
-        "space",
-        "moon",
-        "nasa"
-    ],
-    [
         "sale"
+    ],
+    [
+        "windows",
+        "files"
     ]
 ]

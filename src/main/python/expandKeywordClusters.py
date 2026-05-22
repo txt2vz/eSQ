@@ -4,6 +4,7 @@ import os
 import csv
 import re
 from dataclasses import dataclass
+import sys
 from typing import Dict, List
 from datetime import datetime
 
@@ -428,7 +429,10 @@ def main() -> None:
     else:
         process_keyword_directory(args.keyword_dir, args.dataset)
 
+    sys.exit(0)    
+
 
 if __name__ == "__main__":
     main()
+    
 

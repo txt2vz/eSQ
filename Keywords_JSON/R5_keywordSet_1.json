@@ -1,11 +1,15 @@
 [
     [
+        "sugar",
+        "ec"
+    ],
+    [
         "surplus",
         "deficit"
     ],
     [
-        "sugar",
-        "ec"
+        "bank",
+        "money"
     ],
     [
         "oil",
@@ -14,9 +18,5 @@
     [
         "coffee",
         "ico"
-    ],
-    [
-        "rate",
-        "rates"
     ]
 ]

@@ -27,8 +27,8 @@ public class JeneticsMain {
     static EsqQueryBuilder esqQueryBuilder;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
-    final static int popSize = 200;
-    final static int maxGen = 400;
+    final static int popSize = 100;
+    final static int maxGen = 800;
     final static int maxWordListValue = 80;
     final static int maxK = 8;
     final static int minK = 2;
@@ -39,15 +39,14 @@ public class JeneticsMain {
     final static int numberMaxFitJobs = 5;
 
     static List<IndexEnum> indexList = Arrays.asList(
-             IndexEnum.CRISIS3,
-             IndexEnum.CRISIS4,
-             IndexEnum.NG3,
-             IndexEnum.NG5,
-             IndexEnum.NG6,
-             IndexEnum.R4,
-             IndexEnum.R5,
-            IndexEnum.R6
-          );
+            IndexEnum.CRISIS3,
+            IndexEnum.CRISIS4,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
+            IndexEnum.R6);
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
@@ -169,9 +168,17 @@ public class JeneticsMain {
             });
         }
 
-        final Date endRun = new Date();
-        TimeDuration duration = TimeCategory.minus(endRun, startRun);
+        final Date endJavaRun = new Date();
+        TimeDuration duration = TimeCategory.minus(endJavaRun, startRun);
         System.out.println("Duration for Keyword Generation: " + duration);
-        CallPythonToExpandKeywordClusters.processPythonExpandClusters();
+        int pythonExitCode = CallPythonToExpandKeywordClusters.processPythonExpandClusters();
+        if (pythonExitCode == 0) {
+            System.out.println("Python expansion of keyword clusters completed successfully.");
+            final Date endTotalRun = new Date();
+            TimeDuration totalDuration = TimeCategory.minus(endTotalRun, startRun);
+            System.out.println("Total Duration for Keyword Generation and Expansion: " + totalDuration);
+        } else {
+            System.out.println("Python expansion of keyword clusters did not complete successfully.");
+        }
     }
 }

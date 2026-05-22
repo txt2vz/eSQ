@@ -1,8 +1,11 @@
 [
     [
         "cts",
-        "revs",
         "shr"
+    ],
+    [
+        "wheat",
+        "agriculture"
     ],
     [
         "money",
@@ -11,9 +14,5 @@
     [
         "oil",
         "ecuador"
-    ],
-    [
-        "wheat",
-        "agriculture"
     ]
 ]
