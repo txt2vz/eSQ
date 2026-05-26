@@ -1,9 +1,5 @@
 [
     [
-        "tonnes",
-        "wheat"
-    ],
-    [
         "company",
         "shares"
     ],
@@ -15,6 +11,10 @@
     [
         "bank",
         "money"
+    ],
+    [
+        "tonnes",
+        "wheat"
     ],
     [
         "cts",

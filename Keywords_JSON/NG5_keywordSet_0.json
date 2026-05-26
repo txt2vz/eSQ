@@ -1,25 +1,24 @@
 [
     [
-        "windows",
-        "files",
-        "dos"
-    ],
-    [
         "god",
-        "bible",
-        "christians"
-    ],
-    [
-        "space",
-        "nasa",
-        "moon"
+        "christians",
+        "bible"
     ],
     [
         "sale"
     ],
     [
+        "space",
+        "moon",
+        "nasa"
+    ],
+    [
         "team",
-        "players",
-        "nhl"
+        "nhl",
+        "players"
+    ],
+    [
+        "windows",
+        "files"
     ]
 ]

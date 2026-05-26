@@ -39,7 +39,7 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 7;
+    final static int numberMaxFitJobs = 5;
     final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(

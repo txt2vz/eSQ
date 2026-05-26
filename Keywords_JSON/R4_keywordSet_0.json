@@ -1,15 +1,16 @@
 [
     [
-        "wheat",
-        "agriculture"
-    ],
-    [
         "cts",
-        "shr"
+        "shr",
+        "revs"
     ],
     [
         "money",
         "bank"
+    ],
+    [
+        "wheat",
+        "agriculture"
     ],
     [
         "oil",

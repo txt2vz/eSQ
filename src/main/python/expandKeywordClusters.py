@@ -1,23 +1,19 @@
 ﻿import argparse
-import json
-import os
 import csv
+import json
 import re
 from dataclasses import dataclass
-import sys
-from turtle import pd
-from typing import Dict, List
 from datetime import datetime
-import pandas as pd
+from pathlib import Path
+from typing import Dict, List
 
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import adjusted_rand_score, pairwise_distances, v_measure_score
+from sklearn.metrics import adjusted_rand_score, v_measure_score
 from sklearn.naive_bayes import ComplementNB, MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import LinearSVC, SVC
-from sklearn.neural_network import MLPClassifier
+from sklearn.svm import LinearSVC
 
 
 @dataclass
@@ -36,34 +32,42 @@ DATASETS: Dict[str, DatasetConfig] = {
     "R6": DatasetConfig(folder_path="R6", description="Reuters 6 dataset"),
 }
 
-def load_documents(folder_path: str) -> tuple[List[str], List[str]]:
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parents[2]
+DATASETS_DIR = REPO_ROOT / "datasets"
+KEYWORD_ROOT = REPO_ROOT / "Keywords_JSON"
+RESULTS_DIR = REPO_ROOT / "results"
+RESULTS_CSV = RESULTS_DIR / "results_compare.csv"
+
+
+def load_documents(folder_path: str | Path) -> tuple[List[str], List[str]]:
     """Load documents recursively from a folder and extract labels from subfolder names.
 
     Prints the number of load errors and the number of files loaded per class.
     """
+    folder = Path(folder_path)
     documents: List[str] = []
     labels: List[str] = []
     error_count = 0
     class_counts: Dict[str, int] = {}
 
-    for root, _, files in os.walk(folder_path):
-        for file_name in files:
-            file_path = os.path.join(root, file_name)
-            try:
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                    raw = f.read()
-                    # Tokenize: keep only word characters and normalize to lowercase
-                    tokens = re.findall(r"\b\w+\b", raw.lower())
-                    documents.append(" ".join(tokens))
-                label = os.path.basename(root)
-                labels.append(label)
-                class_counts[label] = class_counts.get(label, 0) + 1
-            except Exception as e:
-                error_count += 1
-                print(f"Error reading {file_path}: {e}")
+    for file_path in folder.rglob("*"):
+        if not file_path.is_file():
+            continue
+        try:
+            with file_path.open("r", encoding="utf-8", errors="ignore") as f:
+                raw = f.read()
+                tokens = re.findall(r"\b\w+\b", raw.lower())
+                documents.append(" ".join(tokens))
+            label = file_path.parent.name
+            labels.append(label)
+            class_counts[label] = class_counts.get(label, 0) + 1
+        except Exception as e:
+            error_count += 1
+            print(f"Error reading {file_path}: {e}")
 
     total_loaded = len(documents)
-    print(f"Loaded {total_loaded} documents from '{folder_path}'. Errors: {error_count}")
+    print(f"Loaded {total_loaded} documents from '{folder}'. Errors: {error_count}")
     if class_counts:
         print("Documents loaded per class:")
         for label, count in sorted(class_counts.items()):
@@ -106,44 +110,6 @@ def evaluate_clustering(true_labels: List[str], pred_labels: List[int]) -> tuple
     return v_measure_score(true_labels, pred_labels), adjusted_rand_score(true_labels, pred_labels)
 
 
-class FuzzyKNN:
-    """A simple fuzzy KNN classifier using distance-based membership weighting."""
-
-    def __init__(self, n_neighbors: int = 5, m: float = 2.0):
-        self.n_neighbors = n_neighbors
-        self.m = m
-        self.X_train = None
-        self.y_train = None
-
-    def fit(self, X, y):
-        self.X_train = X
-        self.y_train = list(y)
-        return self
-
-    def predict(self, X):
-        distances = pairwise_distances(X, self.X_train, metric="euclidean")
-        predictions = []
-
-        for dist_row in distances:
-            nearest_idx = dist_row.argsort()[: self.n_neighbors]
-            nearest_dist = dist_row[nearest_idx]
-            nearest_labels = [self.y_train[i] for i in nearest_idx]
-
-            if any(d == 0 for d in nearest_dist):
-                zero_dist_labels = [label for label, d in zip(nearest_labels, nearest_dist) if d == 0]
-                predictions.append(max(set(zero_dist_labels), key=zero_dist_labels.count))
-                continue
-
-            weights = 1.0 / (nearest_dist ** (2.0 / (self.m - 1.0)))
-            class_scores = {}
-            for label, weight in zip(nearest_labels, weights):
-                class_scores[label] = class_scores.get(label, 0.0) + weight
-
-            predictions.append(max(class_scores, key=class_scores.get))
-
-        return predictions
-
-
 def list_datasets() -> None:
     print("Available datasets:")
     for name, config in DATASETS.items():
@@ -163,7 +129,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--keyword-dir",
-        default="Keywords_JSON",
+        default=str(KEYWORD_ROOT),
         help="Folder containing JSON keyword files to process when --keyword-file is not provided.",
     )
     parser.add_argument(
@@ -174,47 +140,37 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def resolve_keyword_file_path(file_path: str) -> str:
-    if os.path.isabs(file_path) and os.path.exists(file_path):
-        return file_path
-
-    candidates = [
-        os.path.abspath(file_path),
-        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), file_path)),
-        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", file_path)),
-    ]
+def resolve_keyword_file_path(file_path: str) -> Path:
+    path = Path(file_path)
+    candidates = [path]
+    if not path.is_absolute():
+        candidates.extend([REPO_ROOT / path, KEYWORD_ROOT / path])
 
     for candidate in candidates:
-        if os.path.exists(candidate):
+        if candidate.exists():
             return candidate
 
     raise FileNotFoundError(
-        f"Keyword file not found: '{file_path}'. Checked paths: {', '.join(candidates)}"
+        f"Keyword file not found: '{file_path}'. Checked paths: {', '.join(str(c) for c in candidates)}"
     )
 
 
-def resolve_keyword_dir_path(dir_path: str) -> str:
-    if os.path.isabs(dir_path) and os.path.isdir(dir_path):
-        return dir_path
-
-    candidates = [
-        os.path.abspath(dir_path),
-        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), dir_path)),
-        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", dir_path)),
-    ]
+def resolve_keyword_dir_path(dir_path: str) -> Path:
+    path = Path(dir_path)
+    candidates = [path] if path.is_absolute() else [REPO_ROOT / path, KEYWORD_ROOT / path]
 
     for candidate in candidates:
-        if os.path.isdir(candidate):
+        if candidate.is_dir():
             return candidate
 
     raise FileNotFoundError(
-        f"Keyword directory not found: '{dir_path}'. Checked paths: {', '.join(candidates)}"
+        f"Keyword directory not found: '{dir_path}'. Checked paths: {', '.join(str(c) for c in candidates)}"
     )
 
 
-def load_keyword_sets_from_file(file_path: str) -> List[List[str]]:
+def load_keyword_sets_from_file(file_path: str | Path) -> List[List[str]]:
     resolved_path = resolve_keyword_file_path(file_path)
-    with open(resolved_path, "r", encoding="utf-8") as file:
+    with resolved_path.open("r", encoding="utf-8") as file:
         data = json.load(file)
 
     if not isinstance(data, list) or not all(isinstance(group, list) for group in data):
@@ -227,22 +183,91 @@ def load_keyword_sets_from_file(file_path: str) -> List[List[str]]:
     return data
 
 
-def resolve_dataset_folder(folder_path: str) -> str:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-    candidates = [
-        os.path.abspath(folder_path),
-        os.path.abspath(os.path.join(script_dir, folder_path)),
-        os.path.abspath(os.path.join(repo_root, folder_path)),
-        os.path.abspath(os.path.join(repo_root, "datasets", folder_path)),
+def get_classifier_list():
+    return [
+        ("KNN", KNeighborsClassifier(n_neighbors=5)),
+        ("LinearSVC", LinearSVC(max_iter=2000)),
+        ("RandomForest", RandomForestClassifier(n_estimators=200, n_jobs=-1, random_state=42)),
+        ("ComplementNB", ComplementNB()),
+        ("MultinomialNB", MultinomialNB()),
     ]
 
-    for candidate in candidates:
-        if os.path.isdir(candidate):
-            return candidate
 
+def evaluate_expanded_classifiers(classifiers, X_train, y_train, X_all, labels):
+    classifier_ari: Dict[str, float] = {}
+    classifier_v: Dict[str, float] = {}
+    best_score = None
+    best_result = None
+
+    for name, clf in classifiers:
+        clf.fit(X_train, y_train)
+        pred_labels_all = clf.predict(X_all)
+        v_measure_expanded, ari_expanded = evaluate_clustering(labels, pred_labels_all)
+        classifier_ari[name] = ari_expanded
+        classifier_v[name] = v_measure_expanded
+        print(f"{name} expanded clusters - V-measure: {v_measure_expanded:.4f}, ARI: {ari_expanded:.4f}")
+
+        score = (v_measure_expanded + ari_expanded) / 2
+        if best_score is None or score > best_score:
+            best_score = score
+            best_result = (name, v_measure_expanded, ari_expanded)
+
+    return classifier_ari, classifier_v, best_result
+
+
+def write_results(
+    dataset_name: str,
+    keyword_file_name: str,
+    num_classes: int,
+    num_clusters: int,
+    base_ari: float,
+    base_v: float,
+    classifier_ari: Dict[str, float],
+    classifier_v: Dict[str, float],
+) -> None:
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    classifier_names = list(classifier_ari)
+    header = [
+        "dataset",
+    ] + [f"{name}_ARI" for name in classifier_names] + [f"{name}_V" for name in classifier_names] + [
+        "keyword_file",
+        "num_classes",
+        "num_clusters",
+        "clusterCountError",
+        "base_ARI",
+        "base_V",
+        "timestamp",
+    ]
+
+    cluster_count_error = abs(num_classes - num_clusters)
+    row = [
+        dataset_name,
+    ] + [f"{classifier_ari[name]:.6f}" for name in classifier_names] + [f"{classifier_v[name]:.6f}" for name in classifier_names] + [
+        keyword_file_name,
+        str(num_classes),
+        str(num_clusters),
+        str(cluster_count_error),
+        f"{base_ari:.6f}",
+        f"{base_v:.6f}",
+        f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    ]
+
+    mode = "w" if not RESULTS_CSV.exists() or RESULTS_CSV.stat().st_size == 0 else "a"
+    with RESULTS_CSV.open(mode, newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        if mode == "w":
+            writer.writerow(header)
+        writer.writerow(row)
+
+    print(f"Results appended to {RESULTS_CSV}")
+
+
+def resolve_dataset_folder(folder_name: str) -> Path:
+    path = DATASETS_DIR / folder_name
+    if path.is_dir():
+        return path
     raise FileNotFoundError(
-        f"Dataset folder not found: '{folder_path}'. Checked paths: {', '.join(candidates)}"
+        f"Dataset folder not found: '{folder_name}'. Expected under {DATASETS_DIR}"
     )
 
 
@@ -286,9 +311,10 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
 
     base_clusters = create_base_clusters(documents, keyword_sets)
     clustered_indices = sorted(index for cluster in base_clusters.values() for index in cluster)
+    doc_to_cluster = {index: cluster_id for cluster_id, cluster in base_clusters.items() for index in cluster}
 
     true_labels_clustered = [labels[i] for i in clustered_indices]
-    pred_labels_clustered = [cluster_id for i in clustered_indices for cluster_id, indices in base_clusters.items() if i in indices]
+    pred_labels_clustered = [doc_to_cluster[i] for i in clustered_indices]
 
     v_measure_base, ari_base = evaluate_clustering(true_labels_clustered, pred_labels_clustered)
     print(f"Base clusters - V-measure: {v_measure_base:.4f}, ARI: {ari_base:.4f}")
@@ -305,35 +331,8 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
     X_train = X[clustered_indices]
     y_train = pred_labels_clustered
 
-    classifiers = [
-        ("KNN", KNeighborsClassifier(n_neighbors=5)),
-     #   ("FuzzyKNN", FuzzyKNN(n_neighbors=5, m=2.0)),
-     #   ("LogisticRegression", LogisticRegression(solver="lbfgs", max_iter=500)),
-        ("LinearSVC", LinearSVC(max_iter=2000)),
-     #   ("SVC-RBF", SVC(kernel="rbf", gamma="scale", max_iter=5000)),
-        ("RandomForest", RandomForestClassifier(n_estimators=200, n_jobs=-1, random_state=42)),
-        ("ComplementNB", ComplementNB()),
-        ("MultinomialNB", MultinomialNB()),
-    ]
-
-    classifier_ari: Dict[str, float] = {}
-    best_score = None
-    best_result = None
-
-    for name, clf in classifiers:
-        X_train_fit = X_train
-        X_predict = X
-
-        clf.fit(X_train_fit, y_train)
-        pred_labels_all = clf.predict(X_predict)
-        v_measure_expanded, ari_expanded = evaluate_clustering(labels, pred_labels_all)
-        classifier_ari[name] = ari_expanded
-        print(f"{name} expanded clusters - V-measure: {v_measure_expanded:.4f}, ARI: {ari_expanded:.4f}")
-
-        score = (v_measure_expanded + ari_expanded) / 2
-        if best_score is None or score > best_score:
-            best_score = score
-            best_result = (name, v_measure_expanded, ari_expanded)
+    classifiers = get_classifier_list()
+    classifier_ari, classifier_v, best_result = evaluate_expanded_classifiers(classifiers, X_train, y_train, X, labels)
 
     if best_result is not None:
         name, v_best, ari_best = best_result
@@ -342,89 +341,64 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
         name = "base"
         v_best, ari_best = v_measure_base, ari_base
 
-    # Prepare CSV results
-    num_classes = len(set(labels))
-    num_clusters = len(keyword_sets)
-    keyword_file_name = os.path.basename(resolved_keyword_path)
-
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-    results_dir = os.path.join(repo_root, "results")
-    os.makedirs(results_dir, exist_ok=True)
-    results_csv = os.path.join(results_dir, "results_compare.csv")
-
-    classifier_names = [name for name, _ in classifiers]
-    header = [
-        "dataset"      
-    ] + [f"{name}_ARI" for name in classifier_names]  + [
-        "keyword_file",
-        "num_classes",
-        "num_clusters",
-        "base_ARI",
-        "base_V",
-        "timestamp"
-    ]  
-
-    row = [
-        dataset_name,
-    ] + [f"{classifier_ari[name]:.6f}" for name in classifier_names] + [
-        keyword_file_name,
-        str(num_classes),
-        str(num_clusters),
-        f"{ari_base:.6f}",
-        f"{v_measure_base:.6f}",
-        f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    ] #+ [f"{classifier_ari[name]:.6f}" for name in classifier_names]
-
-    if not os.path.exists(results_csv) or os.path.getsize(results_csv) == 0:
-        with open(results_csv, "w", newline="", encoding="utf-8") as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(header)
-            writer.writerow(row)
-    else:
-        with open(results_csv, "a", newline="", encoding="utf-8") as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(row)
-
-    print(f"Results appended to {results_csv}")
+    write_results(
+        dataset_name=dataset_name,
+        keyword_file_name=Path(resolved_keyword_path).name,
+        num_classes=len(set(labels)),
+        num_clusters=len(keyword_sets),
+        base_ari=ari_base,
+        base_v=v_measure_base,
+        classifier_ari=classifier_ari,
+        classifier_v=classifier_v,
+    )
 
 
 def process_keyword_directory(keyword_dir: str, dataset_filter: str | None = None) -> None:
     resolved_dir = resolve_keyword_dir_path(keyword_dir)
     json_files = sorted(
-        f for f in os.listdir(resolved_dir)
-        if os.path.isfile(os.path.join(resolved_dir, f)) and f.lower().endswith('.json')
+        file_path for file_path in resolved_dir.iterdir()
+        if file_path.is_file() and file_path.suffix.lower() == '.json'
     )
 
     if not json_files:
         raise FileNotFoundError(f"No JSON keyword files found in directory '{resolved_dir}'")
 
     for json_file in json_files:
-        dataset_name = infer_dataset_name_from_keyword_file(json_file)
+        dataset_name = infer_dataset_name_from_keyword_file(json_file.name)
         if dataset_name is None:
-            print(f"Skipping file with unknown dataset prefix: {json_file}")
+            print(f"Skipping file with unknown dataset prefix: {json_file.name}")
             continue
         if dataset_filter and dataset_name != dataset_filter:
             continue
 
-        keyword_file_path = os.path.join(resolved_dir, json_file)
-        run_experiment(dataset_name, keyword_file_path)
+        run_experiment(dataset_name, json_file)
 
 def overallResults():    
 
-    df = pd.read_csv("results/results_compare.csv")
+    df = pd.read_csv(RESULTS_CSV)
 
-    # classifier ARI columns
-    classifier_cols = [col for col in df.columns if col.endswith("_ARI") and col != "base_ARI"]
+    # classifier ARI and V columns
+    ari_cols = [col for col in df.columns if col.endswith("_ARI") and col != "base_ARI"]
+    v_cols = [col for col in df.columns if col.endswith("_V") and col != "base_V"]
 
-    means = df[classifier_cols].mean()
-    best_classifier = means.idxmax()
-    best_value = means.max()
+    ari_means = df[ari_cols].mean()
+    v_means = df[v_cols].mean()
+    cluster_count_error_mean = df["clusterCountError"].mean() if "clusterCountError" in df.columns else float("nan")
+    best_ari_classifier = ari_means.idxmax()
+    best_ari_value = ari_means.max()
+    best_v_classifier = v_means.idxmax()
+    best_v_value = v_means.max()
 
     print("********************************************************")
     print("Average ARI by classifier:")
-    print(means)
-    print(f"Best classifier: {best_classifier} with average ARI = {best_value:.4f}")
+    print(ari_means)
+    print(f"Best classifier by ARI: {best_ari_classifier} with average ARI = {best_ari_value:.4f}")
+    print()
+    print("Average V-measure by classifier:")
+    print(v_means)
+    print(f"Best classifier by V-measure: {best_v_classifier} with average V = {best_v_value:.4f}")
+    print()
+    print(f"Average clusterCountError: {cluster_count_error_mean:.4f}")
 
 def main() -> None:
     args = parse_args()
@@ -436,7 +410,7 @@ def main() -> None:
         if args.dataset:
             run_experiment(args.dataset, args.keyword_file)       
         else:
-            file_name = os.path.basename(args.keyword_file)
+            file_name = Path(args.keyword_file).name
             dataset_name = infer_dataset_name_from_keyword_file(file_name)
             if dataset_name is None:
                 raise ValueError(
@@ -446,8 +420,7 @@ def main() -> None:
     else:
         process_keyword_directory(args.keyword_dir, args.dataset)
 
-    overallResults() 
-    sys.exit(0)    
+    overallResults()
 
 
 if __name__ == "__main__":

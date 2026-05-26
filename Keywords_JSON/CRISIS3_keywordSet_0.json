@@ -1,13 +1,11 @@
 [
     [
-        "boston",
-        "explosion",
-        "marathon"
+        "colorado",
+        "wildfires",
+        "springs"
     ],
     [
-        "colorado",
-        "springs",
-        "wildfires"
+        "highparkfire"
     ],
     [
         "bigwet",
@@ -15,7 +13,9 @@
         "tornado"
     ],
     [
-        "highparkfire"
+        "boston",
+        "explosion",
+        "marathon"
     ],
     [
         "prayforboston",
