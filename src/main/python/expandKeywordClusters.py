@@ -388,17 +388,20 @@ def overallResults():
     best_ari_value = ari_means.max()
     best_v_classifier = v_means.idxmax()
     best_v_value = v_means.max()
-
-    print("********************************************************")
-    print("Average ARI by classifier:")
-    print(ari_means)
-    print(f"Best classifier by ARI: {best_ari_classifier} with average ARI = {best_ari_value:.4f}")
+    
     print()
+    print("********************************************************")
     print("Average V-measure by classifier:")
     print(v_means)
     print(f"Best classifier by V-measure: {best_v_classifier} with average V = {best_v_value:.4f}")
     print()
+      
+    print("Average ARI by classifier:")
+    print(ari_means)
+    print(f"Best classifier by ARI: {best_ari_classifier} with average ARI = {best_ari_value:.4f}")
+    print()
     print(f"Average clusterCountError: {cluster_count_error_mean:.4f}")
+
 
 def main() -> None:
     args = parse_args()

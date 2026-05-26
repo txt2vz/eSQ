@@ -65,8 +65,7 @@ public class JeneticsMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-        List<Double> bestMaxFitV = new ArrayList<>();
-
+    
         File keywordDir = new File("Keywords_JSON");
         try {
             // delete existing keyword directory and contents if it exists to avoid
