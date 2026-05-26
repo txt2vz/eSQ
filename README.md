@@ -1,7 +1,7 @@
 # eSQ evolved search queries for document clustering
 Uses a GA to create [Apache Lucene](https://lucene.apache.org/) queries suitable for document clustering.
 
-Install JDK for Java (21), Groovy (4) and Python (3).
+Install JDK for Java (21), Groovy (4) and Python (3). 
 
 The python sklearn package is used for cluster evaluation.
 Install [sklearn](https://scikit-learn.org/stable/) for cluster evaluation.
