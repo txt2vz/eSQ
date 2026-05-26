@@ -1,25 +1,26 @@
 [
     [
-        "game",
-        "hockey"
+        "gun",
+        "control"
+    ],
+    [
+        "clipper",
+        "chip",
+        "encryption"
     ],
     [
         "god",
         "jesus"
     ],
     [
-        "graphics"
+        "game",
+        "hockey"
     ],
     [
         "space",
         "nasa"
     ],
     [
-        "chip",
-        "encryption",
-        "clipper"
-    ],
-    [
-        "gun"
+        "graphics"
     ]
 ]

@@ -5,8 +5,10 @@ import csv
 import re
 from dataclasses import dataclass
 import sys
+from turtle import pd
 from typing import Dict, List
 from datetime import datetime
+import pandas as pd
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
@@ -305,10 +307,10 @@ def run_experiment(dataset_name: str, keyword_file: str) -> None:
 
     classifiers = [
         ("KNN", KNeighborsClassifier(n_neighbors=5)),
-        ("FuzzyKNN", FuzzyKNN(n_neighbors=5, m=2.0)),
-        ("LogisticRegression", LogisticRegression(solver="lbfgs", max_iter=500)),
+     #   ("FuzzyKNN", FuzzyKNN(n_neighbors=5, m=2.0)),
+     #   ("LogisticRegression", LogisticRegression(solver="lbfgs", max_iter=500)),
         ("LinearSVC", LinearSVC(max_iter=2000)),
-        ("SVC-RBF", SVC(kernel="rbf", gamma="scale", max_iter=5000)),
+     #   ("SVC-RBF", SVC(kernel="rbf", gamma="scale", max_iter=5000)),
         ("RandomForest", RandomForestClassifier(n_estimators=200, n_jobs=-1, random_state=42)),
         ("ComplementNB", ComplementNB()),
         ("MultinomialNB", MultinomialNB()),
@@ -408,6 +410,21 @@ def process_keyword_directory(keyword_dir: str, dataset_filter: str | None = Non
         keyword_file_path = os.path.join(resolved_dir, json_file)
         run_experiment(dataset_name, keyword_file_path)
 
+def overallResults():    
+
+    df = pd.read_csv("results/results_compare.csv")
+
+    # classifier ARI columns
+    classifier_cols = [col for col in df.columns if col.endswith("_ARI") and col != "base_ARI"]
+
+    means = df[classifier_cols].mean()
+    best_classifier = means.idxmax()
+    best_value = means.max()
+
+    print("********************************************************")
+    print("Average ARI by classifier:")
+    print(means)
+    print(f"Best classifier: {best_classifier} with average ARI = {best_value:.4f}")
 
 def main() -> None:
     args = parse_args()
@@ -417,7 +434,7 @@ def main() -> None:
 
     if args.keyword_file:
         if args.dataset:
-            run_experiment(args.dataset, args.keyword_file)
+            run_experiment(args.dataset, args.keyword_file)       
         else:
             file_name = os.path.basename(args.keyword_file)
             dataset_name = infer_dataset_name_from_keyword_file(file_name)
@@ -429,6 +446,7 @@ def main() -> None:
     else:
         process_keyword_directory(args.keyword_dir, args.dataset)
 
+    overallResults() 
     sys.exit(0)    
 
 

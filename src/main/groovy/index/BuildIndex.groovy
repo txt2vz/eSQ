@@ -105,11 +105,10 @@ class BuildIndex {
     }
 
     static main(args) {
-        new BuildIndex("NG6")
+       // new BuildIndex("NG6")
         for (index in IndexEnum.values()) {
             new BuildIndex(index.name())
-            println "Index: ${index.name()} numDocs: ${index.getIndexReader().numDocs()}"
-            
+            println "Index: ${index.name()} numDocs: ${index.getIndexReader().numDocs()}"            
         }
     }
 }

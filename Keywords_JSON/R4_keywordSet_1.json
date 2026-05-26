@@ -1,7 +1,10 @@
 [
     [
+        "money",
+        "bank"
+    ],
+    [
         "oil",
-        "bpd",
         "ecuador"
     ],
     [
@@ -11,9 +14,5 @@
     [
         "cts",
         "shr"
-    ],
-    [
-        "money",
-        "bank"
     ]
 ]

@@ -15,10 +15,13 @@ import io.jenetics.util.IntRange;
 import org.apache.lucene.search.BooleanQuery;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.apache.commons.io.FileUtils;
 
 public class JeneticsMain {
 
@@ -36,7 +39,8 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 5;
+    final static int numberMaxFitJobs = 7;
+    final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
@@ -63,6 +67,16 @@ public class JeneticsMain {
         final Date startRun = new Date();
         List<Double> bestMaxFitV = new ArrayList<>();
 
+        File keywordDir = new File("Keywords_JSON");
+        try {
+            // delete existing keyword directory and contents if it exists to avoid
+            // confusion with old results
+            FileUtils.deleteDirectory(keywordDir);
+            System.out.println("Keyword directory deleted successfully!");
+        } catch (IOException e) {
+            System.out.println("Failed to delete keyword directory: " + e.getMessage());
+        }
+        
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
             Indexes.setImportantTermQueryList(maxWordListValue);
@@ -155,7 +169,6 @@ public class JeneticsMain {
                     bestJobQuerySet[0].printQueryMap();
                     bestJobQuerySet[0].printQueryTermLists();
 
-                    File keywordDir = new File("Keywords_JSON");
                     if (!keywordDir.exists()) {
                         keywordDir.mkdirs();
                     }
@@ -171,14 +184,17 @@ public class JeneticsMain {
         final Date endJavaRun = new Date();
         TimeDuration duration = TimeCategory.minus(endJavaRun, startRun);
         System.out.println("Duration for Keyword Generation: " + duration);
-        int pythonExitCode = CallPythonToExpandKeywordClusters.processPythonExpandClusters();
-        if (pythonExitCode == 0) {
-            System.out.println("Python expansion of keyword clusters completed successfully.");
-            final Date endTotalRun = new Date();
-            TimeDuration totalDuration = TimeCategory.minus(endTotalRun, startRun);
-            System.out.println("Total Duration for Keyword Generation and Expansion: " + totalDuration);
-        } else {
-            System.out.println("Python expansion of keyword clusters did not complete successfully.");
+
+        if (expandKeywordClustersWithPython) {
+            int pythonExitCode = CallPythonToExpandKeywordClusters.processPythonExpandClusters();
+            if (pythonExitCode == 0) {
+                System.out.println("Python expansion of keyword clusters completed successfully.");
+                final Date endTotalRun = new Date();
+                TimeDuration totalDuration = TimeCategory.minus(endTotalRun, startRun);
+                System.out.println("Total Duration for Keyword Generation and Expansion: " + totalDuration);
+            } else {
+                System.out.println("Python expansion of keyword clusters did not complete successfully.");
+            }
         }
     }
 }

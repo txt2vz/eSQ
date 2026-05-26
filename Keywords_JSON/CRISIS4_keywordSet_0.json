@@ -1,13 +1,19 @@
 [
     [
+        "highparkfire"
+    ],
+    [
         "boston",
         "marathon",
         "explosion"
     ],
     [
         "lax",
-        "shooter",
-        "incident"
+        "incident",
+        "shooter"
+    ],
+    [
+        "prayforboston"
     ],
     [
         "colorado",
@@ -18,11 +24,5 @@
         "bigwet",
         "brisbane",
         "qpsmedia"
-    ],
-    [
-        "highparkfire"
-    ],
-    [
-        "prayforboston"
     ]
 ]

@@ -13,11 +13,13 @@ import Indexes.*
 @CompileStatic
 class ImportantTermQueries {
 
-    //static Set<String> stopSet = StopSet.getStopSetFromFile()
+    static Set<String> stopSet = StopSet.getStopSetFromFile()
     final static int MAX_TERMQUERYLIST_SIZE = 120
+    //static Set<String> stopSet = new File('src/cfg/stop_words_moderate.txt') as Set<String>
+   
 
     static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {
-
+        
         Map<TermQuery, Double> termQueryMap = [:]
         int totalDocs = indexReader.numDocs()
 
@@ -93,7 +95,7 @@ class ImportantTermQueries {
                 return false
         }
 
-     //   if (stopSet.contains(word)) return false
+        if (stopSet.contains(word)) return false
 
         return true
     }

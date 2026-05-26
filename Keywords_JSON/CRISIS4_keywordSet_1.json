@@ -5,9 +5,17 @@
         "qpsmedia"
     ],
     [
+        "highparkfire"
+    ],
+    [
         "lax",
         "shooter",
         "incident"
+    ],
+    [
+        "colorado",
+        "wildfire",
+        "springs"
     ],
     [
         "boston",
@@ -16,13 +24,5 @@
     ],
     [
         "prayforboston"
-    ],
-    [
-        "colorado",
-        "wildfire",
-        "springs"
-    ],
-    [
-        "highparkfire"
     ]
 ]

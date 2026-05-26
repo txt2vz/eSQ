@@ -1,13 +1,8 @@
 [
     [
-        "coffee",
-        "ico",
-        "bags"
-    ],
-    [
         "bank",
-        "banks",
-        "money"
+        "money",
+        "banks"
     ],
     [
         "oil",
@@ -17,6 +12,10 @@
     [
         "sugar",
         "ec"
+    ],
+    [
+        "coffee",
+        "ico"
     ],
     [
         "surplus",

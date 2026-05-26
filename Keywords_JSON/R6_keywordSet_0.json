@@ -1,22 +1,23 @@
 [
     [
+        "company",
+        "shares"
+    ],
+    [
+        "oil",
+        "bpd",
+        "barrels"
+    ],
+    [
         "tonnes",
         "wheat"
     ],
     [
         "cts",
-        "vs",
         "shr"
     ],
     [
         "bank",
         "money"
-    ],
-    [
-        "oil",
-        "bpd"
-    ],
-    [
-        "shares"
     ]
 ]
