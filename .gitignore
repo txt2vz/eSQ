@@ -7,6 +7,6 @@ build/
 .idea/
 #indexes/
 .venv
-results/
+#results/
 **/__pycache__/
 .vscode/
