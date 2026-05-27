@@ -1,4 +1,5 @@
 # Project exclude paths
+bin/
 .gradle/
 build/
 *.stat
@@ -7,3 +8,5 @@ build/
 #indexes/
 .venv
 results/
+**/__pycache__/
+.vscode

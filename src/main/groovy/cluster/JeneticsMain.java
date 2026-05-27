@@ -30,8 +30,8 @@ public class JeneticsMain {
     static EsqQueryBuilder esqQueryBuilder;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
-    final static int popSize = 100;
-    final static int maxGen = 800;
+    final static int popSize = 200;
+    final static int maxGen = 500;
     final static int maxWordListValue = 80;
     final static int maxK = 8;
     final static int minK = 2;
@@ -89,22 +89,16 @@ public class JeneticsMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                    // builderMethod = (maxFitjob % 2 == 0) ? BuilderMethod.INTERSECT :
-                    // BuilderMethod.SINGLE; //vary the builder Method - maxFitJobs will select best
-                    // based on fitness
+                    
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap,
                             builderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK, 1), // possible values of k
                             IntegerChromosome.of(0, maxWordListValue, maxK), // rootword
-                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)// intersect
-                                                                                                       // words -1
-                                                                                                       // indicates no
-                                                                                                       // word added to
-                                                                                                       // query
-                    // ,IntegerChromosome.of(0, maxWordListValue, IntRange.of(minGenomeLength,
-                    // maxGenomeLength)) //for BLOCKS or MODULUS builderMethod
+                            
+                            //intersect word -1 indicates no word to be added to the query
+                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)                   
                     );
 
                     final Engine<IntegerGene, Double> engine = Engine
@@ -113,9 +107,7 @@ public class JeneticsMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0), // should be good
-                                                                                                     // for single gene
-                                                                                                     // chromosome
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0),                             
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
@@ -136,10 +128,7 @@ public class JeneticsMain {
 
                                         if (ind.generation() % 90 == 0) {
                                             System.out.println("Gen: " + ind.generation() + " Index: " + index.name()
-                                                    + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);// + "
-                                                                                                           // phenotype:
-                                                                                                           // " +
-                                                                                                           // ind.bestPhenotype());
+                                                    + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);                                               
                                         }
                                     })
                                     .peek(statistics)
