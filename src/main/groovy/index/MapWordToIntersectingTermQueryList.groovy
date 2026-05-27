@@ -54,7 +54,7 @@ class MapWordToIntersectingTermQueryList {
 
     static void main(String[] args) {
 
-        Indexes.setIndex(IndexEnum.NG3)
+        Indexes.setIndex(IndexEnum.CRISIS6)
         Indexes.setImportantTermQueryList()
 
         MapWordToIntersectingTermQueryList mapWordToIntersectingTermQueryList = new MapWordToIntersectingTermQueryList()

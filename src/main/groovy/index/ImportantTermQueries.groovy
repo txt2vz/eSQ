@@ -87,13 +87,13 @@ class ImportantTermQueries {
              println "Term ${word} has df ${df} which is more than 50% of total docs ${indexReader.numDocs()}. Ignoring it."
              return false
          }
-        if (!word.charAt(0).isLetter()) return false
+       // if (!word.charAt(0).isLetter()) return false
         if (word.length() < 2) return false
 
-        for (char c : word.toCharArray()) {
-            if (!c.isLetterOrDigit())
-                return false
-        }
+        // for (char c : word.toCharArray()) {
+        //     if (!c.isLetterOrDigit())
+        //         return false
+        // }
 
         if (stopSet.contains(word)) return false
 
@@ -103,12 +103,12 @@ class ImportantTermQueries {
     static void main(String[] args) {
 
         final Date start = new Date()
-        Indexes.setIndex(IndexEnum.NG3)
+        Indexes.setIndex(IndexEnum.CRISIS6)
 
-        def l = getTFIDFTermQueryList(IndexEnum.NG3.indexReader)
+        def l = getTFIDFTermQueryList(IndexEnum.CRISIS6.indexReader)
 
-        final Date end = new Date()
-        TimeDuration duration = TimeCategory.minus(end, start)
+         final Date end = new Date()
+         TimeDuration duration = TimeCategory.minus(end, start)
         println "Duration: $duration"
     }
 }

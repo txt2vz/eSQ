@@ -27,6 +27,7 @@ DATASETS: Dict[str, DatasetConfig] = {
     "NG3": DatasetConfig(folder_path="NG3", description="20 Newsgroups subset with 3 classes"),
     "crisis3": DatasetConfig(folder_path="crisis3", description="Crisis dataset"),
     "crisis4": DatasetConfig(folder_path="crisis4", description="Crisis4 dataset"),
+    "crisis6": DatasetConfig(folder_path="CrisisLexT6", description="CrisisLexT6 dataset"),
     "R4": DatasetConfig(folder_path="R4", description="Reuters 4 dataset"),
     "R5": DatasetConfig(folder_path="R5", description="Reuters 5 dataset"),
     "R6": DatasetConfig(folder_path="R6", description="Reuters 6 dataset"),
@@ -38,7 +39,6 @@ DATASETS_DIR = REPO_ROOT / "datasets"
 KEYWORD_ROOT = REPO_ROOT / "Keywords_JSON"
 RESULTS_DIR = REPO_ROOT / "results"
 RESULTS_CSV = RESULTS_DIR / "results_compare.csv"
-
 
 def load_documents(folder_path: str | Path) -> tuple[List[str], List[str]]:
     """Load documents recursively from a folder and extract labels from subfolder names.
@@ -57,7 +57,8 @@ def load_documents(folder_path: str | Path) -> tuple[List[str], List[str]]:
         try:
             with file_path.open("r", encoding="utf-8", errors="ignore") as f:
                 raw = f.read()
-                tokens = re.findall(r"\b\w+\b", raw.lower())
+                #tokens = re.findall(r"\b\w+\b", raw.lower())
+                tokens = re.findall(r"#\w+|\b\w+\b", raw.lower()) #for hashtags as tokens
                 documents.append(" ".join(tokens))
             label = file_path.parent.name
             labels.append(label)

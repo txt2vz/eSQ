@@ -1,28 +1,31 @@
 [
     [
+        "lax",
+        "suspect",
+        "shooter"
+    ],
+    [
+        "colorado",
+        "springs",
+        "wildfire"
+    ],
+    [
+        "#bigwet",
+        "qpsmedia",
+        "made"
+    ],
+    [
+        "#lax"
+    ],
+    [
+        "#highparkfire"
+    ],
+    [
         "boston",
         "marathon",
         "explosion"
     ],
     [
-        "prayforboston"
-    ],
-    [
-        "colorado",
-        "wildfire",
-        "springs"
-    ],
-    [
-        "bigwet",
-        "brisbane",
-        "qpsmedia"
-    ],
-    [
-        "lax",
-        "shooter",
-        "incident"
-    ],
-    [
-        "highparkfire"
+        "#prayforboston"
     ]
 ]

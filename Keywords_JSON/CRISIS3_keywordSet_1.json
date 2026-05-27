@@ -1,24 +1,27 @@
 [
     [
-        "highparkfire"
+        "#highparkfire"
     ],
     [
-        "colorado",
-        "wildfires",
-        "springs"
-    ],
-    [
-        "prayforboston",
-        "world"
+        "#bigwet",
+        "brisbane",
+        "qpsmedia"
     ],
     [
         "boston",
-        "marathon",
-        "explosion"
+        "explosion",
+        "marathon"
     ],
     [
-        "bigwet",
-        "qpsmedia",
-        "tornado"
+        "#colorado"
+    ],
+    [
+        "#prayforboston",
+        "world"
+    ],
+    [
+        "colorado",
+        "wildfire",
+        "springs"
     ]
 ]

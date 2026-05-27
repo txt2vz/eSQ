@@ -45,12 +45,15 @@ public class JeneticsMain {
     static List<IndexEnum> indexList = Arrays.asList(
             IndexEnum.CRISIS3,
             IndexEnum.CRISIS4,
+            IndexEnum.CRISIS6,
             IndexEnum.NG3,
             IndexEnum.NG5,
             IndexEnum.NG6,
             IndexEnum.R4,
             IndexEnum.R5,
-            IndexEnum.R6);
+            IndexEnum.R6
+          
+        );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 

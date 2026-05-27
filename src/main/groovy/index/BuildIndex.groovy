@@ -24,12 +24,11 @@ class BuildIndex {
 
     final static  int MAX_DOCS_PER_DIRECTORY = 10000
 
-    BuildIndex(String indexName) {
+    BuildIndex(IndexEnum index) {
 
-       // String indexName = 'R6'
-        String indexPath = 'indexes' + /\$indexName/
-        String docsPath =  'datasets' +  /\$indexName/
-
+        String indexPath = index.indexPath
+        String docsPath =  index.docsPath
+   
         Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
         Analyzer analyzer = Indexes.analyzer
@@ -105,10 +104,12 @@ class BuildIndex {
     }
 
     static main(args) {
-       // new BuildIndex("NG6")
+       //new BuildIndex(IndexEnum.CRISIS6)
+   
         for (index in IndexEnum.values()) {
-            new BuildIndex(index.name())
-            println "Index: ${index.name()} numDocs: ${index.getIndexReader().numDocs()}"            
+            new BuildIndex(index)
+           
+            println "IndexName: $index IndexPath: ${index.indexPath}  DocsPath: ${index.docsPath} numDocs: ${index.getIndexReader().numDocs()}"            
         }
     }
 }

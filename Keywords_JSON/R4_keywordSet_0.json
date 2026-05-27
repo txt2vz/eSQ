@@ -1,16 +1,15 @@
 [
     [
-        "oil",
-        "ecuador",
-        "bpd"
-    ],
-    [
         "cts",
         "shr"
     ],
     [
         "wheat",
         "agriculture"
+    ],
+    [
+        "oil",
+        "ecuador"
     ],
     [
         "money",

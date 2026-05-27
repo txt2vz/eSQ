@@ -21,38 +21,41 @@ import java.nio.file.Paths
 @CompileStatic
 enum IndexEnum {
 
-    CRISIS3('indexes/Crisis3', 3),
-    CRISIS4('indexes/crisis4', 4),
+    CRISIS3('indexes/Crisis3', 'datasets/Crisis3', 3),
+    CRISIS4('indexes/crisis4', 'datasets/crisis4', 4),
+    CRISIS6('indexes/CrisisLexT6', 'datasets/CrisisLexT6', 6),
 
-    NG3('indexes/NG3', 3),
-    NG5('indexes/NG5', 5),
-    NG6('indexes/NG6', 6),
+     NG3('indexes/NG3', 'datasets/NG3', 3),
+     NG5('indexes/NG5', 'datasets/NG5', 5),
+     NG6('indexes/NG6', 'datasets/NG6', 6),
 
-    R4('indexes/R4', 4),
-    R5('indexes/R5', 5),
-    R6('indexes/R6', 6)
+     R4('indexes/R4', 'datasets/R4', 4),
+     R5('indexes/R5', 'datasets/R5', 5),
+     R6('indexes/R6', 'datasets/R6', 6)
 
-    String pathString
+    String indexPath
+    String docsPath
     int numberOfClasses
 
-    IndexEnum(String pathString, int numberOfClasses) {
+    IndexEnum(String indexPath, String docsPath, int numberOfClasses) {
         this.numberOfClasses = numberOfClasses
-        this.pathString = pathString
+        this.indexPath = indexPath
+        this.docsPath = docsPath
     }
 
     String toString() {
-        return "${this.name()} path: $pathString numberOfClasses: $numberOfClasses  "
+        return "${this.name()} indexPath: $indexPath docsPath: $docsPath numberOfClasses: $numberOfClasses  "
     }
 
     IndexReader getIndexReader() {
-        Path path = Paths.get(pathString)
+        Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
         IndexReader ir = DirectoryReader.open(directory)
         return ir
     }
 
     IndexSearcher getIndexSearcher() {
-        Path path = Paths.get(pathString)
+        Path path = Paths.get(indexPath)
         Directory directory = FSDirectory.open(path)
         IndexReader ir = DirectoryReader.open(directory)
         IndexSearcher is = new IndexSearcher(ir)
@@ -83,13 +86,12 @@ class Indexes {
                         FIELD_QUERY_ASSIGNED_CLUSTER = 'assignedClass',
                         FIELD_DOCUMENT_ID = 'document_id'
 
- 
-   // static List<String> stopSet = new File("src//cfg//stop_words_moderate.txt") as List<String>
-    //static List<String> stopSet = new File("src//cfg//stop_words_most.txt") as List<String>
+
    // static CharArraySet stopCharSet = new CharArraySet(stopSet, true);
    // static final Analyzer analyzer = new StandardAnalyzer(stopCharSet)
     // public static final Similarity similarity = //new BM25Similarity()    //new ClassicSimilarity()
-    static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)  //new StandardAnalyzer()  //new EnglishAnalyzer();  //with stemming  new WhitespaceAnalyzer()
+    //static final Analyzer analyzer = new StandardAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET)  //new StandardAnalyzer()  //new EnglishAnalyzer();
+    static final Analyzer analyzer = new HashtagPreservingEnglishAnalyzer()
 
     static void setIndex(IndexEnum indexEnum) {
         index = indexEnum
