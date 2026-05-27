@@ -55,23 +55,11 @@ class BuildIndex {
                 if (!file.hidden && file.exists() && file.canRead() && !file.isDirectory() && dirCount < MAX_DOCS_PER_DIRECTORY) {
                     Document doc = new Document()
 
-                   // Field catNumberField = new StringField(Indexes.FIELD_CATEGORY_NUMBER, String.valueOf(categoryNumber), Field.Store.YES)
-                  //  doc.add(catNumberField)
-
-                    //non-alpha characters cause a problem when identifying a document for delete.
-                   // String fileName = file.getName().replaceAll(/\W/, '').toLowerCase() + 'id' + totalDocCount
-                   // Field documentIDfield = new StringField(Indexes.FIELD_DOCUMENT_ID, fileName, Field.Store.YES)
-                  //  doc.add(documentIDfield)
-
-                    String parent = file.getParent()
-                   // String grandParent = file.getParentFile().getParent()
+                    String parent = file.getParent()                
 
                     String catName = parent.substring(parent.lastIndexOf(File.separator) + 1, parent.length())
                     Field catNameField = new StringField(Indexes.FIELD_CATEGORY_NAME, catName.replaceAll(/\W/, '').toLowerCase(), Field.Store.YES)
                     doc.add(catNameField)
-
-                   // Field assignedClass = new StringField(Indexes.FIELD_QUERY_ASSIGNED_CLUSTER, 'unassigned', Field.Store.YES)
-                  //  doc.add(assignedClass)
 
                     doc.add(new TextField(Indexes.FIELD_CONTENTS, file.text, Field.Store.YES))
 
@@ -109,7 +97,7 @@ class BuildIndex {
         for (index in IndexEnum.values()) {
             new BuildIndex(index)
            
-            println "IndexName: $index IndexPath: ${index.indexPath}  DocsPath: ${index.docsPath} numDocs: ${index.getIndexReader().numDocs()}"            
+            println "$index numDocs: ${index.getIndexReader().numDocs()}"            
         }
     }
 }
