@@ -1,24 +1,22 @@
 [
     [
-        "bank",
-        "money",
-        "banks"
+        "surplus",
+        "deficit"
     ],
     [
-        "oil",
-        "bpd",
-        "opec"
+        "rate",
+        "rates"
     ],
     [
         "sugar",
         "ec"
     ],
     [
-        "coffee",
-        "ico"
+        "oil",
+        "opec"
     ],
     [
-        "surplus",
-        "deficit"
+        "coffee",
+        "ico"
     ]
 ]

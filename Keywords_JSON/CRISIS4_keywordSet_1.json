@@ -1,6 +1,11 @@
 [
     [
-        "#prayforboston"
+        "boston",
+        "marathon",
+        "explosion"
+    ],
+    [
+        "#lax"
     ],
     [
         "#bigwet",
@@ -8,7 +13,7 @@
         "qpsmedia"
     ],
     [
-        "#lax"
+        "#highparkfire"
     ],
     [
         "colorado",
@@ -16,14 +21,9 @@
         "springs"
     ],
     [
-        "boston",
-        "explosion",
-        "marathon"
-    ],
-    [
         "lax"
     ],
     [
-        "#highparkfire"
+        "#prayforboston"
     ]
 ]

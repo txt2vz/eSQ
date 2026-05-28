@@ -13,10 +13,10 @@ import Indexes.*
 @CompileStatic
 class ImportantTermQueries {
 
-    static Set<String> stopSet = StopSet.getStopSetFromFile()
+    //static Set<String> stopSet = StopSet.getStopSetFromFile()
     final static int MAX_TERMQUERYLIST_SIZE = 120
-    //static Set<String> stopSet = new File('src/cfg/stop_words_moderate.txt') as Set<String>
-   
+    //static Set<String> stopSet = new File('src/cfg/stop_words_moderate.txt') as Set<String>   
+   // static Set<String> stopSet = new File('src/cfg/nltkStopWords.txt') as Set<String>   
 
     static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, final int maxSize = MAX_TERMQUERYLIST_SIZE) {
         
@@ -65,7 +65,7 @@ class ImportantTermQueries {
         def termQueryMapDescend = termQueryMap.sort { a, b -> a.value <=> b.value }
 
         def tql = new ArrayList<TermQuery>(termQueryMapDescend.keySet().take(maxSize))
-      //  println "termQueryMapDescend first (40): ${termQueryMapDescend.take(40)}"
+     //   println "termQueryMapDescend first (40): ${termQueryMapDescend.take(40)}"
      //   println "termQueryList first (40): ${tql.take(40)}"
 
         print "Important words: "
@@ -80,6 +80,9 @@ class ImportantTermQueries {
 
     private static boolean isUsefulTerm(long df, String word, IndexReader indexReader) {
 
+        
+         if (word.length() < 2) return false
+
         if (df < 4) return false //document frequency
        
         if (df > 0.5 * indexReader.numDocs()) 
@@ -88,14 +91,14 @@ class ImportantTermQueries {
              return false
          }
        // if (!word.charAt(0).isLetter()) return false
-        if (word.length() < 2) return false
+       
 
         // for (char c : word.toCharArray()) {
         //     if (!c.isLetterOrDigit())
         //         return false
         // }
 
-        if (stopSet.contains(word)) return false
+       // if (stopSet.contains(word))  return false        
 
         return true
     }
@@ -103,9 +106,10 @@ class ImportantTermQueries {
     static void main(String[] args) {
 
         final Date start = new Date()
-        Indexes.setIndex(IndexEnum.CRISIS6)
+        IndexEnum indexEnum = IndexEnum.CRISIS4
+        Indexes.setIndex(indexEnum)
 
-        def l = getTFIDFTermQueryList(IndexEnum.CRISIS6.indexReader)
+        def l = getTFIDFTermQueryList(indexEnum.indexReader)
 
          final Date end = new Date()
          TimeDuration duration = TimeCategory.minus(end, start)

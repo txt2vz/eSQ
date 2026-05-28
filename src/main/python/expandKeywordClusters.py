@@ -392,16 +392,15 @@ def overallResults():
     
     print()
     print("********************************************************")
+    print(f"Average clusterCountError: {cluster_count_error_mean:.4f}")
+    print()
     print("Average V-measure by classifier:")
     print(v_means)
     print(f"Best classifier by V-measure: {best_v_classifier} with average V = {best_v_value:.4f}")
-    print()
-      
+    print()      
     print("Average ARI by classifier:")
     print(ari_means)
-    print(f"Best classifier by ARI: {best_ari_classifier} with average ARI = {best_ari_value:.4f}")
-    print()
-    print(f"Average clusterCountError: {cluster_count_error_mean:.4f}")
+    print(f"Best classifier by ARI: {best_ari_classifier} with average ARI = {best_ari_value:.4f}")  
 
 
 def main() -> None:

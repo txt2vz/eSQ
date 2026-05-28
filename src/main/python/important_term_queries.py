@@ -6,7 +6,9 @@ from pathlib import Path
 
 TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
 DEFAULT_STOP_WORDS_PATH = Path("src/cfg/stop_words_moderate.txt")
-DEFAULT_DATASET_PATH = Path("datasets/NG3")
+#DEFAULT_STOP_WORDS_PATH = Path("src/stop_words/nltkStopWords.txt")
+#DEFAULT_STOP_WORDS_PATH = Path("src/cfg/stopWordsLucene.txt")
+DEFAULT_DATASET_PATH = Path("datasets/crisis4")
 MAX_TERMQUERYLIST_SIZE = 120
 
 

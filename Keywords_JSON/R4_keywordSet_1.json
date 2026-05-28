@@ -1,19 +1,18 @@
 [
     [
+        "money",
+        "bank"
+    ],
+    [
         "oil",
-        "ecuador",
-        "bpd"
+        "ecuador"
+    ],
+    [
+        "wheat",
+        "tonnes"
     ],
     [
         "cts",
         "shr"
-    ],
-    [
-        "wheat",
-        "agriculture"
-    ],
-    [
-        "money",
-        "bank"
     ]
 ]

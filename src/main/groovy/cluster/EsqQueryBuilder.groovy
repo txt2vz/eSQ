@@ -67,7 +67,6 @@ class EsqQueryBuilder {
                 }
             }
         }
-
         return arrayOfBuilders
     }
 

@@ -1,17 +1,17 @@
 [
     [
         "hockey",
-        "play",
-        "league"
-    ],
-    [
-        "space",
-        "lunar",
-        "nasa"
+        "league",
+        "play"
     ],
     [
         "god",
         "truth",
         "faith"
+    ],
+    [
+        "space",
+        "nasa",
+        "lunar"
     ]
 ]
