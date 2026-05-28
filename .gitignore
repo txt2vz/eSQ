@@ -5,7 +5,7 @@ build/
 *.stat
 *.iml
 .idea/
-indexes/
+#indexes/
 .venv
 #results/
 **/__pycache__/
