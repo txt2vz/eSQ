@@ -30,8 +30,8 @@ public class JeneticsMain {
     static EsqQueryBuilder esqQueryBuilder;
     static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
 
-    final static int popSize = 200;
-    final static int maxGen = 500;
+    final static int popSize = 100;
+    final static int maxGen = 1200;
     final static int maxWordListValue = 80;
     final static int maxK = 8;
     final static int minK = 2;
