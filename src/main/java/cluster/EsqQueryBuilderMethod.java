@@ -1,6 +1,6 @@
 package cluster;
 
-public enum BuilderMethod {
+public enum EsqQueryBuilderMethod {
     INTERSECT,
     BLOCKS,
     SINGLE,

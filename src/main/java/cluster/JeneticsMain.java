@@ -28,7 +28,7 @@ public class JeneticsMain {
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
-    static BuilderMethod builderMethod = BuilderMethod.INTERSECT;
+    static EsqQueryBuilderMethod eSqQueryBuilderMethod = EsqQueryBuilderMethod.INTERSECT;
 
     final static int popSize = 100;
     final static int maxGen = 1200;
@@ -39,18 +39,18 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 2;
+    final static int numberMaxFitJobs = 5;
     final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(
            IndexEnum.CRISIS3,
-        //    IndexEnum.CRISIS4,
-        //     IndexEnum.CRISIS6,
-        //     IndexEnum.NG3,
-        //     IndexEnum.NG5,
-        //     IndexEnum.NG6,
-        //     IndexEnum.R4,
-        //     IndexEnum.R5,
+           IndexEnum.CRISIS4,
+            IndexEnum.CRISIS6,
+            IndexEnum.NG3,
+            IndexEnum.NG5,
+            IndexEnum.NG6,
+            IndexEnum.R4,
+            IndexEnum.R5,
             IndexEnum.R6          
          );
 
@@ -98,7 +98,7 @@ public class JeneticsMain {
 
                     
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap,
-                            builderMethod);
+                            eSqQueryBuilderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK, 1), // possible values of k

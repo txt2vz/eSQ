@@ -8,7 +8,7 @@ The Java library Apache Lucene is required for query generation:  [Apache Lucene
 The python sklearn package is used for cluster evaluation.
 Install [sklearn](https://scikit-learn.org/stable/) for cluster evaluation.
 
-Change the PYTHON_LOCATION in src/main/groovy/cluster/CallPythonToExpandClusters.groovy
+Change the PYTHON_LOCATION in src/main/groovy/cluster/CallPythonToExpandClusters.java
 
 ## Overview
 The eSQ (evolved Search Queries) is a system for automatic document clustering. Two stages are involved.  
@@ -42,11 +42,11 @@ Note: to call python and run the expansion set expandKeywordClustersWithPython t
 
 ## GA Engine 
 Uses [Jenetics.IO](https://jenetics.io/) 
-To run use: https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/cluster/JeneticsMain.java
+To run use: https://github.com/txt2vz/eSQ/blob/eSQJ/src/main/java/cluster/JeneticsMain.java
 
 ## Indexes
 eSQ uses Apache Lucene for indexing and firing queries. Several pre-built Lucene indexes are included in the 'indexes' folder.  
-You can build your own index by adapting https://github.com/txt2vz/eSQ/blob/master/src/main/groovy/index/BuildIndex.groovy
+You can build your own index by adapting https://github.com/txt2vz/eSQ/blob/eSQJ/src/main/java/index/BuildIndex.java
 
 ## Help
 Please let me know if you are interested in helping to improve this project.

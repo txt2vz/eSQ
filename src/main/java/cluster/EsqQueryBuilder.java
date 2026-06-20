@@ -20,17 +20,17 @@ public class EsqQueryBuilder {
     private final List<TermQuery> tql;
     private final Map<String, List<TermQuery>> orderedIntersectMap;
     private final BooleanClause.Occur booleanClauseOccur;
-    private final BuilderMethod builderMethod;
+    private final EsqQueryBuilderMethod builderMethod;
 
-    public EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap, BuilderMethod bm, BooleanClause.Occur bco) {
+    public EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap, EsqQueryBuilderMethod eSQbm, BooleanClause.Occur bco) {
         this.tql = termQueryList;
         this.booleanClauseOccur = bco;
         this.orderedIntersectMap = orderedIntersectMap;
-        this.builderMethod = bm;
+        this.builderMethod = eSQbm;
     }
 
-    public EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap, BuilderMethod bm) {
-        this(termQueryList, orderedIntersectMap, bm, BooleanClause.Occur.SHOULD);
+    public EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap, EsqQueryBuilderMethod eSQbm) {
+        this(termQueryList, orderedIntersectMap, eSQbm, BooleanClause.Occur.SHOULD);
     }
 
     public BooleanQuery.Builder[] buildQueries(final Genotype<IntegerGene> gt, final int k) throws java.io.IOException {
