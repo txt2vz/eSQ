@@ -39,25 +39,30 @@ public class JeneticsMain {
     final static int minGenomeLength = 16;
     final static int maxGenomeLength = 50;
     final static int numberOfJobs = 2;
-    final static int numberMaxFitJobs = 5;
+    final static int numberMaxFitJobs = 2;
     final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(
            IndexEnum.CRISIS3,
-           IndexEnum.CRISIS4,
-            IndexEnum.CRISIS6,
-            IndexEnum.NG3,
-            IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
+        //    IndexEnum.CRISIS4,
+        //     IndexEnum.CRISIS6,
+        //     IndexEnum.NG3,
+        //     IndexEnum.NG5,
+        //     IndexEnum.NG6,
+        //     IndexEnum.R4,
+        //     IndexEnum.R5,
             IndexEnum.R6          
          );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
         final int k = (gt.get(0)).get(0).allele();
-        BooleanQuery.Builder[] bqbArray = esqQueryBuilder.buildQueries(gt, k);
+        BooleanQuery.Builder[] bqbArray;
+        try {
+            bqbArray = esqQueryBuilder.buildQueries(gt, k);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         QuerySet querySet = new QuerySet(bqbArray);
 
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
@@ -140,7 +145,12 @@ public class JeneticsMain {
                     Genotype<IntegerGene> genotype = jeneticsResult.genotype();
 
                     final int k = (genotype.get(0)).get(0).allele();
-                    BooleanQuery.Builder[] arrayOfQueryBuilders = esqQueryBuilder.buildQueries(genotype, k);
+                    BooleanQuery.Builder[] arrayOfQueryBuilders;
+                    try {
+                        arrayOfQueryBuilders = esqQueryBuilder.buildQueries(genotype, k);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     querySet.printQueryMap();
@@ -163,7 +173,11 @@ public class JeneticsMain {
                         keywordDir.mkdirs();
                     }
                     File keywordFile = new File(keywordDir, index.name() + "_keywordSet_" + jobNumber + ".json");
-                    bestJobQuerySet[0].writeQueryTermsJson(keywordFile);
+                    try {
+                        bestJobQuerySet[0].writeQueryTermsJson(keywordFile);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     System.out.println("Best query keyword sets written to " + keywordFile.getAbsolutePath());
                 } else {
                     System.out.println("No best query map was selected for jobNumber " + jobNumber);
