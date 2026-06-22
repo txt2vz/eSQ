@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 public enum IndexEnum {
 
     CRISIS3("indexes/Crisis3", "datasets/Crisis3", 3),
-    CRISIS4("indexes/crisis4", "datasets/crisis4", 4),
+    CRISIS4("indexes/Crisis4", "datasets/Crisis4", 4),
     CRISIS6("indexes/CrisisLexT6", "datasets/CrisisLexT6", 6),
     NG3("indexes/NG3", "datasets/NG3", 3),
     NG5("indexes/NG5", "datasets/NG5", 5),

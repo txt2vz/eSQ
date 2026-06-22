@@ -186,9 +186,9 @@ def load_keyword_sets_from_file(file_path: str | Path) -> List[List[str]]:
 
 def get_classifier_list():
     return [
-        ("KNN", KNeighborsClassifier(n_neighbors=5)),
-        ("LinearSVC", LinearSVC(max_iter=2000)),
-        ("RandomForest", RandomForestClassifier(n_estimators=200, n_jobs=-1, random_state=42)),
+       # ("KNN", KNeighborsClassifier(n_neighbors=5)),
+       # ("LinearSVC", LinearSVC(max_iter=2000)),
+       # ("RandomForest", RandomForestClassifier(n_estimators=200, n_jobs=-1, random_state=42)),
         ("ComplementNB", ComplementNB()),
         ("MultinomialNB", MultinomialNB()),
     ]
