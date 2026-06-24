@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.io.FileUtils;
 
-public class JeneticsMain {
+public class ESQMain {
 
     static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
@@ -108,7 +108,7 @@ public class JeneticsMain {
 
                     final Engine<IntegerGene, Double> engine = Engine
                             .builder(
-                                    JeneticsMain::searchQueryFitness, gtf)
+                                    ESQMain::searchQueryFitness, gtf)
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(

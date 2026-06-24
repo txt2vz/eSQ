@@ -15,14 +15,14 @@ java {
 }
 
 application {
-    mainClass = 'cluster.JeneticsMain'
+    mainClass = 'cluster.ESQMain'
     applicationDefaultJvmArgs = ['--add-modules', 'jdk.incubator.vector']
 }
 
 task runESQ(type: JavaExec) {
     group = "Execution"
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'cluster.JeneticsMain'
+    mainClass = 'cluster.ESQMain'
     jvmArgs += ['--add-modules', 'jdk.incubator.vector']
 }
 
