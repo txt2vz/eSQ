@@ -31,27 +31,25 @@ public class JeneticsMain {
     static EsqQueryBuilderMethod eSqQueryBuilderMethod = EsqQueryBuilderMethod.INTERSECT;
 
     final static int popSize = 100;
-    final static int maxGen = 1200;
+    final static int maxGen = 500;
     final static int maxWordListValue = 80;
     final static int maxK = 8;
     final static int minK = 2;
-    final static int maxIntersectListSize = 2;
-    final static int minGenomeLength = 16;
-    final static int maxGenomeLength = 50;
+    final static int maxIntersectListSize = 2;   
     final static int numberOfJobs = 2;
     final static int numberMaxFitJobs = 5;
     final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(
-           IndexEnum.CRISIS3,
-           IndexEnum.CRISIS4,
+        //   IndexEnum.CRISIS3,
+         //  IndexEnum.CRISIS4,
             IndexEnum.CRISIS6,
-            IndexEnum.NG3,
+        //    IndexEnum.NG3,
             IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6          
+         //   IndexEnum.NG6,
+            IndexEnum.R4
+         //   IndexEnum.R5,
+         //   IndexEnum.R6          
          );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
@@ -101,11 +99,11 @@ public class JeneticsMain {
                             eSqQueryBuilderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
-                            IntegerChromosome.of(minK, maxK, 1), // possible values of k
-                            IntegerChromosome.of(0, maxWordListValue, maxK), // rootword
+                           IntegerChromosome.of(minK, maxK, 1), // possible values of k
+                           IntegerChromosome.of(0, maxWordListValue, maxK), // rootword
                             
                             //intersect word -1 indicates no word to be added to the query
-                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)                   
+                           IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)                 
                     );
 
                     final Engine<IntegerGene, Double> engine = Engine
