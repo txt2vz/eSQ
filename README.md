@@ -42,7 +42,7 @@ Note: to call python and run the expansion set expandKeywordClustersWithPython t
 
 ## GA Engine 
 Uses [Jenetics.IO](https://jenetics.io/) 
-To run use: https://github.com/txt2vz/eSQ/blob/eSQJ/src/main/java/cluster/JeneticsMain.java
+To run use: https://github.com/txt2vz/eSQ/blob/master/src/main/java/cluster/ESQMain.java
 
 ## Indexes
 eSQ uses Apache Lucene for indexing and firing queries. Several pre-built Lucene indexes are included in the 'indexes' folder.  
