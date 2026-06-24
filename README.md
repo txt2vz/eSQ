@@ -13,7 +13,7 @@ Change the PYTHON_LOCATION in src/main/groovy/cluster/CallPythonToExpandClusters
 ## Overview
 The eSQ (evolved Search Queries) is a system for automatic document clustering. Two stages are involved.  
 
-**Stage 1** uses a Genetic Algorithm to build a set of queries. To run stage 1 run EsqMain.java
+**Stage 1** uses a Genetic Algorithm to build a set of queries. To run stage 1 run ESQMain.java
 The evolved search queries are stored in JSON format, for example when evolving queries for the NG3 dataset  the following JSON is stored in a file named NG3_keywordSet.json.
 [
     [
