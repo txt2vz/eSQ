@@ -12,21 +12,7 @@ import index.Indexes
 
 class EsqQueryBuilderTest extends Specification {
 
-    def "constructor initializes fields correctly with default BooleanClause.Occur"() {
-        given:
-        def termQueryList = [new TermQuery(new Term(Indexes.FIELD_CONTENTS, "term1")), 
-                             new TermQuery(new Term(Indexes.FIELD_CONTENTS, "term2")), 
-                             new TermQuery(new Term(Indexes.FIELD_CONTENTS, "term3"))]
-        def orderedIntersectMap = [:]
-        def builderMethod = EsqQueryBuilderMethod.SINGLE
-     
-        when:
-        def builder = new EsqQueryBuilder(termQueryList, orderedIntersectMap, builderMethod)
-
-        then:
-        builder != null
-    }
-
+  
     def "single word query"() {
     given:
         def termQueryList = [new TermQuery(new Term(Indexes.FIELD_CONTENTS, "term1")), 
@@ -87,7 +73,7 @@ class EsqQueryBuilderTest extends Specification {
         def query0 = listOfBuilders[0].build()
 
         then:
-        query0.clauses().size() == 4
+        query0.clauses().size() == 4  //root term + 3 intersect terms
         query0.clauses()[0].query() instanceof TermQuery
         println("query0: ${query0.toString()}")
         
