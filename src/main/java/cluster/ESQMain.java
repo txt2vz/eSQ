@@ -25,7 +25,6 @@ import org.apache.commons.io.FileUtils;
 
 public class ESQMain {
 
-    static String gaEngine = "JENETICS.IO";
     static final double K_PENALTY = 0.03d;
     static EsqQueryBuilder esqQueryBuilder;
     static EsqQueryBuilderMethod eSqQueryBuilderMethod = EsqQueryBuilderMethod.INTERSECT;
@@ -35,34 +34,29 @@ public class ESQMain {
     final static int maxWordListValue = 80;
     final static int maxK = 8;
     final static int minK = 2;
-    final static int maxIntersectListSize = 2;   
+    final static int maxIntersectListSize = 2;
     final static int numberOfJobs = 2;
     final static int numberMaxFitJobs = 5;
     final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(
-           IndexEnum.CRISIS3,
-          IndexEnum.CRISIS4,
+            // IndexEnum.CRISIS3,
+            // IndexEnum.CRISIS4,
             IndexEnum.CRISIS6,
-            IndexEnum.NG3,
+            // IndexEnum.NG3,
             IndexEnum.NG5,
-            IndexEnum.NG6,
-            IndexEnum.R4,
-            IndexEnum.R5,
-            IndexEnum.R6          
-         );
+            // IndexEnum.NG6,
+            IndexEnum.R4
+    // IndexEnum.R5,
+    // IndexEnum.R6
+    );
 
     static double searchQueryFitness(final Genotype<IntegerGene> gt) {
 
         final int k = (gt.get(0)).get(0).allele();
         BooleanQuery.Builder[] bqbArray;
-        try {
-            bqbArray = esqQueryBuilder.buildQueries(gt, k);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        bqbArray = esqQueryBuilder.buildQueries(gt, k);
         QuerySet querySet = new QuerySet(bqbArray);
-
         final int uniqueHits = querySet.getTotalHitsReturnedByOnlyOneQuery();
         return uniqueHits * (1.0 - (K_PENALTY * k));
     }
@@ -70,7 +64,7 @@ public class ESQMain {
     public static void main(String[] args) throws Exception {
 
         final Date startRun = new Date();
-    
+
         File keywordDir = new File("Keywords_JSON");
         try {
             // delete existing keyword directory and contents if it exists to avoid
@@ -80,7 +74,7 @@ public class ESQMain {
         } catch (IOException e) {
             System.out.println("Failed to delete keyword directory: " + e.getMessage());
         }
-        
+
         for (IndexEnum index : indexList) {
             Indexes.setIndex(index);
             Indexes.setImportantTermQueryList(maxWordListValue);
@@ -94,17 +88,15 @@ public class ESQMain {
 
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
-                    
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap,
                             eSqQueryBuilderMethod);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
-                           IntegerChromosome.of(minK, maxK, 1), // possible values of k
-                           IntegerChromosome.of(0, maxWordListValue, maxK), // rootword
-                            
-                            //intersect word -1 indicates no word to be added to the query
-                           IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK)                 
-                    );
+                            IntegerChromosome.of(minK, maxK, 1), // possible values of k
+                            IntegerChromosome.of(0, maxWordListValue, maxK), // rootword
+
+                            // intersect word -1 indicates no word to be added to the query
+                            IntegerChromosome.of(-1, maxIntersectListSize, maxIntersectListSize * maxK));
 
                     final Engine<IntegerGene, Double> engine = Engine
                             .builder(
@@ -112,7 +104,7 @@ public class ESQMain {
                             .populationSize(popSize)
                             .selector(new TournamentSelector<>(3))
                             .alterers(
-                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0),                             
+                                    PartialAlterer.of(new MeanAlterer<IntegerGene, Double>(0.1), 0),
                                     PartialAlterer.of(new GaussianMutator<IntegerGene, Double>(0.3), 0),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 1),
                                     PartialAlterer.of(new SinglePointCrossover<IntegerGene, Double>(0.3), 2),
@@ -133,7 +125,7 @@ public class ESQMain {
 
                                         if (ind.generation() % 90 == 0) {
                                             System.out.println("Gen: " + ind.generation() + " Index: " + index.name()
-                                                    + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);                                               
+                                                    + " bestPhenoFit: " + ind.bestFitness() + " k: " + k0);
                                         }
                                     })
                                     .peek(statistics)
@@ -144,11 +136,8 @@ public class ESQMain {
 
                     final int k = (genotype.get(0)).get(0).allele();
                     BooleanQuery.Builder[] arrayOfQueryBuilders;
-                    try {
-                        arrayOfQueryBuilders = esqQueryBuilder.buildQueries(genotype, k);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+
+                    arrayOfQueryBuilders = esqQueryBuilder.buildQueries(genotype, k);
 
                     QuerySet querySet = new QuerySet(arrayOfQueryBuilders);
                     querySet.printQueryMap();
@@ -171,11 +160,8 @@ public class ESQMain {
                         keywordDir.mkdirs();
                     }
                     File keywordFile = new File(keywordDir, index.name() + "_keywordSet_" + jobNumber + ".json");
-                    try {
-                        bestJobQuerySet[0].writeQueryTermsJson(keywordFile);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    bestJobQuerySet[0].writeQueryTermsJson(keywordFile);
+
                     System.out.println("Best query keyword sets written to " + keywordFile.getAbsolutePath());
                 } else {
                     System.out.println("No best query map was selected for jobNumber " + jobNumber);

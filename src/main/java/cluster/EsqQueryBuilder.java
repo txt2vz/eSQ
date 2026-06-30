@@ -35,7 +35,7 @@ public class EsqQueryBuilder {
         this(termQueryList, orderedIntersectMap, eSQbm, BooleanClause.Occur.SHOULD);
     }
 
-    public BooleanQuery.Builder[] buildQueries(final Genotype<IntegerGene> gt, final int k) throws java.io.IOException {
+    public BooleanQuery.Builder[] buildQueries(final Genotype<IntegerGene> gt, final int k)  {//throws java.io.IOException {
         switch (builderMethod) {
             case SINGLE:
                 return getSingleWordQueries(((IntegerChromosome) gt.get(1)).toArray(), k);

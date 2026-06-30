@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class CallPythonToExpandKeywordClusters {
 
+    //change this to your python location
     static final String PYTHON_LOCATION = "C:\\Users\\lauri\\eSQ\\eSQ\\.venv\\Scripts\\python.exe";
 
     public static int processPythonExpandClusters() throws IOException, InterruptedException {

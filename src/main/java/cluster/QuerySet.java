@@ -41,11 +41,11 @@ public class QuerySet {
             BooleanQuery booleanQuery = (BooleanQuery) arrayOfQueryBuilders[i].build();
             queryArray[i] = booleanQuery;
 
-            List<String> terms = new ArrayList<>();
+            List<String> words = new ArrayList<>();
             for (BooleanClause clause : booleanQuery.clauses()) {
-                terms.add(((TermQuery) clause.query()).getTerm().text());
+                words.add(((TermQuery) clause.query()).getTerm().text());
             }
-            queryTermLists.add(terms);
+            queryTermLists.add(words);
 
             totalHitsBQB.add(booleanQuery, BooleanClause.Occur.SHOULD);
 
@@ -93,9 +93,14 @@ public class QuerySet {
         }
     }
 
-    public void writeQueryTermsJson(File file) throws IOException {
-        String json = JsonOutput.prettyPrint(JsonOutput.toJson(queryTermLists));
-        Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
+    public void writeQueryTermsJson(File file) {
+        try {
+            String json = JsonOutput.prettyPrint(JsonOutput.toJson(queryTermLists));
+            Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.err.println("Error writing query terms to JSON file: " + file.getAbsolutePath());
+            e.printStackTrace();
+        }
     }
 
     public List<List<String>> getQueryTermLists() {

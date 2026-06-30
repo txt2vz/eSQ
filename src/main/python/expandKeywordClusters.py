@@ -39,6 +39,9 @@ DATASETS_DIR = REPO_ROOT / "datasets"
 KEYWORD_ROOT = REPO_ROOT / "Keywords_JSON"
 RESULTS_DIR = REPO_ROOT / "results"
 RESULTS_CSV = RESULTS_DIR / "results_compare.csv"
+#RESULTS_CSV = RESULTS_DIR / "results_compare6.csv"
+#RESULTS_CSV = RESULTS_DIR / "results_R4_NG5_CRISIS6.csv"
+
 
 def load_documents(folder_path: str | Path) -> tuple[List[str], List[str]]:
     """Load documents recursively from a folder and extract labels from subfolder names.
@@ -189,8 +192,8 @@ def get_classifier_list():
        # ("KNN", KNeighborsClassifier(n_neighbors=5)),
        # ("LinearSVC", LinearSVC(max_iter=2000)),
        # ("RandomForest", RandomForestClassifier(n_estimators=200, n_jobs=-1, random_state=42)),
-        ("ComplementNB", ComplementNB()),
-        ("MultinomialNB", MultinomialNB()),
+        ("ComplementNB", ComplementNB())
+       # ("MultinomialNB", MultinomialNB()),
     ]
 
 
