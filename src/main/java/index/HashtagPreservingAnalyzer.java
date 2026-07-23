@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class HashtagPreservingEnglishAnalyzer extends Analyzer {
+public class HashtagPreservingAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName) {
@@ -25,7 +25,9 @@ public class HashtagPreservingEnglishAnalyzer extends Analyzer {
         TokenStream filter = new LowerCaseFilter(source);
 
         try {
-            Path stopWordsPath = Paths.get("src", "stop_words", "stop_words_moderate.txt");
+            Path stopWordsPath = Paths.get("src", "stop_words", "stop_words_moderate.txt");            
+       //     Path stopWordsPath = Paths.get("src", "stop_words", "nltkStopWords.txt");
+
             List<String> stopSet = Files.readAllLines(stopWordsPath);
             CharArraySet stopCharSet = new CharArraySet(stopSet, true);
             filter = new StopFilter(filter, stopCharSet);

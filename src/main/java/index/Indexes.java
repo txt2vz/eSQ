@@ -1,6 +1,8 @@
 package index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.TermQuery;
@@ -26,7 +28,9 @@ public class Indexes {
     public static final String FIELD_QUERY_ASSIGNED_CLUSTER = "assignedClass";
     public static final String FIELD_DOCUMENT_ID = "document_id";
 
-    public static final Analyzer analyzer = new HashtagPreservingEnglishAnalyzer();
+    public static final Analyzer analyzer = //new EnglishAnalyzer(); 
+                                            new HashtagPreservingAnalyzer();
+                                      //     new StandardAnalyzer();
 
     public static void setIndex(IndexEnum indexEnum) throws IOException {
         index = indexEnum;

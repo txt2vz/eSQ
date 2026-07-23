@@ -6,7 +6,7 @@ Install JDK for Java (21), Groovy (4) and Python (3).
 The Java library Apache Lucene is required for query generation:  [Apache Lucene](https://lucene.apache.org/)
 
 The python sklearn package is used for cluster evaluation.
-Install [sklearn](https://scikit-learn.org/stable/) for cluster evaluation.
+Install [sklearn](https://scikit-learn.org/stable/) and pandas for cluster evaluation.
 
 Change the PYTHON_LOCATION in src/main/groovy/cluster/CallPythonToExpandClusters.java
 

@@ -1,6 +1,7 @@
 # Project exclude paths
 bin/
 .gradle/
+*.class
 build/
 *.stat
 *.iml

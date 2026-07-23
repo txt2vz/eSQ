@@ -58,12 +58,21 @@ public class BuildIndex {
                         continue;
                     }
                     for (File file : files) {
-                        if (!file.isHidden() && file.exists() && file.canRead() && file.isFile() && dirCount < MAX_DOCS_PER_DIRECTORY) {
+                        if (!file.isHidden() && file.exists() && file.canRead() && file.isFile()
+                                && dirCount < MAX_DOCS_PER_DIRECTORY) {
                             Document doc = new Document();
                             String catName = dir.getName();
-                            Field catNameField = new StringField(Indexes.FIELD_CATEGORY_NAME, catName.replaceAll("\\W", "").toLowerCase(), Field.Store.YES);
+                            Field catNameField = new StringField(Indexes.FIELD_CATEGORY_NAME,
+                                    catName.replaceAll("\\W", "").toLowerCase(), Field.Store.YES);
                             doc.add(catNameField);
-                            doc.add(new TextField(Indexes.FIELD_CONTENTS, java.nio.file.Files.readString(file.toPath()), Field.Store.YES));
+                            // doc.add(new TextField(Indexes.FIELD_CONTENTS,
+                            // java.nio.file.Files.readString(file.toPath()), Field.Store.YES));
+                            // System.out.print("Indexing file: " + file.getAbsolutePath() + " with
+                            // category: " + catName + " ... ");
+
+                            // Streams the file line-by-line instead of loading the whole string into RAM:
+                            doc.add(new TextField(Indexes.FIELD_CONTENTS, java.nio.file.Files
+                                    .newBufferedReader(file.toPath(), java.nio.charset.StandardCharsets.ISO_8859_1)));
 
                             catsNameFreq.put(catName, catsNameFreq.getOrDefault(catName, 0) + 1);
                             writer.addDocument(doc);
@@ -92,6 +101,8 @@ public class BuildIndex {
     }
 
     public static void main(String[] args) throws IOException {
+        // new BuildIndex(IndexEnum.NG5);
+    
         for (IndexEnum index : IndexEnum.values()) {
             new BuildIndex(index);
             System.out.println(index + " numDocs: " + index.getIndexReader().numDocs());

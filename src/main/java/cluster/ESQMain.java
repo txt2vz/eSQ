@@ -40,13 +40,14 @@ public class ESQMain {
     final static boolean expandKeywordClustersWithPython = true;
 
     static List<IndexEnum> indexList = Arrays.asList(
-            // IndexEnum.CRISIS3,
-            // IndexEnum.CRISIS4,
             IndexEnum.CRISIS6,
-            // IndexEnum.NG3,
             IndexEnum.NG5,
-            // IndexEnum.NG6,
             IndexEnum.R4
+
+    // IndexEnum.CRISIS3,
+    // IndexEnum.CRISIS4,
+    // IndexEnum.NG3,
+    // IndexEnum.NG6,
     // IndexEnum.R5,
     // IndexEnum.R6
     );
@@ -89,7 +90,7 @@ public class ESQMain {
                 IntStream.range(0, numberMaxFitJobs).forEach(maxFitjob -> {
 
                     esqQueryBuilder = new EsqQueryBuilder(Indexes.termQueryList, Indexes.orderedIntersectMap,
-                            eSqQueryBuilderMethod);
+                            eSqQueryBuilderMethod, maxIntersectListSize);
 
                     final Factory<Genotype<IntegerGene>> gtf = Genotype.of(
                             IntegerChromosome.of(minK, maxK, 1), // possible values of k

@@ -1,18 +1,21 @@
-[
-    [
-        "money",
-        "bank"
-    ],
-    [
-        "oil",
-        "ecuador"
-    ],
-    [
-        "wheat",
-        "tonnes"
-    ],
-    [
-        "cts",
-        "shr"
+{
+    "dataSetName": "R4",
+    "keyWordClusters": [
+        [
+            "money",
+            "bank"
+        ],
+        [
+            "wheat",
+            "tonnes"
+        ],
+        [
+            "cts",
+            "shr"
+        ],
+        [
+            "oil",
+            "ecuador"
+        ]
     ]
-]
+}

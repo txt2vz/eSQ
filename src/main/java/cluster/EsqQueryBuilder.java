@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class EsqQueryBuilder {
 
-    private static final int MAX_INTERSECT_LIST_SIZE = 2;
+    int MAX_INTERSECT_LIST_SIZE = 2;
 
     private final List<TermQuery> tql;
     private final Map<String, List<TermQuery>> orderedIntersectMap;
@@ -23,19 +23,16 @@ public class EsqQueryBuilder {
     private final EsqQueryBuilderMethod builderMethod;
 
     public EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap,
-            EsqQueryBuilderMethod eSQbm, BooleanClause.Occur bco) {
+            EsqQueryBuilderMethod eSQbm, int maxIntersectListSize) {
         this.tql = termQueryList;
-        this.booleanClauseOccur = bco;
+        this.booleanClauseOccur = BooleanClause.Occur.SHOULD;
         this.orderedIntersectMap = orderedIntersectMap;
         this.builderMethod = eSQbm;
+        this.MAX_INTERSECT_LIST_SIZE = maxIntersectListSize;
     }
 
-    public EsqQueryBuilder(List<TermQuery> termQueryList, Map<String, List<TermQuery>> orderedIntersectMap,
-            EsqQueryBuilderMethod eSQbm) {
-        this(termQueryList, orderedIntersectMap, eSQbm, BooleanClause.Occur.SHOULD);
-    }
-
-    public BooleanQuery.Builder[] buildQueries(final Genotype<IntegerGene> gt, final int k)  {//throws java.io.IOException {
+    public BooleanQuery.Builder[] buildQueries(final Genotype<IntegerGene> gt, final int k) {// throws
+                                                                                             // java.io.IOException {
         switch (builderMethod) {
             case SINGLE:
                 return getSingleWordQueries(((IntegerChromosome) gt.get(1)).toArray(), k);

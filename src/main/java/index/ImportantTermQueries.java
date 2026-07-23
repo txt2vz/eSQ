@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class ImportantTermQueries {
 
-    public static final int MAX_TERMQUERYLIST_SIZE = 120;
+    public static final int MAX_TERMQUERYLIST_SIZE = 500;
 
     public static List<TermQuery> getTFIDFTermQueryList(IndexReader indexReader, int maxSize) throws IOException {
         Map<TermQuery, Double> termQueryMap = new HashMap<>();
@@ -87,7 +87,7 @@ public class ImportantTermQueries {
         if (df < 4) {
             return false;
         }
-        if (df > 0.5 * indexReader.numDocs()) {
+        if (df > (0.5 * indexReader.numDocs())) {
             System.out.println("Term " + word + " has df " + df + " which is more than 50% of total docs " + indexReader.numDocs() + ". Ignoring it.");
             return false;
         }

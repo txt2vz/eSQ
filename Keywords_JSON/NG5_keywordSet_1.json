@@ -1,23 +1,26 @@
-[
-    [
-        "god",
-        "jesus",
-        "christians"
-    ],
-    [
-        "space",
-        "nasa"
-    ],
-    [
-        "team",
-        "nhl",
-        "hockey"
-    ],
-    [
-        "windows",
-        "file"
-    ],
-    [
-        "sale"
+{
+    "dataSetName": "NG5",
+    "keyWordClusters": [
+        [
+            "team",
+            "nhl",
+            "hockey"
+        ],
+        [
+            "god",
+            "christians",
+            "jesus"
+        ],
+        [
+            "space",
+            "nasa"
+        ],
+        [
+            "windows",
+            "file"
+        ],
+        [
+            "sale"
+        ]
     ]
-]
+}

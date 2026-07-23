@@ -94,8 +94,12 @@ public class QuerySet {
     }
 
     public void writeQueryTermsJson(File file) {
-        try {
-            String json = JsonOutput.prettyPrint(JsonOutput.toJson(queryTermLists));
+      try {
+            Map<String, Object> output = new HashMap<>();
+            output.put("dataSetName", Indexes.index.name());
+            output.put("keyWordClusters", queryTermLists);
+
+            String json = JsonOutput.prettyPrint(JsonOutput.toJson(output));
             Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.err.println("Error writing query terms to JSON file: " + file.getAbsolutePath());

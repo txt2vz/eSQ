@@ -1,27 +1,31 @@
-[
-    [
-        "flood",
-        "queensland",
-        "australia"
-    ],
-    [
-        "boston",
-        "bombing",
-        "marathon"
-    ],
-    [
-        "oklahoma"
-    ],
-    [
-        "#yycflood",
-        "#yyc"
-    ],
-    [
-        "explosion",
-        "fertilizer",
-        "plant"
-    ],
-    [
-        "hurricane"
+{
+    "dataSetName": "CRISIS6",
+    "keyWordClusters": [
+        [
+            "hurricane",
+            "sandy"
+        ],
+        [
+            "oklahoma"
+        ],
+        [
+            "explosion",
+            "fertilizer",
+            "plant"
+        ],
+        [
+            "flood",
+            "australia",
+            "queensland"
+        ],
+        [
+            "boston",
+            "bombing",
+            "marathon"
+        ],
+        [
+            "#yycflood",
+            "#yyc"
+        ]
     ]
-]
+}
